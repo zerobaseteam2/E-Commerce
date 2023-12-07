@@ -4,5 +4,7 @@ import com.example.Ecommerce.user.dto.UserRegisterDto;
 
 public interface UserService {
 
-  public UserRegisterDto.Response register(UserRegisterDto.Request request);
+  UserRegisterDto.Response registerUser(UserRegisterDto.Request request);
+
+  void verifyUserEmail(Long id);
 }
