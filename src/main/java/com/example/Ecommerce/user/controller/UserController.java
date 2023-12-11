@@ -1,9 +1,11 @@
 package com.example.Ecommerce.user.controller;
 
+import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,5 +21,10 @@ public class UserController {
       @RequestBody UserRegisterDto.Request request) {
     UserRegisterDto.Response response = userService.register(request);
     return ResponseEntity.ok(response);
+  }
+  
+  @PostMapping("/login")
+  public ResponseEntity<UserLoginDto.Response> login(@RequestBody UserLoginDto.Request request) {
+    return ResponseEntity.ok(userService.login(request));
   }
 }
