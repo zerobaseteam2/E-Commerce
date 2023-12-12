@@ -4,8 +4,12 @@ import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 
 public interface UserService {
-
+  
   public UserRegisterDto.Response register(UserRegisterDto.Request request);
   
   public UserLoginDto.Response login(UserLoginDto.Request request);
+  
+  public UserLoginDto.Response reissue(String refreshToken);
+  
+  public void logout(String accessToken, String username);
 }

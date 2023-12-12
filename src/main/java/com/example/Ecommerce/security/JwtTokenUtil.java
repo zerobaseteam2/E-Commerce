@@ -1,17 +1,14 @@
 package com.example.Ecommerce.security;
 
-import com.example.Ecommerce.user.domain.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -23,7 +20,6 @@ import static com.example.Ecommerce.security.JwtExpirationEnums.REFRESH_TOKEN_EX
 @Component
 public class JwtTokenUtil {
   public static final String AUTHORIZATION_HEADER = "Authorization";
-  public static final String AUTHORIZATION_KEY = "auth";
   public static final String BEARER_PREFIX = "Bearer ";
   
   @Value("${jwt.secret}")
@@ -49,38 +45,21 @@ public class JwtTokenUtil {
     return extractAllClaims(token).get("username", String.class);
   }
   
-  
-  public String generateAccessToken(String username, UserRole role) {
-    Claims claims = Jwts.claims().setSubject(username);
-    claims.put("auth", role);
-    
-    return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME.getValue()))
-            .signWith(key, signatureAlgorithm)
-            .compact();
+  public String generateAccessToken(String username) {
+    return generateToken(username, ACCESS_TOKEN_EXPIRATION_TIME.getValue());
   }
   
   public String generateRefreshToken(String username) {
-    Claims claims = Jwts.claims().setSubject(username);
-    
-    return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME.getValue()))
-            .signWith(key, signatureAlgorithm)
-            .compact();
+    return generateToken(username, REFRESH_TOKEN_EXPIRATION_TIME.getValue());
   }
-  // 토큰 생성
-  private String generateToken(String username, UserRole role, long expireTime) {
+  
+  public String generateToken(String username, long expireTime) {
     Claims claims = Jwts.claims().setSubject(username);
-    claims.put("auth", role);
     
-    return Jwts.builder()
+    return BEARER_PREFIX + Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME.getValue()))
+            .setExpiration(new Date(System.currentTimeMillis() + expireTime))
             .signWith(key, signatureAlgorithm)
             .compact();
   }
