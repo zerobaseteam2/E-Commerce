@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.example.Ecommerce.security.JwtTokenUtil.BEARER_PREFIX;
+import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 public class UserLoginDto {
   @Getter

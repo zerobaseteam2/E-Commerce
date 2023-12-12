@@ -1,25 +1,27 @@
 package com.example.Ecommerce.user.service.impl;
 
 import com.example.Ecommerce.config.CacheConfig;
-import com.example.Ecommerce.security.*;
+import com.example.Ecommerce.security.jwt.JwtExpirationEnums;
+import com.example.Ecommerce.security.jwt.JwtTokenUtil;
+import com.example.Ecommerce.user.domain.LogoutAccessToken;
+import com.example.Ecommerce.user.domain.RefreshToken;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
+import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
+import com.example.Ecommerce.user.repository.RefreshTokenRedisRepository;
 import com.example.Ecommerce.user.repository.UserRepository;
 import com.example.Ecommerce.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.NoSuchElementException;
 
-import static com.example.Ecommerce.security.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
-import static com.example.Ecommerce.security.JwtTokenUtil.BEARER_PREFIX;
+import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
+import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 @Service
 @RequiredArgsConstructor

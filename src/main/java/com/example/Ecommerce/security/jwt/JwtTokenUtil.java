@@ -1,4 +1,4 @@
-package com.example.Ecommerce.security;
+package com.example.Ecommerce.security.jwt;
 
 import com.example.Ecommerce.user.domain.UserRole;
 import io.jsonwebtoken.*;
@@ -14,8 +14,8 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
-import static com.example.Ecommerce.security.JwtExpirationEnums.ACCESS_TOKEN_EXPIRATION_TIME;
-import static com.example.Ecommerce.security.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
+import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.ACCESS_TOKEN_EXPIRATION_TIME;
+import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 
 @Slf4j
 @Component

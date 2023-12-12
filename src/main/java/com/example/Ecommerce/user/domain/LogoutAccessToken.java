@@ -1,4 +1,4 @@
-package com.example.Ecommerce.security;
+package com.example.Ecommerce.user.domain;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -8,23 +8,23 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 @Getter
-@RedisHash("refreshToken")
+@RedisHash("logoutAccessToken")
 @AllArgsConstructor
 @Builder
-public class RefreshToken {
+public class LogoutAccessToken {
   
   @Id
   private String id;
   
-  private String refreshToken;
+  private String username;
   
   @TimeToLive
   private Long expiration; // 설정한 시간만큼 데이터 저장
   
-  public static RefreshToken createRefreshToken(String username, String refreshToken, Long remainingMilliSeconds) {
-    return RefreshToken.builder()
-            .id(username)
-            .refreshToken(refreshToken)
+  public static LogoutAccessToken of(String accessToken, String username, Long remainingMilliSeconds) {
+    return LogoutAccessToken.builder()
+            .id(accessToken)
+            .username(username)
             .expiration(remainingMilliSeconds / 1000)
             .build();
   }

@@ -1,5 +1,6 @@
-package com.example.Ecommerce.security;
+package com.example.Ecommerce.user.repository;
 
+import com.example.Ecommerce.user.domain.RefreshToken;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
