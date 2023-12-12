@@ -39,11 +39,11 @@ public class JwtTokenUtil {
     claims.put("role", role);
     return BEARER_PREFIX +
             Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME.getValue()))
-            .signWith(key, signatureAlgorithm)
-            .compact();
+                    .setClaims(claims)
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME.getValue()))
+                    .signWith(key, signatureAlgorithm)
+                    .compact();
   }
   
   public String generateRefreshToken(String username) {

@@ -1,7 +1,7 @@
 package com.example.Ecommerce.user.controller;
 
-import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.security.UserDetailsImpl;
+import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
@@ -36,7 +36,7 @@ public class UserController {
   
   @PostMapping("/logout")
   public void logout(@RequestHeader("Authorization") String accessToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    String username = userDetails.getUser().getUserId();;
+    String username = userDetails.getUser().getUserId();
     userService.logout(accessToken, username);
   }
 }

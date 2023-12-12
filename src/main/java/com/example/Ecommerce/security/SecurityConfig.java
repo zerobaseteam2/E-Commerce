@@ -36,11 +36,11 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
-
-//  @Bean
-//  public JwtAuthenticationFilter jwtAuthorizationFilter() {
-//    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService, logoutAccessTokenRedisRepository);
-//  }
+  
+  @Bean
+  public JwtAuthenticationFilter jwtAuthorizationFilter() {
+    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService, logoutAccessTokenRedisRepository);
+  }
   
   @Bean
   protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

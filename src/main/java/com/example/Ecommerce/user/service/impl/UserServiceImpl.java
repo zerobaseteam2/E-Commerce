@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
   
   @Override
   public UserLoginDto.Response login(UserLoginDto.Request request) {
-    User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new NoSuchElementException("회원이 없습니다."));
+    User user = userRepository.findByUserId(request.getUsername()).orElseThrow(() -> new NoSuchElementException("회원이 없습니다."));
     checkPassword(request.getPassword(), user.getPassword());
     
     String username = user.getUserId();
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
   }
   
   private UserLoginDto.Response reissueRefreshToken(String refreshToken, String username) {
-    User user = userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("토큰 재발급 오류 : 회원이 없습니다."));
+    User user = userRepository.findByUserId(username).orElseThrow(() -> new NoSuchElementException("토큰 재발급 오류 : 회원이 없습니다."));
     if (lessThanReissueExpirationTimesLeft(refreshToken)) { // 3일보다 적게 남은 경우 refresh 토큰도 7일로 재발급
       String accessToken = jwtTokenUtil.generateAccessToken(username, user.getRole());
       return new UserLoginDto.Response(accessToken, saveRefreshToken(username).getRefreshToken());
