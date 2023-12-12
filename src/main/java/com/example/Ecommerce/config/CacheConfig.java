@@ -28,8 +28,9 @@ public class CacheConfig {
   
   @Value("${spring.redis.port}")
   private int port;
+  
   @Bean
-  public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory){
+  public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
     RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
             .disableCachingNullValues()
             .entryTtl(Duration.ofSeconds(CacheKey.DEFAULT_EXPIRE_SEC))

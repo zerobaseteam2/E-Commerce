@@ -1,12 +1,9 @@
 package com.example.Ecommerce.security;
 
-import com.example.Ecommerce.user.service.impl.UserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,7 +21,7 @@ public class SecurityConfig {
   private final JwtTokenUtil jwtTokenUtil;
   private final UserDetailServiceImpl userDetailService;
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
-
+  
   
   // 인증처리를 위한 AuthenticaitonManager
   @Bean
@@ -36,7 +33,7 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
-  
+
 //  @Bean
 //  public JwtAuthenticationFilter jwtAuthorizationFilter() {
 //    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService, logoutAccessTokenRedisRepository);
@@ -62,7 +59,7 @@ public class SecurityConfig {
     
     return http.build();
   }
-  
+
 //  @Bean
 //  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //    auth.userDetailsService(userDetailService).passwordEncoder(passwordEncoder());

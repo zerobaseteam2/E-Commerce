@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
-    NOT_FOUND(HttpStatus.NOT_FOUND, "Not found.");
-    private HttpStatus status;
-    private String message;
+  NOT_FOUND(HttpStatus.NOT_FOUND, "Not found.");
+  private HttpStatus status;
+  private String message;
 }

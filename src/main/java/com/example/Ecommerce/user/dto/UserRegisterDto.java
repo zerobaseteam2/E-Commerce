@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class UserRegisterDto {
-
+  
   @Getter
   @Setter
   @Builder
@@ -14,7 +14,7 @@ public class UserRegisterDto {
   public static class Request {
     private Long number;
   }
-
+  
   @Getter
   @Setter
   @Builder
