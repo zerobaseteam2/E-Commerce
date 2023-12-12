@@ -1,11 +1,13 @@
 package com.example.Ecommerce.user.controller;
 
 import com.example.Ecommerce.security.JwtTokenUtil;
+import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,12 +35,8 @@ public class UserController {
   }
   
   @PostMapping("/logout")
-  public void logout(@RequestHeader("Authorization") String accessToken) {
-    String username = jwtTokenUtil.getUsername(resolveToken(accessToken));
+  public void logout(@RequestHeader("Authorization") String accessToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    String username = userDetails.getUser().getUserId();;
     userService.logout(accessToken, username);
-  }
-  
-  private String resolveToken(String accessToken) {
-    return accessToken.substring(7);
   }
 }

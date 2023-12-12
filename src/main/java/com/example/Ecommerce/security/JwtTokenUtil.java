@@ -1,5 +1,6 @@
 package com.example.Ecommerce.security;
 
+import com.example.Ecommerce.user.domain.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -33,33 +34,25 @@ public class JwtTokenUtil {
     key = Keys.hmacShaKeyFor(bytes);
   }
   
-  public Claims extractAllClaims(String token) { // 토큰 추출
-    return Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
-  }
-  
-  public String getUsername(String token) {
-    return extractAllClaims(token).get("username", String.class);
-  }
-  
-  public String generateAccessToken(String username) {
-    return generateToken(username, ACCESS_TOKEN_EXPIRATION_TIME.getValue());
+  public String generateAccessToken(String username, UserRole role) {
+    Claims claims = Jwts.claims().setSubject(username);
+    claims.put("role", role);
+    return BEARER_PREFIX +
+            Jwts.builder()
+            .setClaims(claims)
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME.getValue()))
+            .signWith(key, signatureAlgorithm)
+            .compact();
   }
   
   public String generateRefreshToken(String username) {
-    return generateToken(username, REFRESH_TOKEN_EXPIRATION_TIME.getValue());
-  }
-  
-  public String generateToken(String username, long expireTime) {
     Claims claims = Jwts.claims().setSubject(username);
     
-    return BEARER_PREFIX + Jwts.builder()
+    return Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + expireTime))
+            .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME.getValue()))
             .signWith(key, signatureAlgorithm)
             .compact();
   }
@@ -70,12 +63,6 @@ public class JwtTokenUtil {
       return headerAuth.replace(BEARER_PREFIX, "");
     }
     return null;
-  }
-  
-  // 만료된 토큰인지 확인
-  public Boolean isTokenExpired(String token) {
-    Date expiration = extractAllClaims(token).getExpiration();
-    return expiration.before(new Date());
   }
   
   public Boolean validateToken(String token) {
@@ -92,6 +79,18 @@ public class JwtTokenUtil {
       log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
     }
     return false;
+  }
+  
+  public Claims extractAllClaims(String token) { // 토큰 추출
+    return Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+  }
+  
+  public String getUsername(String token) {
+    return extractAllClaims(token).get("username", String.class);
   }
   
   public long getRemainMilliSeconds(String token) {

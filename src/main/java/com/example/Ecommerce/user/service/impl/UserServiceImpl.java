@@ -14,10 +14,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.NoSuchElementException;
 
 import static com.example.Ecommerce.security.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
+import static com.example.Ecommerce.security.JwtTokenUtil.BEARER_PREFIX;
 
 @Service
 @RequiredArgsConstructor
@@ -40,26 +42,22 @@ public class UserServiceImpl implements UserService {
     checkPassword(request.getPassword(), user.getPassword());
     
     String username = user.getUserId();
-    String accessToken = jwtTokenUtil.generateAccessToken(username);
+    String accessToken = jwtTokenUtil.generateAccessToken(username, user.getRole());
     RefreshToken refreshToken = saveRefreshToken(username);
-    return new UserLoginDto.Response(accessToken, refreshToken.getRefreshToken());
+    return UserLoginDto.Response.of(accessToken, refreshToken.getRefreshToken());
   }
   
   @Override
   public UserLoginDto.Response reissue(String refreshToken) {
     refreshToken = resolveToken(refreshToken);
-    String username = getCurrentUsername();
-    RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(NoSuchElementException::new);
+    RefreshToken redisRefreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshToken).orElseThrow(NoSuchElementException::new);
     
-    if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {
-      return reissueRefreshToken(refreshToken, username);
-    }
-    throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
+    return reissueRefreshToken(refreshToken, redisRefreshToken.getId());
   }
   
   @CacheEvict(value = CacheConfig.CacheKey.USER, key = "#username")
-  public void logout(String accessToken2, String username) {
-    String accessToken = resolveToken(accessToken2);
+  public void logout(String accessToken, String username) {
+    accessToken = resolveToken(accessToken);
     long remainMilliSeconds = jwtTokenUtil.getRemainMilliSeconds(accessToken);
     refreshTokenRedisRepository.deleteById(username);
     logoutAccessTokenRedisRepository.save(LogoutAccessToken.of(accessToken, username, remainMilliSeconds));
@@ -76,18 +74,13 @@ public class UserServiceImpl implements UserService {
             jwtTokenUtil.generateRefreshToken(username), REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
   }
   
-  private String getCurrentUsername() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    UserDetails principal = (UserDetails) authentication.getPrincipal();
-    return principal.getUsername();
-  }
-  
   private UserLoginDto.Response reissueRefreshToken(String refreshToken, String username) {
-    if (lessThanReissueExpirationTimesLeft(refreshToken)) {
-      String accessToken = jwtTokenUtil.generateAccessToken(username);
+    User user = userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("토큰 재발급 오류 : 회원이 없습니다."));
+    if (lessThanReissueExpirationTimesLeft(refreshToken)) { // 3일보다 적게 남은 경우 refresh 토큰도 7일로 재발급
+      String accessToken = jwtTokenUtil.generateAccessToken(username, user.getRole());
       return new UserLoginDto.Response(accessToken, saveRefreshToken(username).getRefreshToken());
     }
-    return new UserLoginDto.Response(jwtTokenUtil.generateAccessToken(username), refreshToken);
+    return new UserLoginDto.Response(jwtTokenUtil.generateAccessToken(username, user.getRole()), refreshToken); // 그게 아닌 경우 refresh 토큰은 재발급하지 않음
   }
   
   private boolean lessThanReissueExpirationTimesLeft(String refreshToken) {
@@ -95,6 +88,9 @@ public class UserServiceImpl implements UserService {
   }
   
   private String resolveToken(String token) {
-    return token.substring(7);
+    if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
+      return token.replace(BEARER_PREFIX, "");
+    }
+    return null;
   }
 }
