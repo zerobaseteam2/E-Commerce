@@ -1,6 +1,9 @@
 package com.example.Ecommerce.user.service.impl;
 
+import com.example.Ecommerce.common.MailComponent;
 import com.example.Ecommerce.config.CacheConfig;
+import com.example.Ecommerce.exception.CustomException;
+import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.security.jwt.JwtExpirationEnums;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.domain.LogoutAccessToken;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.NoSuchElementException;
@@ -32,10 +36,41 @@ public class UserServiceImpl implements UserService {
   private final RefreshTokenRedisRepository refreshTokenRedisRepository;
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
   private final JwtTokenUtil jwtTokenUtil;
+  private final MailComponent mailComponent;
   
   @Override
-  public UserRegisterDto.Response register(UserRegisterDto.Request request) {
-    return null;
+  public UserRegisterDto.Response registerUser(UserRegisterDto.Request request) {
+    registerUserDuplicateCheck(request);
+    
+    String encryptedPassword = passwordEncoder.encode(request.getPassword());
+    User user = userRepository.save(request.toEntity(encryptedPassword));
+    
+    mailComponent.sendVerifyLink(user.getId(), user.getEmail(), user.getName());
+    
+    return new UserRegisterDto.Response(user.getUserId());
+  }
+  
+  @Override
+  @Transactional
+  public void verifyUserEmail(Long id) {
+    User user = userRepository.findById(id)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    
+    user.verifyUserEmail();
+  }
+  
+  private void registerUserDuplicateCheck(UserRegisterDto.Request request) {
+    if (userRepository.existsByUserId(request.getUserId())) {
+      throw new CustomException(ErrorCode.USERID_ALREADY_EXISTS);
+    }
+    
+    if (userRepository.existsByEmail(request.getEmail())) {
+      throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+    }
+    
+    if (userRepository.existsByPhone(request.getPhone())) {
+      throw new CustomException(ErrorCode.PHONE_ALREADY_EXISTS);
+    }
   }
   
   @Override

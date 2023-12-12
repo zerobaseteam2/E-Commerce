@@ -5,6 +5,7 @@ import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,10 +19,19 @@ public class UserController {
   private final UserService userService;
   private final JwtTokenUtil jwtTokenUtil;
   
+  @PostMapping("/register")
   public ResponseEntity<UserRegisterDto.Response> registerUser(
-          @RequestBody UserRegisterDto.Request request) {
-    UserRegisterDto.Response response = userService.register(request);
+          @RequestBody @Valid UserRegisterDto.Request request) {
+    UserRegisterDto.Response response = userService.registerUser(request);
+    
     return ResponseEntity.ok(response);
+  }
+  
+  @GetMapping("/verify/{id}")
+  public ResponseEntity verifyUserEmail(@PathVariable Long id) {
+    userService.verifyUserEmail(id);
+    
+    return ResponseEntity.ok().build();
   }
   
   @PostMapping("/login")

@@ -16,7 +16,6 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Users")
 @EntityListeners(AuditingEntityListener.class)
 public class User {
   @Id
