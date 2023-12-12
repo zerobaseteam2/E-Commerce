@@ -1,11 +1,9 @@
 package com.example.Ecommerce.user.dto;
 
 import com.example.Ecommerce.user.domain.User;
+import com.example.Ecommerce.user.domain.UserRole;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
@@ -14,6 +12,7 @@ public class UserRegisterDto {
   @Getter
   @Setter
   @Builder
+  @NoArgsConstructor
   @AllArgsConstructor
   public static class Request {
     
@@ -38,8 +37,8 @@ public class UserRegisterDto {
     @Past(message = "생일은 현재보다 이전이어야 합니다.")
     private Date birth;
     
-    @NotBlank(message = "권한은 필수 입력값입니다.")
-    private String role;
+//    @NotBlank(message = "권한은 필수 입력값입니다.")
+    private UserRole role;
     
     public User toEntity(String encryptedPassword) {
       return User.builder()
@@ -59,6 +58,7 @@ public class UserRegisterDto {
   @Getter
   @Setter
   @Builder
+  @NoArgsConstructor
   @AllArgsConstructor
   public static class Response {
     
