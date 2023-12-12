@@ -10,6 +10,7 @@ import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class UserRegisterDto {
@@ -17,6 +18,7 @@ public class UserRegisterDto {
   @Getter
   @Setter
   @Builder
+  @NoArgsConstructor
   @AllArgsConstructor
   public static class Request {
 
@@ -62,6 +64,7 @@ public class UserRegisterDto {
   @Getter
   @Setter
   @Builder
+  @NoArgsConstructor
   @AllArgsConstructor
   public static class Response {
 
