@@ -41,13 +41,13 @@ public class CacheConfig {
             .serializeValuesWith(RedisSerializationContext
                     .SerializationPair
                     .fromSerializer(new GenericJackson2JsonRedisSerializer()));
-    
-    
+
+
     return RedisCacheManager.RedisCacheManagerBuilder
             .fromConnectionFactory(redisConnectionFactory)
             .cacheDefaults(configuration)
             .build();
-    
+
   }
   
   @Bean
@@ -55,7 +55,7 @@ public class CacheConfig {
     RedisStandaloneConfiguration conf = new RedisStandaloneConfiguration();
     conf.setHostName(this.host);
     conf.setPort(this.port);
-    
+
     return new LettuceConnectionFactory(conf);
   }
   

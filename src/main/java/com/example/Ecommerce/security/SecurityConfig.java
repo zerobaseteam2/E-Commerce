@@ -4,12 +4,15 @@ import com.example.Ecommerce.security.jwt.JwtAuthenticationFilter;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +43,14 @@ public class SecurityConfig {
   @Bean
   public JwtAuthenticationFilter jwtAuthorizationFilter() {
     return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService, logoutAccessTokenRedisRepository);
+  }
+  
+  // h2 console Spring Security 제외 설정
+  @Bean
+  @ConditionalOnProperty(name = "spring.h2.console.enabled",havingValue = "true")
+  public WebSecurityCustomizer configureH2ConsoleEnable() {
+    return web -> web.ignoring()
+            .requestMatchers(PathRequest.toH2Console());
   }
   
   @Bean
