@@ -11,15 +11,15 @@ import org.springframework.validation.FieldError;
 @AllArgsConstructor
 @Builder
 public class ResponseError {
-
+  
   private String field;
   private String message;
-
+  
   // error 를 ResponseError 로 변경하는 method
   public static ResponseError of(FieldError e) {
     return ResponseError.builder()
-        .message(e.getDefaultMessage())
-        .field(((FieldError) e).getField())
-        .build();
+            .message(e.getDefaultMessage())
+            .field(((FieldError) e).getField())
+            .build();
   }
 }

@@ -1,5 +1,6 @@
 package com.example.Ecommerce.user.controller;
 
+import static com.example.Ecommerce.user.domain.UserRole.CUSTOMER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -25,45 +26,45 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import(TestConfig.class)
 @WebMvcTest(UserController.class)
 class UserControllerTest {
-
+  
   @Autowired
   private MockMvc mockMvc;
-
+  
   @Autowired
   private ObjectMapper objectMapper;
-
+  
   @MockBean
   private UserService userService;
-
+  
   @Test
   @DisplayName("회원 가입 성공 테스트")
   void registerUserSuccess() throws Exception {
     //given
     given(userService.registerUser(any()))
-        .willReturn(UserRegisterDto.Response.builder()
-            .userId("Test")
-            .build());
-
+            .willReturn(UserRegisterDto.Response.builder()
+                    .userId("Test")
+                    .build());
+    
     UserRegisterDto.Request request = UserRegisterDto.Request.builder()
-        .userId("Test")
-        .password("Test1234!")
-        .name("테스트")
-        .email("Test@naver.com")
-        .phone("01012345678")
-        .birth(new Date())
-        .role("ROLE_CUSTOMER")
-        .build();
+            .userId("Test")
+            .password("Test1234!")
+            .name("테스트")
+            .email("Test@naver.com")
+            .phone("01012345678")
+            .birth(new Date())
+            .role(CUSTOMER)
+            .build();
     //when
     //then
     mockMvc.perform(
-            post("/api/user/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.userId").exists())
-        .andDo(print());
-
+                    post("/api/user/register")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.userId").exists())
+            .andDo(print());
+    
     verify(userService).registerUser(any());
   }
-
+  
 }

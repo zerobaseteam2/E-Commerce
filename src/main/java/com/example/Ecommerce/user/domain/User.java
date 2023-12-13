@@ -1,12 +1,6 @@
 package com.example.Ecommerce.user.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import java.util.Date;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +9,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @Builder
@@ -22,43 +18,42 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class User {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
+  
   @Column(nullable = false, unique = true)
   private String userId;
-
+  
   @Column(nullable = false)
   private String password;
-
+  
   @Column(nullable = false)
   private String name;
-
+  
   @Column(nullable = false)
   private String email;
-
+  
   @Column(nullable = false)
   private String phone;
-
+  
   @Column
   private Date birth;
-
-  @Column(nullable = false)
-  private String role;
-
+  
+  @Enumerated(value = EnumType.STRING)
+  private UserRole role;
+  
   @Column(nullable = false)
   private boolean emailVerify;
-
+  
   @CreatedDate
   @Column(nullable = false)
   private Date createdAt;
-
+  
   @Column
   @LastModifiedDate
-  private Date UpdatedAt;
-
+  private Date updatedAt;
+  
   public void verifyUserEmail() {
     emailVerify = true;
   }

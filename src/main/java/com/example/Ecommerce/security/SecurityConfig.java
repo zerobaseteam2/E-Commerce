@@ -1,34 +1,39 @@
-package com.example.Ecommerce;
+package com.example.Ecommerce.security;
 
-import com.example.Ecommerce.security.UserDetailServiceImpl;
 import com.example.Ecommerce.security.jwt.JwtAuthenticationFilter;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@TestConfiguration
+@Configuration
 @EnableWebSecurity
-public class TestConfig {
-  @Autowired
-  private JwtAuthenticationFilter jwtAuthenticationFilter;
-  @MockBean
-  private JwtTokenUtil jwtTokenUtil;
-  @MockBean
-  private UserDetailServiceImpl userDetailService;
-  @MockBean
-  private LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+@RequiredArgsConstructor
+public class SecurityConfig {
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final JwtTokenUtil jwtTokenUtil;
+  private final UserDetailServiceImpl userDetailService;
+  private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+  
+  
+  // 인증처리를 위한 AuthenticaitonManager
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    return configuration.getAuthenticationManager();
+  }
   
   @Bean
-  public BCryptPasswordEncoder bCryptPasswordEncoder() {
+  public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
   
@@ -38,7 +43,7 @@ public class TestConfig {
   }
   
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
             .httpBasic((httpBasicConfig) ->
                     httpBasicConfig.disable())
@@ -57,4 +62,9 @@ public class TestConfig {
     
     return http.build();
   }
+
+//  @Bean
+//  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//    auth.userDetailsService(userDetailService).passwordEncoder(passwordEncoder());
+//  }
 }
