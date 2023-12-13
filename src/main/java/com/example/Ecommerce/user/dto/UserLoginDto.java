@@ -13,7 +13,7 @@ public class UserLoginDto {
   @Builder
   @AllArgsConstructor
   public static class Request {
-    private String username;
+    private String userId;
     private String password;
   }
   
