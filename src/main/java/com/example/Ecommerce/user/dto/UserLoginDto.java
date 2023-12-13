@@ -1,12 +1,8 @@
 package com.example.Ecommerce.user.dto;
 
-import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 public class UserLoginDto {
   @Getter

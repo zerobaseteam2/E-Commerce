@@ -47,7 +47,7 @@ public class SecurityConfig {
   
   // h2 console Spring Security 제외 설정
   @Bean
-  @ConditionalOnProperty(name = "spring.h2.console.enabled",havingValue = "true")
+  @ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
   public WebSecurityCustomizer configureH2ConsoleEnable() {
     return web -> web.ignoring()
             .requestMatchers(PathRequest.toH2Console());
@@ -73,9 +73,4 @@ public class SecurityConfig {
     
     return http.build();
   }
-
-//  @Bean
-//  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//    auth.userDetailsService(userDetailService).passwordEncoder(passwordEncoder());
-//  }
 }

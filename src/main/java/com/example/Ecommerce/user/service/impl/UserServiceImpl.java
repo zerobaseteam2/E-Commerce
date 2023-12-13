@@ -1,8 +1,5 @@
 package com.example.Ecommerce.user.service.impl;
 
-import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
-import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
-
 import com.example.Ecommerce.common.MailComponent;
 import com.example.Ecommerce.config.CacheConfig;
 import com.example.Ecommerce.exception.CustomException;
@@ -18,13 +15,17 @@ import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
 import com.example.Ecommerce.user.repository.RefreshTokenRedisRepository;
 import com.example.Ecommerce.user.repository.UserRepository;
 import com.example.Ecommerce.user.service.UserService;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.NoSuchElementException;
+
+import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
+import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 @Service
 @RequiredArgsConstructor
