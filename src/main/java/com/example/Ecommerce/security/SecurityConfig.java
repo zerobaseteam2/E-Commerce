@@ -30,7 +30,7 @@ public class SecurityConfig {
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
 
-  // 인증처리를 위한 AuthenticationManager
+  // 인증처리를 위한 AuthenticaitonManager
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
       throws Exception {
@@ -70,6 +70,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/login").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api-docs/**").permitAll()
+                .requestMatchers("api/user/verify/{id}").permitAll()
+                .requestMatchers("api/product").hasRole("SELLER")
                 .anyRequest().authenticated())
         .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
         .sessionManagement((sessionConfig) ->
