@@ -23,54 +23,59 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final JwtTokenUtil jwtTokenUtil;
   private final UserDetailServiceImpl userDetailService;
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
-  
-  
-  // 인증처리를 위한 AuthenticaitonManager
+
+
+  // 인증처리를 위한 AuthenticationManager
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+      throws Exception {
     return configuration.getAuthenticationManager();
   }
-  
+
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
-  
+
   @Bean
   public JwtAuthenticationFilter jwtAuthorizationFilter() {
-    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService, logoutAccessTokenRedisRepository);
+    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService,
+        logoutAccessTokenRedisRepository);
   }
-  
+
   // h2 console Spring Security 제외 설정
   @Bean
   @ConditionalOnProperty(name = "spring.h2.console.enabled", havingValue = "true")
   public WebSecurityCustomizer configureH2ConsoleEnable() {
     return web -> web.ignoring()
-            .requestMatchers(PathRequest.toH2Console());
+        .requestMatchers(PathRequest.toH2Console());
   }
-  
+
   @Bean
   protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-            .httpBasic((httpBasicConfig) ->
-                    httpBasicConfig.disable())
-            .csrf((csrfConfig) ->
-                    csrfConfig.disable())
-            .formLogin((formLoginConfig) ->
-                    formLoginConfig.disable())
-            .authorizeHttpRequests((auth) ->
-                    auth.requestMatchers("/api/user/register").permitAll()
-                            .requestMatchers("/api/user/login").permitAll()
-                            .anyRequest().authenticated())
-            .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
-            .sessionManagement((sessionConfig) ->
-                    sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    
+        .httpBasic((httpBasicConfig) ->
+            httpBasicConfig.disable())
+        .csrf((csrfConfig) ->
+            csrfConfig.disable())
+        .formLogin((formLoginConfig) ->
+            formLoginConfig.disable())
+        .authorizeHttpRequests((auth) ->
+            auth.requestMatchers("/api/user/register").permitAll()
+                .requestMatchers("/api/user/login").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/api-docs/**").permitAll()
+                .anyRequest().authenticated())
+        .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
+        .sessionManagement((sessionConfig) ->
+            sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
   }
 }
