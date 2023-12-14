@@ -23,4 +23,5 @@ public enum UserRole {
     public static final String SELLER = "ROLE_SELLER";
     public static final String ADMIN = "ROLE_ADMIN";
   }
+
 }

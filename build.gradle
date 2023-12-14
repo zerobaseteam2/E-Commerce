@@ -40,6 +40,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+
+    // 엔티티들의 변경이력 자동 관리를 위한 envers
+    implementation 'org.springframework.data:spring-data-envers'
 }
 
 tasks.named('test') {
