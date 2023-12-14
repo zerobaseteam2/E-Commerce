@@ -36,7 +36,7 @@ public class JwtTokenUtil {
   
   public String generateAccessToken(String username, UserRole role) {
     Claims claims = Jwts.claims().setSubject(username);
-    claims.put("role", role);
+    claims.put("auth", role);
     return BEARER_PREFIX +
             Jwts.builder()
                     .setClaims(claims)
@@ -90,7 +90,7 @@ public class JwtTokenUtil {
   }
   
   public String getUsername(String token) {
-    return extractAllClaims(token).get("username", String.class);
+    return extractAllClaims(token).getSubject();
   }
   
   public long getRemainMilliSeconds(String token) {

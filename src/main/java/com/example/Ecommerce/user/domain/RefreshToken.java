@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
+// DB에 저장하는 것으로 변경
 @Getter
 @RedisHash("refreshToken")
 @AllArgsConstructor
