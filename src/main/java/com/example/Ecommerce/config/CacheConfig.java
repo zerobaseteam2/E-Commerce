@@ -55,7 +55,7 @@ public class CacheConfig {
     RedisStandaloneConfiguration conf = new RedisStandaloneConfiguration();
     conf.setHostName(this.host);
     conf.setPort(this.port);
-    
+
     return new LettuceConnectionFactory(conf);
   }
   

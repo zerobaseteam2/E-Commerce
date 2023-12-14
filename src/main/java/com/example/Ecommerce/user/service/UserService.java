@@ -9,7 +9,7 @@ public interface UserService {
   
   public UserLoginDto.Response login(UserLoginDto.Request request);
   
-  public UserLoginDto.Response reissue(String refreshToken);
+  public UserLoginDto.Response reissue(String refreshToken, String username);
   
   public void logout(String accessToken, String username);
   

@@ -85,11 +85,14 @@ public class UserServiceImpl implements UserService {
   }
   
   @Override
-  public UserLoginDto.Response reissue(String refreshToken) {
+  public UserLoginDto.Response reissue(String refreshToken, String username) {
     refreshToken = resolveToken(refreshToken);
-    RefreshToken redisRefreshToken = refreshTokenRedisRepository.findByRefreshToken(refreshToken).orElseThrow(NoSuchElementException::new);
+    RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(NoSuchElementException::new);
     
-    return reissueRefreshToken(refreshToken, redisRefreshToken.getId());
+    if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {
+      return reissueAccessToken(refreshToken, username);
+    }
+    throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
   }
   
   @CacheEvict(value = CacheConfig.CacheKey.USER, key = "#username")
@@ -111,17 +114,10 @@ public class UserServiceImpl implements UserService {
             jwtTokenUtil.generateRefreshToken(username), REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
   }
   
-  private UserLoginDto.Response reissueRefreshToken(String refreshToken, String username) {
+  private UserLoginDto.Response reissueAccessToken(String refreshToken, String username) {
     User user = userRepository.findByUserId(username).orElseThrow(() -> new NoSuchElementException("토큰 재발급 오류 : 회원이 없습니다."));
-    if (lessThanReissueExpirationTimesLeft(refreshToken)) { // 3일보다 적게 남은 경우 refresh 토큰도 7일로 재발급
-      String accessToken = jwtTokenUtil.generateAccessToken(username, user.getRole());
-      return new UserLoginDto.Response(accessToken, saveRefreshToken(username).getRefreshToken());
-    }
+    
     return new UserLoginDto.Response(jwtTokenUtil.generateAccessToken(username, user.getRole()), refreshToken); // 그게 아닌 경우 refresh 토큰은 재발급하지 않음
-  }
-  
-  private boolean lessThanReissueExpirationTimesLeft(String refreshToken) {
-    return jwtTokenUtil.getRemainMilliSeconds(refreshToken) < JwtExpirationEnums.REISSUE_EXPIRATION_TIME.getValue();
   }
   
   private String resolveToken(String token) {

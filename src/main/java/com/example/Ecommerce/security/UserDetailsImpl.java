@@ -2,8 +2,10 @@ package com.example.Ecommerce.security;
 
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.domain.UserRole;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,9 +14,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown =true)
 public class UserDetailsImpl implements UserDetails {
-  private final User user;
+  private  User user;
   
   public User getUser() {
     return user;
@@ -32,6 +36,7 @@ public class UserDetailsImpl implements UserDetails {
   
   
   @Override
+  @JsonIgnore
   public Collection<? extends GrantedAuthority> getAuthorities() {    // authorities를 통해 권한 제어 가능. GrantedAuthority : 현재 사용자가 가지고 있는 권한
     UserRole userRole = user.getRole();
     String authority = userRole.getAuthority();
@@ -44,21 +49,25 @@ public class UserDetailsImpl implements UserDetails {
   }
   
   @Override
+  @JsonIgnore
   public boolean isAccountNonExpired() {
     return false;
   }
   
   @Override
+  @JsonIgnore
   public boolean isAccountNonLocked() {
     return false;
   }
   
   @Override
+  @JsonIgnore
   public boolean isCredentialsNonExpired() {
     return false;
   }
   
   @Override
+  @JsonIgnore
   public boolean isEnabled() {
     return false;
   }
