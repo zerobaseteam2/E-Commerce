@@ -68,10 +68,10 @@ public class SecurityConfig {
         .authorizeHttpRequests((auth) ->
             auth.requestMatchers("/api/user/register").permitAll()
                 .requestMatchers("/api/user/login").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/api-docs/**").permitAll()
                 .requestMatchers("api/user/verify/{id}").permitAll()
                 .requestMatchers("api/product").hasRole("SELLER")
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/api-docs/**").permitAll()
                 .anyRequest().authenticated())
         .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
         .sessionManagement((sessionConfig) ->
