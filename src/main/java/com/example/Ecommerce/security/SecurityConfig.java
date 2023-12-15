@@ -1,6 +1,5 @@
 package com.example.Ecommerce.security;
 
-
 import com.example.Ecommerce.security.jwt.JwtAuthenticationFilter;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
@@ -69,6 +68,8 @@ public class SecurityConfig {
         .authorizeHttpRequests((auth) ->
             auth.requestMatchers("/api/user/register").permitAll()
                 .requestMatchers("/api/user/login").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/api-docs/**").permitAll()
                 .requestMatchers("api/user/verify/{id}").permitAll()
                 .requestMatchers("api/product").hasRole("SELLER")
                 .anyRequest().authenticated())

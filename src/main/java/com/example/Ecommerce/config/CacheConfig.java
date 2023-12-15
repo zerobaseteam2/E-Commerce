@@ -1,5 +1,6 @@
 package com.example.Ecommerce.config;
 
+import java.time.Duration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +17,6 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-
-import java.time.Duration;
 
 @Configuration
 @RequiredArgsConstructor
@@ -55,7 +54,7 @@ public class CacheConfig {
     RedisStandaloneConfiguration conf = new RedisStandaloneConfiguration();
     conf.setHostName(this.host);
     conf.setPort(this.port);
-    
+
     return new LettuceConnectionFactory(conf);
   }
   
