@@ -71,7 +71,7 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api-docs/**").permitAll()
                 .requestMatchers("api/user/verify/{id}").permitAll()
-                .requestMatchers("api/product").hasRole("SELLER")
+                .requestMatchers("v1/product").hasRole("SELLER")
                 .anyRequest().authenticated())
         .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
         .sessionManagement((sessionConfig) ->
