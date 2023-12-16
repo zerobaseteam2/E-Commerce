@@ -3,6 +3,7 @@ package com.example.Ecommerce.user.controller;
 import static com.example.Ecommerce.security.jwt.JwtTokenUtil.AUTHORIZATION_HEADER;
 
 import com.example.Ecommerce.security.UserDetailsImpl;
+import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
@@ -62,5 +63,14 @@ public class UserController {
   public void logout(@RequestHeader("Authorization") String accessToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
     String username = userDetails.getUser().getUserId();
     userService.logout(accessToken, username);
+  }
+
+  @PostMapping("/address")
+  public ResponseEntity<Void> addUserAddress(
+      @RequestBody @Valid UserAddressDto.Request request,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    userService.addUserAddress(request, userDetails);
+
+    return ResponseEntity.ok().build();
   }
 }

@@ -7,12 +7,16 @@ import com.example.Ecommerce.common.MailComponent;
 import com.example.Ecommerce.config.CacheConfig;
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
+import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
+import com.example.Ecommerce.user.domain.DeliveryAddress;
 import com.example.Ecommerce.user.domain.LogoutAccessToken;
 import com.example.Ecommerce.user.domain.RefreshToken;
 import com.example.Ecommerce.user.domain.User;
+import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
+import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
 import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
 import com.example.Ecommerce.user.repository.RefreshTokenRedisRepository;
 import com.example.Ecommerce.user.repository.UserRepository;
@@ -33,6 +37,7 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
   private final RefreshTokenRedisRepository refreshTokenRedisRepository;
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+  private final DeliveryAddressRepository deliveryAddressRepository;
   private final JwtTokenUtil jwtTokenUtil;
   private final MailComponent mailComponent;
   
@@ -123,5 +128,15 @@ public class UserServiceImpl implements UserService {
       return token.replace(BEARER_PREFIX, "");
     }
     return null;
+  }
+
+  @Override
+  public void addUserAddress(UserAddressDto.Request request, UserDetailsImpl userDetails) {
+    User user = userDetails.getUser();
+
+    boolean existsRepresentAddress = deliveryAddressRepository.existsByUser(user);
+    DeliveryAddress deliveryAddress = request.toEntity(existsRepresentAddress);
+
+    deliveryAddressRepository.save(deliveryAddress);
   }
 }

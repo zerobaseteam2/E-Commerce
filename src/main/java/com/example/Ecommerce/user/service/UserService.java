@@ -1,5 +1,7 @@
 package com.example.Ecommerce.user.service;
 
+import com.example.Ecommerce.security.UserDetailsImpl;
+import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 
@@ -14,4 +16,6 @@ public interface UserService {
   public void logout(String accessToken, String username);
   
   void verifyUserEmail(Long id);
+
+  void addUserAddress(UserAddressDto.Request request, UserDetailsImpl userDetails);
 }
