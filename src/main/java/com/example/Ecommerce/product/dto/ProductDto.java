@@ -25,6 +25,7 @@ public class ProductDto {
   private ProductConfirm confirm;
   private ProductState discount;
   private ProductState state;
+  private Double stars;
   private List<ProductOptionDto> productOptionList;
   private List<ProductTagDto> productTagDtoList;
 
@@ -44,6 +45,7 @@ public class ProductDto {
         .origin(product.getOrigin())
         .confirm(product.getConfirm())
         .discount(product.getDiscount())
+        .stars(product.getStars())
         .state(product.getState())
         .productOptionList(productOptionDtoList)
         .productTagDtoList(productTagDtoList)
