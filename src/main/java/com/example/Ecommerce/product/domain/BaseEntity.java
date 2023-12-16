@@ -1,6 +1,5 @@
 package com.example.Ecommerce.product.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -14,7 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(value = {AuditingEntityListener.class})
 public class BaseEntity {
 
-  @Column(nullable = false)
+
   @CreatedDate
   private LocalDateTime createAt;
   @LastModifiedDate

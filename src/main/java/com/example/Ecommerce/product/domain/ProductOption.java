@@ -1,11 +1,13 @@
 package com.example.Ecommerce.product.domain;
 
+import com.example.Ecommerce.product.domain.form.AddProductOptionForm;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +22,6 @@ import org.hibernate.envers.Audited;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "productOptions")
 @Audited
 @AuditOverride(forClass = BaseEntity.class)
 public class ProductOption extends BaseEntity {
@@ -33,13 +34,22 @@ public class ProductOption extends BaseEntity {
   private Long sellerId;
 
   @Column(nullable = false)
-  private Long productId;
-
-  @Column(nullable = false)
   private Integer count;
 
   @Column(nullable = false)
   private String optionName;
 
+  @ManyToOne
+  @JoinColumn(name = "product_id")
+  private Product product;
 
+
+  public static ProductOption of(Long sellerId, AddProductOptionForm form) {
+
+    return ProductOption.builder()
+        .sellerId(sellerId)
+        .count(form.getCount())
+        .optionName(form.getOptionName())
+        .build();
+  }
 }
