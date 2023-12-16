@@ -59,6 +59,9 @@ public class Product extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private ProductConfirm confirm;
 
+  // 상품 별점 - 리뷰에서 사람들의 별점 평균별점
+  private Double stars;
+
   // 상품 할인 여부
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
@@ -89,6 +92,7 @@ public class Product extends BaseEntity {
         .origin(form.getOrigin())
         .confirm(ProductConfirm.WAITING)
         .discount(form.getDiscount())
+        .stars(0.0)
         .productOptionList(form.getOptionFormList().stream()
             .map(productOptionForm -> ProductOption.of(sellerId, productOptionForm))
             .collect(Collectors.toList()))
