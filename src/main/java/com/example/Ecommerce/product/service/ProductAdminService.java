@@ -42,7 +42,7 @@ public class ProductAdminService {
         .pageNo(pageNo)
         .pageSize(pageSize)
         .totalElements(productPage.getTotalElements())
-        .totalPage(productPage.getTotalPages())
+        .totalPages(productPage.getTotalPages())
         .last(productPage.isLast())
         .build();
   }

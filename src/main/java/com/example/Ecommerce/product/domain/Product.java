@@ -20,15 +20,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-eature/adminProces
 import lombok.Setter;
- develop
 import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Getter
-@Setterevel
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
