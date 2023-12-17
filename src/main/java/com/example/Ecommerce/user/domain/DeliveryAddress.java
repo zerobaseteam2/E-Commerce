@@ -1,5 +1,6 @@
 package com.example.Ecommerce.user.domain;
 
+import com.example.Ecommerce.user.dto.UserAddressDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,4 +45,12 @@ public class DeliveryAddress {
 
   @Column(nullable = false)
   private boolean representAddress;
+
+  public void modifyInfo(UserAddressDto.Request request) {
+    this.roadAddress = request.getRoadAddress();
+    this.detailAddress = request.getDetailAddress();
+    this.zoneNo = request.getZoneNo();
+    this.addressName = request.getAddressName();
+    this.phone = request.getPhone();
+  }
 }
