@@ -2,6 +2,7 @@ package com.example.Ecommerce.user.service;
 
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.user.dto.UserAddressDto;
+import com.example.Ecommerce.user.dto.UserAddressDto.Request;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 
@@ -18,4 +19,6 @@ public interface UserService {
   void verifyUserEmail(Long id);
 
   void addUserAddress(UserAddressDto.Request request, UserDetailsImpl userDetails);
+
+  void modifyUserAddress(Request request, UserDetailsImpl userDetails, Long deliveryAddressId);
 }

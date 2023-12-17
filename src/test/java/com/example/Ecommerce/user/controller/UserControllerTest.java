@@ -2,9 +2,11 @@ package com.example.Ecommerce.user.controller;
 
 import static com.example.Ecommerce.user.domain.UserRole.CUSTOMER;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -93,4 +95,27 @@ class UserControllerTest {
     verify(userService).addUserAddress(any(), any());
   }
 
+  @Test
+  @DisplayName("배송지 수정 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_CUSTOMER"})
+  void modifyUserAddressSuccess() throws Exception {
+    //given
+    UserAddressDto.Request request = UserAddressDto.Request.builder()
+        .roadAddress("서울특별시 샘플구 테스트로 1")
+        .detailAddress("101동 101호")
+        .zoneNo("12345")
+        .addressName("집")
+        .phone("01012345678")
+        .build();
+    //when
+    //then
+    mockMvc.perform(
+            put("/api/user/address/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).modifyUserAddress(any(), any(), anyLong());
+  }
 }
