@@ -6,6 +6,7 @@ import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,9 +15,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserDetailServiceImpl implements UserDetailsService {
   private final UserRepository userRepository;
-  
   @Override
   @Cacheable(value = CacheConfig.CacheKey.USER, key = "#username", unless = "#result == null")
   // 캐시에서 먼저 회원을 조회 후 없으면 DB에서 조회

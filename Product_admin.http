@@ -1,0 +1,15 @@
+### 관리자 상품 요청 내역 보기
+GET http://localhost:8080/admin/product/waitingList
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqa2F0d3hjMSIsImF1dGgiOiJBRE1JTiIsImlhdCI6MTcwMjgxMjM1MSwiZXhwIjoxNzAyODE0MTUxfQ.m2tUaTTkt1JVF30c8ILCBxxQ6OfUYUkD1kSUAbkL7p4
+
+### 관리자 요청 승인 거절
+POST http://localhost:8080/admin/product/process
+Content-Type: application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqa2F0d3hjMSIsImF1dGgiOiJBRE1JTiIsImlhdCI6MTcwMjgxMjM1MSwiZXhwIjoxNzAyODE0MTUxfQ.m2tUaTTkt1JVF30c8ILCBxxQ6OfUYUkD1kSUAbkL7p4
+
+{
+  "productId": 1,
+  "confirm": "NOT_APPROVED",
+  "reason": ""
+}

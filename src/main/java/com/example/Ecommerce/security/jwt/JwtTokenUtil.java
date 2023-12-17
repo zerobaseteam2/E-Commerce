@@ -1,21 +1,25 @@
 package com.example.Ecommerce.security.jwt;
 
+import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.ACCESS_TOKEN_EXPIRATION_TIME;
+import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
+
 import com.example.Ecommerce.user.domain.UserRole;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-
-import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.ACCESS_TOKEN_EXPIRATION_TIME;
-import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 
 @Slf4j
 @Component
@@ -36,7 +40,7 @@ public class JwtTokenUtil {
   
   public String generateAccessToken(String username, UserRole role) {
     Claims claims = Jwts.claims().setSubject(username);
-    claims.put("role", role);
+    claims.put("auth", role);
     return BEARER_PREFIX +
             Jwts.builder()
                     .setClaims(claims)
@@ -90,7 +94,7 @@ public class JwtTokenUtil {
   }
   
   public String getUsername(String token) {
-    return extractAllClaims(token).get("username", String.class);
+    return extractAllClaims(token).getSubject();
   }
   
   public long getRemainMilliSeconds(String token) {
