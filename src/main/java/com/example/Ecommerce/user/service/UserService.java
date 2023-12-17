@@ -21,4 +21,6 @@ public interface UserService {
   void addUserAddress(UserAddressDto.Request request, UserDetailsImpl userDetails);
 
   void modifyUserAddress(Request request, UserDetailsImpl userDetails, Long deliveryAddressId);
+
+  void deleteUserAddress(UserDetailsImpl userDetails, Long deliveryAddressId);
 }
