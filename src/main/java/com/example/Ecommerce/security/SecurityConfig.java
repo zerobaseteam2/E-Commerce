@@ -70,9 +70,15 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/login").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api-docs/**").permitAll()
+
                 .requestMatchers("api/user/verify/{id}").permitAll()
                 .requestMatchers("/v1/product/**").hasRole("SELLER")
                 .requestMatchers("/admin/product/**").hasRole("ADMIN")
+
+                .requestMatchers("/api/user/verify/{id}").permitAll()
+                .requestMatchers("/api/user/address").hasRole("CUSTOMER")
+                .requestMatchers("v1/product").hasRole("SELLER")
+
                 .anyRequest().authenticated())
         .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
         .sessionManagement((sessionConfig) ->

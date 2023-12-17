@@ -1,4 +1,4 @@
-package com.example.Ecommerce;
+package com.example.Ecommerce.config;
 
 import com.example.Ecommerce.security.UserDetailServiceImpl;
 import com.example.Ecommerce.security.jwt.JwtAuthenticationFilter;

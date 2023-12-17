@@ -13,9 +13,10 @@ public enum ErrorCode {
   PHONE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Phone Number already exists."),
   USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "User not found."),
 
+
   // 관리자 상품 요청 승인 거절관련 exception
   PRODUCT_NOT_WAITING(HttpStatus.BAD_REQUEST, "승인 대기중인 상품이 아닙니다."),
-  PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 상품이 존재하지 않습니다.");
+  DELIVERY_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Address not found");
 
   
   private HttpStatus status;

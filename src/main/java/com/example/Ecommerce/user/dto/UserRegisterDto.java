@@ -37,7 +37,7 @@ public class UserRegisterDto {
     @Past(message = "생일은 현재보다 이전이어야 합니다.")
     private Date birth;
     
-//    @NotBlank(message = "권한은 필수 입력값입니다.")
+    //    @NotBlank(message = "권한은 필수 입력값입니다.")
     private UserRole role;
     
     public User toEntity(String encryptedPassword) {
