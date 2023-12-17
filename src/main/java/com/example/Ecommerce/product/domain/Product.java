@@ -20,11 +20,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+eature/adminProces
+import lombok.Setter;
+ develop
 import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Getter
+@Setterevel
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -70,6 +74,9 @@ public class Product extends BaseEntity {
   // 상품 상태
   @Enumerated(EnumType.STRING)
   private ProductState state;
+
+  // 상품 승인 요청 거절사유 - 승인된 물품은 null 값을 유지
+  private String reason;
 
   // 상품 옵션 리스트
   @OneToMany(cascade = CascadeType.ALL)
