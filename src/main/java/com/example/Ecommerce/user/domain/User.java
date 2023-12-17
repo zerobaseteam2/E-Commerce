@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -39,7 +40,7 @@ public class User {
   private String phone;
   
   @Column
-  private Date birth;
+  private LocalDate birth;
   
   @Enumerated(value = EnumType.STRING)
   private UserRole role;

@@ -11,7 +11,9 @@ public enum ErrorCode {
   USERID_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "UserID already exists."),
   EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Email already exists."),
   PHONE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Phone Number already exists."),
-  USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "User not found.");
+  USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "User not found."),
+  COUPON_NOT_FOUND(HttpStatus.BAD_REQUEST, "Coupon not found."),
+  EXPIRES_COUPON(HttpStatus.BAD_REQUEST, "Coupon has expired.");
   
   private HttpStatus status;
   private String message;
