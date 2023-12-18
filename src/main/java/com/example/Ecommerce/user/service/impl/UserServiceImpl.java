@@ -5,6 +5,9 @@ import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 import com.example.Ecommerce.common.MailComponent;
 import com.example.Ecommerce.config.CacheConfig;
+import com.example.Ecommerce.coupon.domain.CouponType;
+import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
+import com.example.Ecommerce.coupon.service.CouponService;
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
@@ -35,6 +38,7 @@ public class UserServiceImpl implements UserService {
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
   private final JwtTokenUtil jwtTokenUtil;
   private final MailComponent mailComponent;
+  private final CouponService couponService;
   
   @Override
   public UserRegisterDto.Response registerUser(UserRegisterDto.Request request) {
@@ -42,6 +46,9 @@ public class UserServiceImpl implements UserService {
     
     String encryptedPassword = passwordEncoder.encode(request.getPassword());
     User user = userRepository.save(request.toEntity(encryptedPassword));
+    
+    CouponIssuanceDto.Request couponRequest = new CouponIssuanceDto.Request(user.getId(), CouponType.MEMBERSHIP_SIGNUP_COUPON, null);
+    couponService.issuanceCoupon(couponRequest);
     
     mailComponent.sendVerifyLink(user.getId(), user.getEmail(), user.getName());
     
@@ -85,6 +92,10 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserLoginDto.Response reissue(String refreshToken, String username) {
     refreshToken = resolveToken(refreshToken);
+    if (refreshToken == null) {
+      throw new CustomException(ErrorCode.REFRESH_TOKEN_NULL);
+    }
+    
     RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username).orElseThrow(NoSuchElementException::new);
     
     if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {

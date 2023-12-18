@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/login").permitAll()
                 .requestMatchers("api/user/verify/{id}").permitAll()
                 .requestMatchers("api/product").hasRole("SELLER")
+                .requestMatchers("/api/coupon/issuance").hasRole("ADMIN")
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api-docs/**").permitAll()
                 .anyRequest().authenticated())
