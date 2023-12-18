@@ -1,8 +1,7 @@
 package com.example.Ecommerce.coupon.service;
 
-import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
-import com.example.Ecommerce.coupon.dto.UseCouponDto;
-import com.example.Ecommerce.coupon.dto.viewCouponsDto;
+import com.example.Ecommerce.coupon.dto.*;
+import com.example.Ecommerce.user.domain.User;
 
 public interface CouponService {
   CouponIssuanceDto.Response issuanceCoupon(CouponIssuanceDto.Request request);
@@ -13,7 +12,7 @@ public interface CouponService {
   
   void checkExpiredCoupon();
   
-  viewCouponsDto.Response viewCoupons(viewCouponsDto.Request request);
+  PageResponse viewCoupons(ViewCouponsDto.Request request, int pageNo, User user);
   
   
 }

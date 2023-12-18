@@ -4,6 +4,7 @@ import com.example.Ecommerce.coupon.domain.Coupon;
 import com.example.Ecommerce.coupon.domain.CouponType;
 import com.example.Ecommerce.user.domain.User;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -15,9 +16,8 @@ public class CouponIssuanceDto {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Request {
-    @NotBlank
+    @NotNull
     private Long customerId;
-    @NotBlank
     private CouponType couponType;
     private String category;
     

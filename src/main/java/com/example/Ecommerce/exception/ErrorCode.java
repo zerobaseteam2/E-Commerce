@@ -13,7 +13,8 @@ public enum ErrorCode {
   PHONE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Phone Number already exists."),
   USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "User not found."),
   COUPON_NOT_FOUND(HttpStatus.BAD_REQUEST, "Coupon not found."),
-  EXPIRES_COUPON(HttpStatus.BAD_REQUEST, "Coupon has expired.");
+  EXPIRES_COUPON(HttpStatus.BAD_REQUEST, "Coupon has expired."),
+  FILTER_TYPE_ERROR(HttpStatus.BAD_REQUEST, "The filter type is incorrect.");
   
   private HttpStatus status;
   private String message;

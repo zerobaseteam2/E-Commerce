@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+  Optional<User> findById(Long id);
   Optional<User> findByUserId(String username);
-  
-  List<User> findAllByBirth_MonthAndBirth_Day(LocalDate birth);
   
   boolean existsByUserId(String userId);
   
