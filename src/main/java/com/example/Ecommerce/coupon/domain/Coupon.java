@@ -52,4 +52,8 @@ public class Coupon {
   public void useCoupon(Long orderDetailNo) {
     this.orderDetailNo = orderDetailNo;
   }
+  
+  public void couponExpires() {
+    this.expires = true;
+  }
 }

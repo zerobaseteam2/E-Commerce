@@ -6,11 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.Properties;
 
 @Configuration
 @EnableJpaAuditing
+@EnableScheduling
 public class AppConfig {
   
   @Value("${spring.mail.host}")

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,10 +42,12 @@ public class CouponServiceImpl implements CouponService {
   }
   
   // 생일 기념 쿠폰 발급
-  // 스케줄러 설정 필요
+  // 매일 자정 실행
   @Override
+  @Transactional
+  @Scheduled(cron = "0 0 0 1/1 * ? *")
   public void issuanceBirthDayCoupon() {
-  
+    List<User> userList = new ArrayList<>();
   }
   
   // 쿠폰 사용
@@ -64,11 +67,16 @@ public class CouponServiceImpl implements CouponService {
     return new UseCouponDto.Response().toDto(nowCoupon);
   }
   
-  // 쿠폰 만료여부 확인
-  // 스케줄러 설정 필요
+  // 쿠폰 만료 처리
+  // 매일 자정 실행
   @Override
+  @Transactional
+  @Scheduled(cron = "0 0 0 1/1 * ? *")
   public void checkExpiredCoupon() {
-  
+    List<Coupon> couponList = couponRepository.findAllByExpiresFalseAndExpirationDateBefore(LocalDate.now());
+    for (Coupon coupon : couponList) {
+      coupon.couponExpires();
+    }
   }
   
   // 보유 쿠폰 조회
