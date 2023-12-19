@@ -5,6 +5,7 @@ import com.example.Ecommerce.user.domain.UserRole;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class UserRegisterDto {
@@ -35,7 +36,7 @@ public class UserRegisterDto {
     private String phone;
     
     @Past(message = "생일은 현재보다 이전이어야 합니다.")
-    private Date birth;
+    private LocalDate birth;
     
     //    @NotBlank(message = "권한은 필수 입력값입니다.")
     private UserRole role;
