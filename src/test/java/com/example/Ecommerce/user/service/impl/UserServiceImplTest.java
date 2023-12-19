@@ -15,10 +15,9 @@ import com.example.Ecommerce.user.domain.DeliveryAddress;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
-import com.example.Ecommerce.user.repository.UserRepository;
-
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +25,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -54,7 +56,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(LocalDate.of(2023,12,01))
+        .birth(LocalDate.of(2023, 12, 01))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
@@ -87,7 +89,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(LocalDate.of(2023,12,01))
+        .birth(LocalDate.of(2023, 12, 01))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
@@ -119,7 +121,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.now().minusDays(1))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
@@ -144,7 +146,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.now().minusDays(1))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
@@ -177,7 +179,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.now().minusDays(1))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
@@ -190,5 +192,55 @@ class UserServiceImplTest {
         () -> userServiceImpl.deleteUserAddress(userDetails, 1L));
     //then
     assertEquals(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND, e.getErrorCode());
+  }
+
+  @Test
+  @DisplayName("배송지 조회 성공 테스트")
+  void getUserAddressSuccess() {
+    //given
+    Pageable requestPageable = PageRequest.of(0, 10);
+
+    User user = User.builder()
+        .userId("Test")
+        .password("Test1234!")
+        .name("테스트")
+        .email("Test@naver.com")
+        .phone("01012345678")
+        .birth(LocalDate.now().minusDays(1))
+        .role(CUSTOMER)
+        .emailVerify(true)
+        .build();
+    UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+    DeliveryAddress deliveryAddress1 = DeliveryAddress.builder()
+        .roadAddress("서울특별시 샘플구 테스트로 1")
+        .detailAddress("101동 101호")
+        .zoneNo("12345")
+        .addressName("집")
+        .phone("01012345678")
+        .build();
+    DeliveryAddress deliveryAddress2 = DeliveryAddress.builder()
+        .roadAddress("서울특별시 샘플구 테스트로 2")
+        .detailAddress("202동 202호")
+        .zoneNo("12345")
+        .addressName("집")
+        .phone("01012345678")
+        .build();
+
+    List<DeliveryAddress> deliveryAddressList = new ArrayList<>();
+    deliveryAddressList.add(deliveryAddress1);
+    deliveryAddressList.add(deliveryAddress2);
+
+    PageImpl<DeliveryAddress> deliveryAddressPage = new PageImpl<>(deliveryAddressList);
+
+    given(deliveryAddressRepository.findAllByUser(any(), any()))
+        .willReturn(deliveryAddressPage);
+    //when
+    List<UserAddressDto.Response> response = userServiceImpl.getUserAddressList(userDetails, requestPageable);
+    //then
+    assertEquals(response.get(0).getRoadAddress(), "서울특별시 샘플구 테스트로 1");
+    assertEquals(response.get(1).getRoadAddress(), "서울특별시 샘플구 테스트로 2");
+
+    verify(deliveryAddressRepository).findAllByUser(any(), any());
   }
 }

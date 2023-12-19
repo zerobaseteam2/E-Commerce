@@ -1,5 +1,17 @@
 package com.example.Ecommerce.user.controller;
 
+import static com.example.Ecommerce.user.domain.UserRole.CUSTOMER;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.example.Ecommerce.config.TestConfig;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
@@ -171,5 +183,21 @@ class UserControllerTest {
         .andDo(print());
 
     verify(userService).deleteUserAddress(any(), anyLong());
+  }
+
+  @Test
+  @DisplayName("배송지 조회 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_CUSTOMER"})
+  void getUserAddressSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(
+            get("/api/user/address")
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).getUserAddressList(any(), any());
   }
 }

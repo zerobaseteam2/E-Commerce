@@ -54,4 +54,32 @@ public class UserAddressDto {
           .build();
     }
   }
+
+  @Getter
+  @Setter
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Response {
+
+    private String roadAddress;
+
+    private String detailAddress;
+
+    private String zoneNo;
+
+    private String addressName;
+
+    private String phone;
+
+    public static UserAddressDto.Response fromEntity(DeliveryAddress deliveryAddress) {
+      return Response.builder()
+          .roadAddress(deliveryAddress.getRoadAddress())
+          .detailAddress(deliveryAddress.getDetailAddress())
+          .zoneNo(deliveryAddress.getZoneNo())
+          .addressName(deliveryAddress.getAddressName())
+          .phone(deliveryAddress.getPhone())
+          .build();
+    }
+  }
 }

@@ -8,7 +8,10 @@ import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,7 +41,7 @@ public class UserController {
   }
   
   @GetMapping("/verify/{id}")
-  public ResponseEntity verifyUserEmail(@PathVariable Long id) {
+  public ResponseEntity<Void> verifyUserEmail(@PathVariable Long id) {
     userService.verifyUserEmail(id);
     
     return ResponseEntity.ok().build();
@@ -93,5 +96,12 @@ public class UserController {
     userService.deleteUserAddress(userDetails, deliveryAddressId);
 
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/address")
+  public ResponseEntity<List<UserAddressDto.Response>> getUserAddressList(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @PageableDefault Pageable pageable) {
+    return ResponseEntity.ok(userService.getUserAddressList(userDetails, pageable));
   }
 }
