@@ -1,0 +1,26 @@
+POST http://localhost:8080/v1/product/register
+Content-Type:application/json
+Authorization:Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqa2F0d3hjMyIsImF1dGgiOiJTRUxMRVIiLCJpYXQiOjE3MDI3MTI4OTYsImV4cCI6MTcwMjcxNDY5Nn0.JZGGQch12VHKQU3_Yg8kDUJ_dCFJqVisyanQTzcQ1BQ
+
+{
+  "name": "상품명1",
+  "category": "카테고리명",
+  "price": 100,
+  "description": "상품에 대한 설명입니다.",
+  "origin": "원산지는 적어도 되고 안해도됩니다.",
+  "discount": "FOR_SALE",
+  "optionFormList": [
+    {
+      "count": 1,
+      "optionName": "275"
+    }
+  ],
+  "tagList": [
+    {
+      "tagName": "나이키"
+    },
+    {
+      "tagName": "에어맥스"
+    }
+  ]
+}

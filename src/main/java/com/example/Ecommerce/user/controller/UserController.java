@@ -3,6 +3,7 @@ package com.example.Ecommerce.user.controller;
 import static com.example.Ecommerce.security.jwt.JwtTokenUtil.AUTHORIZATION_HEADER;
 
 import com.example.Ecommerce.security.UserDetailsImpl;
+import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,5 +64,24 @@ public class UserController {
   public void logout(@RequestHeader("Authorization") String accessToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
     String username = userDetails.getUser().getUserId();
     userService.logout(accessToken, username);
+  }
+
+  @PostMapping("/address")
+  public ResponseEntity<Void> addUserAddress(
+      @RequestBody @Valid UserAddressDto.Request request,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    userService.addUserAddress(request, userDetails);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PutMapping("/address/{deliveryAddressId}")
+  public ResponseEntity<Void> modifyUserAddress(
+      @RequestBody @Valid UserAddressDto.Request request,
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @PathVariable Long deliveryAddressId) {
+    userService.modifyUserAddress(request, userDetails, deliveryAddressId);
+
+    return ResponseEntity.ok().build();
   }
 }
