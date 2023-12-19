@@ -1,6 +1,6 @@
 POST http://localhost:8080/v1/product/register
 Content-Type:application/json
-Authorization:Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqa2F0d3hjMyIsImF1dGgiOiJTRUxMRVIiLCJpYXQiOjE3MDI3MTI4OTYsImV4cCI6MTcwMjcxNDY5Nn0.JZGGQch12VHKQU3_Yg8kDUJ_dCFJqVisyanQTzcQ1BQ
+Authorization:Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MSIsImF1dGgiOiJTRUxMRVIiLCJpYXQiOjE3MDI4MTM4NTcsImV4cCI6MTcwMjgxNTY1N30.phWs6KlpH2bYDtnEX_Fka9LVQWBxLdOCtt6e1Xn8UFk
 
 {
   "name": "상품명1",

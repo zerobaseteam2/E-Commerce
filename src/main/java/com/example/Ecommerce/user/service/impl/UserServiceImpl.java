@@ -17,6 +17,7 @@ import com.example.Ecommerce.user.domain.LogoutAccessToken;
 import com.example.Ecommerce.user.domain.RefreshToken;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.dto.UserAddressDto;
+import com.example.Ecommerce.user.dto.UserAddressDto.Response;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
@@ -24,9 +25,13 @@ import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
 import com.example.Ecommerce.user.repository.RefreshTokenRedisRepository;
 import com.example.Ecommerce.user.repository.UserRepository;
 import com.example.Ecommerce.user.service.UserService;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -178,5 +183,14 @@ public class UserServiceImpl implements UserService {
         .orElseThrow(() -> new CustomException(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND));
 
     deliveryAddressRepository.delete(deliveryAddress);
+  }
+
+  @Override
+  public List<UserAddressDto.Response> getUserAddressList(UserDetailsImpl userDetails, Pageable pageable) {
+    User user = userDetails.getUser();
+
+    Page<DeliveryAddress> deliveryAddressPage = deliveryAddressRepository.findAllByUser(user, pageable);
+    return deliveryAddressPage.stream().map(Response::fromEntity)
+        .collect(Collectors.toList());
   }
 }
