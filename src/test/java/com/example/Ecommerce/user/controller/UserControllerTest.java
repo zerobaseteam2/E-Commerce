@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import static com.example.Ecommerce.user.domain.UserRole.CUSTOMER;
@@ -52,7 +53,7 @@ class UserControllerTest {
             .name("테스트")
             .email("Test@naver.com")
             .phone("01012345678")
-            .birth(new Date())
+            .birth(LocalDate.of(2023, 12, 31))
             .role(CUSTOMER)
             .build();
     //when

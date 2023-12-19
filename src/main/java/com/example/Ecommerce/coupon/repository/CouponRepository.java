@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
   Optional<Coupon> findById(Long couponId);
   
-  List<Coupon> findAllByExpiresFalseAndExpirationDateBefore(LocalDate today);
+  List<Coupon> findAllByExpiresFalseAndOrderDetailNoNullAndExpirationDateBefore(LocalDate today);
   
   // 전체 쿠폰 조회
   Page<Coupon> findAllByCustomerId(Pageable pageable, Long customerId);

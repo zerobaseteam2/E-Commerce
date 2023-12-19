@@ -23,12 +23,27 @@ public class CouponController {
     return ResponseEntity.ok(response);
   }
   
+  //test용
+  @PostMapping("/issuance/birth")
+  public ResponseEntity<String> inssuanceBirthDayCoupon() {
+    couponService.issuanceBirthDayCoupon();
+    
+    return ResponseEntity.ok("Success");
+  }
+  
+  
   @PostMapping("/using")
   public ResponseEntity<UseCouponDto.Response> useCoupon(
           @RequestBody @Valid UseCouponDto.Request request) {
     UseCouponDto.Response response = couponService.useCoupon(request);
     
     return ResponseEntity.ok(response);
+  }
+  //테스트용
+  @PostMapping("/expires")
+  public ResponseEntity<String> expiresCoupon() {
+    couponService.checkExpiredCoupon();
+    return ResponseEntity.ok("Success");
   }
   
   @GetMapping("/list")

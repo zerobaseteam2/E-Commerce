@@ -1,6 +1,7 @@
 package com.example.Ecommerce.coupon.service.impl;
 
 import com.example.Ecommerce.coupon.domain.Coupon;
+import com.example.Ecommerce.coupon.domain.CouponType;
 import com.example.Ecommerce.coupon.dto.*;
 import com.example.Ecommerce.coupon.repository.CouponRepository;
 import com.example.Ecommerce.coupon.service.CouponService;
@@ -45,9 +46,14 @@ public class CouponServiceImpl implements CouponService {
   // 매일 자정 실행
   @Override
   @Transactional
-  @Scheduled(cron = "0 0 0 1/1 * ? *")
+  @Scheduled(cron = "0 0 0 * * ?")
   public void issuanceBirthDayCoupon() {
-    List<User> userList = new ArrayList<>();
+    List<User> userList = userRepository.findByBirthMonthAndDay(LocalDate.now());
+    
+    for (User user : userList) {
+      issuanceCoupon(new CouponIssuanceDto.Request(user.getId(), CouponType.HAPPY_BIRTHDAY_COUPON, null));
+      
+    }
   }
   
   // 쿠폰 사용
@@ -71,9 +77,9 @@ public class CouponServiceImpl implements CouponService {
   // 매일 자정 실행
   @Override
   @Transactional
-  @Scheduled(cron = "0 0 0 1/1 * ? *")
+  @Scheduled(cron = "0 0 0 * * ?")
   public void checkExpiredCoupon() {
-    List<Coupon> couponList = couponRepository.findAllByExpiresFalseAndExpirationDateBefore(LocalDate.now());
+    List<Coupon> couponList = couponRepository.findAllByExpiresFalseAndOrderDetailNoNullAndExpirationDateBefore(LocalDate.now());
     for (Coupon coupon : couponList) {
       coupon.couponExpires();
     }
