@@ -68,18 +68,19 @@ public class SecurityConfig {
         .authorizeHttpRequests((auth) ->
             auth.requestMatchers("/api/user/register").permitAll()
                 .requestMatchers("/api/user/login").permitAll()
-                .requestMatchers("/api/user/verify/{id}").permitAll()
-                .requestMatchers("/api/user/address").hasRole("CUSTOMER")
-                
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api-docs/**").permitAll()
-                
-                .requestMatchers("/api/coupon/issuance/**").hasRole("ADMIN")
-                .requestMatchers("/api/coupon/expires").hasRole("ADMIN")
 
-                .requestMatchers("v1/product").hasRole("SELLER")
+                .requestMatchers("api/user/verify/{id}").permitAll()
                 .requestMatchers("/v1/product/**").hasRole("SELLER")
                 .requestMatchers("/admin/product/**").hasRole("ADMIN")
+
+                .requestMatchers("api/order/**").hasRole("CUSTOMER")
+
+                .requestMatchers("/api/user/verify/{id}").permitAll()
+                .requestMatchers("/api/user/address").hasRole("CUSTOMER")
+                .requestMatchers("v1/product").hasRole("SELLER")
+
                 .anyRequest().authenticated())
         .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
         .sessionManagement((sessionConfig) ->
