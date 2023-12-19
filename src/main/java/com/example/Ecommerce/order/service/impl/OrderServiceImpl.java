@@ -80,17 +80,17 @@ public class OrderServiceImpl implements OrderService {
       (Long id, UpdateShippingDto.Request request, String customerId) {
     // 수정하려는 주문 가져오기
     Order order = orderRepository.findById(id)
-        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문 상세 내역이 존재하지 않습니다."));
+        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문이 존재하지 않습니다."));
 
     // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!order.getUser().getUserId().equals(customerId)) {
-      throw new UnauthorizedUserException("해당 주문 상세 내역에 접근할 권한이 없습니다.");
+      throw new UnauthorizedUserException("해당 주문에 접근할 권한이 없습니다.");
     }
 
     // 상태 확인
     for (OrderProduct orderProduct : order.getOrderProductList()) {
       if (orderProduct.getStatus() != OrderStatus.ORDER_COMPLETE) {
-        throw new InvalidOrderStatusException("주문 정보를 변경할수 없습니다. 주문 상태를 확인해 주세요.");
+        throw new InvalidOrderStatusException("주문 배송지 정보를 변경할수 없습니다. 주문 상태를 확인해 주세요.");
       }
     }
     // 수정
@@ -104,16 +104,15 @@ public class OrderServiceImpl implements OrderService {
       (UpdateQuantityDto updateQuantityDto, String customerId) {
     // 수정하려는 주문상품 가져오기
     OrderProduct orderProduct = orderProductRepository.findById(updateQuantityDto.getOrderProductId())
-        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문 상세 내역이 존재하지 않습니다."));
+        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문이 존재하지 않습니다."));
 
     // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!orderProduct.getOrder().getUser().getUserId().equals(customerId)) {
-      throw new UnauthorizedUserException("해당 주문 상세 내역에 접근할 권한이 없습니다.");
+      throw new UnauthorizedUserException("해당 주문에 접근할 권한이 없습니다.");
     }
-
     // 주문상품 상태 확인
     if (orderProduct.getStatus() != OrderStatus.ORDER_COMPLETE) {
-      throw new InvalidOrderStatusException("주문 정보를 변경할수 없습니다. 주문 상태를 확인해 주세요.");
+      throw new InvalidOrderStatusException("주문 수량 정보를 변경할수 없습니다. 주문 상태를 확인해 주세요.");
     }
     // 상품 수량 수정
     int quantity = updateQuantityDto.getQuantity();
@@ -128,6 +127,19 @@ public class OrderServiceImpl implements OrderService {
     return OrderDetailDto.of(orderProduct.getOrder());
   }
 
+  @Override
+  public OrderDetailDto getOrderDetails(String customerId, Long id) {
+
+    // 조회하려는 주문 가져오기
+    Order order = orderRepository.findById(id)
+        .orElseThrow(() -> new OrderNotFoundException("조회하려는 주문 상세 내역이 존재하지 않습니다."));
+
+    // 권한 확인 - 조회하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
+    if (!order.getUser().getUserId().equals(customerId)) {
+      throw new UnauthorizedUserException("해당 주문 상세 내역에 접근할 권한이 없습니다.");
+    }
+    return OrderDetailDto.of(order);
+  }
 
 
 }

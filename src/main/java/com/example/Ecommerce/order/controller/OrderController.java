@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -61,6 +62,19 @@ public class OrderController {
     String customerId = userDetails.getUser().getUserId();
 
     OrderDetailDto orderDetailDto = orderService.updateQuantity(updateQuantityDto, customerId );
+    return ResponseEntity.ok(orderDetailDto);
+  }
+
+  // 주문 상세 내역 조회 API
+  @GetMapping("/{id}/details")
+  public ResponseEntity<OrderDetailDto> getOrderDetails(
+      @PathVariable Long id,
+      @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+    // 로그인한 회원 정보
+    String customerId = userDetails.getUser().getUserId();
+
+    OrderDetailDto orderDetailDto = orderService.getOrderDetails(customerId, id);
     return ResponseEntity.ok(orderDetailDto);
   }
 
