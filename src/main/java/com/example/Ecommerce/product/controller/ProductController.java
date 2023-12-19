@@ -30,4 +30,14 @@ public class ProductController {
     Long sellerId = userDetails.getUser().getId();
     return ResponseEntity.ok(ProductDto.from(productService.registerProduct(sellerId, form)));
   }
+
+
+  // 등록 요청한 상품 취소하기
+
+  // 등록된 상품 수정하기
+
+  // 등록된 상품중 판매중지한 물품 삭제하기
+
+
+
 }

@@ -1,17 +1,23 @@
 package com.example.Ecommerce.user.service.impl;
 
 import static com.example.Ecommerce.user.domain.UserRole.CUSTOMER;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import com.example.Ecommerce.exception.CustomException;
+import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.user.domain.DeliveryAddress;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
 import com.example.Ecommerce.user.repository.UserRepository;
+
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -23,9 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
-
-  @Mock
-  private UserRepository userRepository;
 
   @Mock
   private DeliveryAddressRepository deliveryAddressRepository;
@@ -51,7 +54,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.of(2023,12,01))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
@@ -84,7 +87,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.of(2023,12,01))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
@@ -104,5 +107,88 @@ class UserServiceImplTest {
     userServiceImpl.modifyUserAddress(request, userDetails, 1L);
     //then
     verify(deliveryAddressRepository).findByUserAndId(any(), anyLong());
+  }
+
+  @Test
+  @DisplayName("배송지 수정 실패 테스트")
+  void modifyUserAddressNotFoundFail() {
+    //given
+    User user = User.builder()
+        .userId("Test")
+        .password("Test1234!")
+        .name("테스트")
+        .email("Test@naver.com")
+        .phone("01012345678")
+        .birth(new Date())
+        .role(CUSTOMER)
+        .emailVerify(true)
+        .build();
+    UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+    given(deliveryAddressRepository.findByUserAndId(any(), anyLong()))
+        .willReturn(Optional.empty());
+    //when
+    CustomException e = assertThrows(CustomException.class,
+        () -> userServiceImpl.deleteUserAddress(userDetails, 1L));
+    //then
+    assertEquals(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND, e.getErrorCode());
+  }
+
+  @Test
+  @DisplayName("배송지 삭제 성공 테스트")
+  void deleteUserAddressSuccess() {
+    //given
+    User user = User.builder()
+        .userId("Test")
+        .password("Test1234!")
+        .name("테스트")
+        .email("Test@naver.com")
+        .phone("01012345678")
+        .birth(new Date())
+        .role(CUSTOMER)
+        .emailVerify(true)
+        .build();
+    UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+    DeliveryAddress deliveryAddress = DeliveryAddress.builder()
+        .roadAddress("서울특별시 샘플구 테스트로 1")
+        .detailAddress("101동 101호")
+        .zoneNo("12345")
+        .addressName("집")
+        .phone("01012345678")
+        .build();
+
+    given(deliveryAddressRepository.findByUserAndId(any(), anyLong()))
+        .willReturn(Optional.of(deliveryAddress));
+    //when
+    userServiceImpl.deleteUserAddress(userDetails, 1L);
+    //then
+    verify(deliveryAddressRepository).findByUserAndId(any(), anyLong());
+    verify(deliveryAddressRepository).delete(any());
+  }
+
+  @Test
+  @DisplayName("배송지 삭제 실패 테스트")
+  void deleteUserAddressNotFoundFail() {
+    //given
+    User user = User.builder()
+        .userId("Test")
+        .password("Test1234!")
+        .name("테스트")
+        .email("Test@naver.com")
+        .phone("01012345678")
+        .birth(new Date())
+        .role(CUSTOMER)
+        .emailVerify(true)
+        .build();
+    UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+    given(deliveryAddressRepository.findByUserAndId(any(), anyLong()))
+        .willReturn(Optional.empty());
+    //when
+    CustomException e = assertThrows(CustomException.class,
+        () -> userServiceImpl.deleteUserAddress(userDetails, 1L));
+    //then
+    assertEquals(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND, e.getErrorCode());
   }
 }

@@ -8,17 +8,19 @@ import com.example.Ecommerce.user.dto.UserRegisterDto;
 
 public interface UserService {
   
-  public UserRegisterDto.Response registerUser(UserRegisterDto.Request request);
+  UserRegisterDto.Response registerUser(UserRegisterDto.Request request);
   
-  public UserLoginDto.Response login(UserLoginDto.Request request);
+  UserLoginDto.Response login(UserLoginDto.Request request);
   
-  public UserLoginDto.Response reissue(String refreshToken, String username);
+  UserLoginDto.Response reissue(String refreshToken, String username);
   
-  public void logout(String accessToken, String username);
+  void logout(String accessToken, String username);
   
   void verifyUserEmail(Long id);
 
   void addUserAddress(UserAddressDto.Request request, UserDetailsImpl userDetails);
 
   void modifyUserAddress(Request request, UserDetailsImpl userDetails, Long deliveryAddressId);
+
+  void deleteUserAddress(UserDetailsImpl userDetails, Long deliveryAddressId);
 }

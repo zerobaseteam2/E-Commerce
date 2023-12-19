@@ -51,4 +51,20 @@ public class ProductDto {
         .productTagDtoList(productTagDtoList)
         .build();
   }
+
+
+  public static ProductDto exceptOptionTags(Product product){
+    return ProductDto.builder()
+        .id(product.getId())
+        .name(product.getName())
+        .price(product.getPrice())
+        .description(product.getDescription())
+        .origin(product.getOrigin())
+        .confirm(ProductConfirm.WAITING)
+        .discount(product.getDiscount())
+        .category(product.getCategory())
+        .build();
+  }
+
+
 }
