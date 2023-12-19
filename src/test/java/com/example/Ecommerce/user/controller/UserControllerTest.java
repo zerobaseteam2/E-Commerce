@@ -16,7 +16,6 @@ import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Date;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import java.time.LocalDate;
 
 @Import(TestConfig.class)
 @WebMvcTest(UserController.class)
@@ -55,9 +55,10 @@ class UserControllerTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.of(2023,12,12))
         .role(CUSTOMER)
         .build();
+
     //when
     //then
     mockMvc.perform(

@@ -12,6 +12,8 @@ import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
 import com.example.Ecommerce.user.repository.UserRepository;
+
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -23,9 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
-
-  @Mock
-  private UserRepository userRepository;
 
   @Mock
   private DeliveryAddressRepository deliveryAddressRepository;
@@ -51,7 +50,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.of(2023,12,01))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
@@ -84,7 +83,7 @@ class UserServiceImplTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.of(2023,12,01))
         .role(CUSTOMER)
         .emailVerify(true)
         .build();
