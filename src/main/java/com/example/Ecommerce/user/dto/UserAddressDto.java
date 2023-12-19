@@ -65,6 +65,8 @@ public class UserAddressDto {
   @AllArgsConstructor
   public static class Response {
 
+    private Long addressId;
+
     private String roadAddress;
 
     private String detailAddress;
@@ -77,6 +79,7 @@ public class UserAddressDto {
 
     public static UserAddressDto.Response fromEntity(DeliveryAddress deliveryAddress) {
       return Response.builder()
+          .addressId(deliveryAddress.getId())
           .roadAddress(deliveryAddress.getRoadAddress())
           .detailAddress(deliveryAddress.getDetailAddress())
           .zoneNo(deliveryAddress.getZoneNo())
