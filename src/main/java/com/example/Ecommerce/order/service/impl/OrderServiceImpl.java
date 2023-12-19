@@ -1,10 +1,16 @@
 package com.example.Ecommerce.order.service.impl;
 
+import com.example.Ecommerce.exception.InvalidOrderStatusException;
+import com.example.Ecommerce.exception.InvalidQuantityException;
+import com.example.Ecommerce.exception.OrderNotFoundException;
+import com.example.Ecommerce.exception.UnauthorizedUserException;
 import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
 import com.example.Ecommerce.order.domain.OrderStatus;
 import com.example.Ecommerce.order.dto.NewOrderDto;
 import com.example.Ecommerce.order.dto.OrderDetailDto;
+import com.example.Ecommerce.order.dto.UpdateQuantityDto;
+import com.example.Ecommerce.order.dto.UpdateShippingDto;
 import com.example.Ecommerce.order.repository.OrderProductRepository;
 import com.example.Ecommerce.order.repository.OrderRepository;
 import com.example.Ecommerce.order.service.OrderService;
@@ -66,6 +72,60 @@ public class OrderServiceImpl implements OrderService {
 
     //생성한 주문의 상세내역 반환
     return OrderDetailDto.of(order);
+  }
+
+  @Override
+  @Transactional
+  public UpdateShippingDto.Response updateShippingInfo
+      (Long id, UpdateShippingDto.Request request, String customerId) {
+    // 수정하려는 주문 가져오기
+    Order order = orderRepository.findById(id)
+        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문 상세 내역이 존재하지 않습니다."));
+
+    // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
+    if (!order.getUser().getUserId().equals(customerId)) {
+      throw new UnauthorizedUserException("해당 주문 상세 내역에 접근할 권한이 없습니다.");
+    }
+
+    // 상태 확인
+    for (OrderProduct orderProduct : order.getOrderProductList()) {
+      if (orderProduct.getStatus() != OrderStatus.ORDER_COMPLETE) {
+        throw new InvalidOrderStatusException("주문 정보를 변경할수 없습니다. 주문 상태를 확인해 주세요.");
+      }
+    }
+    // 수정
+    order.updateShippingInfo(request);
+    return UpdateShippingDto.Response.of(order);
+  }
+
+  @Override
+  @Transactional
+  public OrderDetailDto updateQuantity
+      (UpdateQuantityDto updateQuantityDto, String customerId) {
+    // 수정하려는 주문상품 가져오기
+    OrderProduct orderProduct = orderProductRepository.findById(updateQuantityDto.getOrderProductId())
+        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문 상세 내역이 존재하지 않습니다."));
+
+    // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
+    if (!orderProduct.getOrder().getUser().getUserId().equals(customerId)) {
+      throw new UnauthorizedUserException("해당 주문 상세 내역에 접근할 권한이 없습니다.");
+    }
+
+    // 주문상품 상태 확인
+    if (orderProduct.getStatus() != OrderStatus.ORDER_COMPLETE) {
+      throw new InvalidOrderStatusException("주문 정보를 변경할수 없습니다. 주문 상태를 확인해 주세요.");
+    }
+    // 상품 수량 수정
+    int quantity = updateQuantityDto.getQuantity();
+    if (quantity == 0) {
+      throw new InvalidQuantityException("상품 수량은 1개 이상으로 변경 가능합니다.");
+    }
+    orderProduct.updateQuantity(quantity);
+
+    // 계산 다시하기
+    orderProduct.getOrder().calculateTotalPaymentPrice();
+
+    return OrderDetailDto.of(orderProduct.getOrder());
   }
 
 
