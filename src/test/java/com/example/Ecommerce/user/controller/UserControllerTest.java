@@ -1,6 +1,7 @@
 package com.example.Ecommerce.user.controller;
 
 import com.example.Ecommerce.config.TestConfig;
+import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
@@ -23,6 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.Date;
 
 import static com.example.Ecommerce.security.jwt.JwtTokenUtil.AUTHORIZATION_HEADER;
+import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 import static com.example.Ecommerce.user.domain.UserRole.CUSTOMER;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,11 +51,6 @@ class UserControllerTest {
   @MockBean
   private UserService userService;
   
-  @MockBean
-  private UserRepository userRepository;
-  
-  @MockBean
-  private PasswordEncoder passwordEncoder;
   
   
   @Test
@@ -91,16 +88,6 @@ class UserControllerTest {
   @DisplayName("로그인 성공 테스트")
   void loginUserSuccess() throws Exception {
     //given
-    User user = User.builder()
-            .userId("Test")
-            .password(passwordEncoder.encode("Test1234!"))
-            .name("테스트")
-            .email("Test@naver.com")
-            .phone("01012345678")
-            .birth(new Date())
-            .role(CUSTOMER)
-            .build();
-    userRepository.save(user);
     
     UserLoginDto.Request request = UserLoginDto.Request.builder()
             .userId("Test")
@@ -110,8 +97,8 @@ class UserControllerTest {
     
     given(userService.login(any(UserLoginDto.Request.class)))
             .willReturn(UserLoginDto.Response.of(
-                    "Bearer access_token_value",
-                    "Bearer refresh_token_value"));
+                    BEARER_PREFIX + "accessToken",
+                    BEARER_PREFIX + "refreshToken"));
     
     //when
     
