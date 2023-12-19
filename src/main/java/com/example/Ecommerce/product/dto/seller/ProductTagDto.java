@@ -1,4 +1,4 @@
-package com.example.Ecommerce.product.dto;
+package com.example.Ecommerce.product.dto.seller;
 
 import com.example.Ecommerce.product.domain.ProductTag;
 import lombok.AllArgsConstructor;

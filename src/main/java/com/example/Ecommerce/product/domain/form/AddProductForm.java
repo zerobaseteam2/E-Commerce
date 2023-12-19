@@ -1,6 +1,6 @@
 package com.example.Ecommerce.product.domain.form;
 
-import com.example.Ecommerce.product.dto.ProductState;
+import com.example.Ecommerce.product.dto.seller.ProductState;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

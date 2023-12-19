@@ -1,6 +1,7 @@
-package com.example.Ecommerce.product.dto.admin;
+package com.example.Ecommerce.product.dto.seller.page;
 
-import com.example.Ecommerce.product.dto.seller.ProductDto;
+
+import com.example.Ecommerce.product.dto.seller.ProductTagListDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,13 +12,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WaitingListResponse {
+public class ProductTagPageResponse {
 
-  private List<ProductDto> productList;
+  private List<ProductTagListDto> tagList;
+
   private int pageNo;
-  private int pageSize;
-  private Long totalElements;
-  private int totalPages;
-  private boolean last;
 
+  private int pageSize;
+
+  private Long totalElements;
+
+  private int totalPages;
+
+  private boolean last;
 }
