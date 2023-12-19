@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -118,5 +119,21 @@ class UserControllerTest {
         .andDo(print());
 
     verify(userService).modifyUserAddress(any(), any(), anyLong());
+  }
+
+  @Test
+  @DisplayName("배송지 삭제 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_CUSTOMER"})
+  void deleteUserAddressSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(
+            delete("/api/user/address/1")
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).deleteUserAddress(any(), anyLong());
   }
 }

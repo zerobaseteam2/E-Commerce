@@ -168,4 +168,15 @@ public class UserServiceImpl implements UserService {
 
     deliveryAddress.modifyInfo(request);
   }
+
+  @Override
+  public void deleteUserAddress(UserDetailsImpl userDetails, Long deliveryAddressId) {
+    User user = userDetails.getUser();
+
+    DeliveryAddress deliveryAddress = deliveryAddressRepository.findByUserAndId(user,
+        deliveryAddressId)
+        .orElseThrow(() -> new CustomException(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND));
+
+    deliveryAddressRepository.delete(deliveryAddress);
+  }
 }
