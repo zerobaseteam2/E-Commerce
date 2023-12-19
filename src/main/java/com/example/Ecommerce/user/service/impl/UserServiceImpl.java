@@ -156,7 +156,7 @@ public class UserServiceImpl implements UserService {
     User user = userDetails.getUser();
 
     boolean existsRepresentAddress = deliveryAddressRepository.existsByUser(user);
-    DeliveryAddress deliveryAddress = request.toEntity(existsRepresentAddress);
+    DeliveryAddress deliveryAddress = request.toEntity(user, existsRepresentAddress);
 
     deliveryAddressRepository.save(deliveryAddress);
   }

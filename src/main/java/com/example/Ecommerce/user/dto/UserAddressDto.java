@@ -1,6 +1,7 @@
 package com.example.Ecommerce.user.dto;
 
 import com.example.Ecommerce.user.domain.DeliveryAddress;
+import com.example.Ecommerce.user.domain.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,9 +33,10 @@ public class UserAddressDto {
     @NotBlank(message = "수신자 번호는 필수 입력값입니다.")
     private String phone;
 
-    public DeliveryAddress toEntity(boolean existsRepresentAddress) {
+    public DeliveryAddress toEntity(User user, boolean existsRepresentAddress) {
       if (existsRepresentAddress) {
         return DeliveryAddress.builder()
+            .user(user)
             .roadAddress(roadAddress)
             .detailAddress(detailAddress)
             .zoneNo(zoneNo)
@@ -45,6 +47,7 @@ public class UserAddressDto {
       }
 
       return DeliveryAddress.builder()
+          .user(user)
           .roadAddress(roadAddress)
           .detailAddress(detailAddress)
           .zoneNo(zoneNo)
