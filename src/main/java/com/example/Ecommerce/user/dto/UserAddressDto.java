@@ -42,7 +42,7 @@ public class UserAddressDto {
             .zoneNo(zoneNo)
             .addressName(addressName)
             .phone(phone)
-            .representAddress(false)
+            .isRepresentAddress(false)
             .build();
       }
 
@@ -53,7 +53,7 @@ public class UserAddressDto {
           .zoneNo(zoneNo)
           .addressName(addressName)
           .phone(phone)
-          .representAddress(true)
+          .isRepresentAddress(true)
           .build();
     }
   }

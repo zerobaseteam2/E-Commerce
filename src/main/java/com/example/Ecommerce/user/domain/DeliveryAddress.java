@@ -44,7 +44,7 @@ public class DeliveryAddress {
   private String phone;
 
   @Column(nullable = false)
-  private boolean representAddress;
+  private boolean isRepresentAddress;
 
   public void modifyInfo(UserAddressDto.Request request) {
     this.roadAddress = request.getRoadAddress();
@@ -52,5 +52,9 @@ public class DeliveryAddress {
     this.zoneNo = request.getZoneNo();
     this.addressName = request.getAddressName();
     this.phone = request.getPhone();
+  }
+
+  public void modifyRepresent() {
+    isRepresentAddress = !isRepresentAddress;
   }
 }

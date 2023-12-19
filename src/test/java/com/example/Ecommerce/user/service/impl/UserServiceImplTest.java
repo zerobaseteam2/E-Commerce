@@ -4,6 +4,7 @@ import static com.example.Ecommerce.user.domain.UserRole.CUSTOMER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -242,5 +243,49 @@ class UserServiceImplTest {
     assertEquals(response.get(1).getRoadAddress(), "서울특별시 샘플구 테스트로 2");
 
     verify(deliveryAddressRepository).findAllByUser(any(), any());
+  }
+
+  @Test
+  @DisplayName("대표 배송지 설정 성공 테스트")
+  void setUserRepresentAddressSuccess() {
+    //given
+    User user = User.builder()
+        .userId("Test")
+        .password("Test1234!")
+        .name("테스트")
+        .email("Test@naver.com")
+        .phone("01012345678")
+        .birth(LocalDate.now().minusDays(1))
+        .role(CUSTOMER)
+        .emailVerify(true)
+        .build();
+    UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
+    DeliveryAddress deliveryAddress1 = DeliveryAddress.builder()
+        .roadAddress("서울특별시 샘플구 테스트로 1")
+        .detailAddress("101동 101호")
+        .zoneNo("12345")
+        .addressName("집")
+        .phone("01012345678")
+        .isRepresentAddress(true)
+        .build();
+    DeliveryAddress deliveryAddress2 = DeliveryAddress.builder()
+        .roadAddress("서울특별시 샘플구 테스트로 2")
+        .detailAddress("202동 202호")
+        .zoneNo("12345")
+        .addressName("집")
+        .phone("01012345678")
+        .isRepresentAddress(false)
+        .build();
+
+    given(deliveryAddressRepository.findByUserAndIsRepresentAddress(any(), anyBoolean()))
+        .willReturn(Optional.of(deliveryAddress1));
+    given(deliveryAddressRepository.findByUserAndId(any(), anyLong()))
+        .willReturn(Optional.of(deliveryAddress2));
+    //when
+    userServiceImpl.setUserRepresentAddress(userDetails, 1L);
+    //then
+    verify(deliveryAddressRepository).findByUserAndIsRepresentAddress(any(), anyBoolean());
+    verify(deliveryAddressRepository).findByUserAndId(any(), any());
   }
 }

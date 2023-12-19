@@ -27,4 +27,6 @@ public interface UserService {
   void deleteUserAddress(UserDetailsImpl userDetails, Long deliveryAddressId);
 
   List<UserAddressDto.Response> getUserAddressList(UserDetailsImpl userDetails, Pageable pageable);
+
+  void setUserRepresentAddress(UserDetailsImpl userDetails, Long deliveryAddressId);
 }
