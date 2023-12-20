@@ -153,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
     // 로그인한 회원의 주문정보
     List<Order> orderList = orderRepository.findAllByUser(userRepository.findById(customerId));
 
-    // 해당 회원의 주문이 없는경우 exception 발생
+    // 해당 회원의 주문이 없는 경우 exception 발생
     if (orderList.isEmpty()) {
       throw new OrderNotFoundException("주문이 존재하지 않습니다.");
     }

@@ -15,5 +15,4 @@ public interface OrderService {
   OrderDetailDto updateQuantity(UpdateQuantityDto updateQuantityDto, String customerId);
   OrderDetailDto getOrderDetails(String userId, Long id);
   Page<OrderProductDto> getAllOrders(Long customerId, Pageable pageable);
-
 }
