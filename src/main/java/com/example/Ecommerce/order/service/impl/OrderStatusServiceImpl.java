@@ -3,14 +3,22 @@ package com.example.Ecommerce.order.service.impl;
 import com.example.Ecommerce.exception.InvalidOrderStatusException;
 import com.example.Ecommerce.exception.OrderNotFoundException;
 import com.example.Ecommerce.exception.UnauthorizedUserException;
+import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
 import com.example.Ecommerce.order.domain.OrderStatus;
+import com.example.Ecommerce.order.dto.OrderProductDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Request;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Response;
 import com.example.Ecommerce.order.repository.OrderProductRepository;
+import com.example.Ecommerce.order.repository.OrderRepository;
 import com.example.Ecommerce.order.service.OrderStatusService;
+import com.example.Ecommerce.user.repository.UserRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderStatusServiceImpl implements OrderStatusService {
 
   private final OrderProductRepository orderProductRepository;
+  private final OrderRepository orderRepository;
+  private final UserRepository userRepository;
 
   @Override
   @Transactional
@@ -52,6 +62,29 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     // 주문 상태 변경
     processBySeller(request, orderProduct);
     return UpdateStatusDto.Response.of(orderProduct);
+  }
+
+  public Page<OrderProductDto> getOrdersByStatus(Long customerId, OrderStatus status, Pageable pageable) {
+
+    List<Order> orderList = orderRepository.findAllByUser(userRepository.findById(customerId));
+    // 해당 회원의 주문이 존재하지 않으면 exception 발생
+    if (orderList.isEmpty()) {
+      throw new OrderNotFoundException("주문이 존재하지 않습니다.");
+    }
+    // 주문 id 리스트
+    List<Long> orderIds = orderList.stream()
+        .map(Order::getId)
+        .collect(Collectors.toList());
+
+    // 상태에 따른 리스트를 paging 처리하여 불러오기
+    Page<OrderProduct> filteredOrderProducts =
+        orderProductRepository.findAllByOrderIdInAndStatus(orderIds, status, pageable);
+
+    if(filteredOrderProducts.isEmpty()){
+      throw new OrderNotFoundException("요청하신 주문 상태의 주문이 존재하지 않습니다.");
+    }
+    // 결과를 OrderProductDto list 로 반환하여 반환
+    return filteredOrderProducts.map(OrderProductDto::of);
   }
 
 
