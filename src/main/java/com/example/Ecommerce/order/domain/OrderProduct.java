@@ -46,21 +46,9 @@ public class OrderProduct {
     this.quantity = quantity;
   }
 
-  // 주문 상태 변경 - 취소
-  public void processCancel() {
-    this.status = OrderStatus.ORDER_CANCELED;
-  }
-  // 주문 상태 변경 - 구매 확정
-  public void processConfirmPurchase() {
-    this.status = OrderStatus.PURCHASE_CONFIRMED;
-  }
-  // 주문 상태 변경 - 교환 신청
-  public void processExchangeRequest() {
-    this.status = OrderStatus.EXCHANGE_REQUESTED;
-  }
-  // 주문 상태 변경 - 환불 신청
-  public void processRefundRequest() {
-    this.status = OrderStatus.REFUND_REQUESTED;
+  // 주문 상태 변경
+  public void updateStatus(OrderStatus newStatus) {
+    this.status = newStatus;
   }
 }
 
