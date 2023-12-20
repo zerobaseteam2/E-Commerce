@@ -1,6 +1,6 @@
 package com.example.Ecommerce.product.domain.form.admin;
 
-import com.example.Ecommerce.product.dto.ProductConfirm;
+import com.example.Ecommerce.product.dto.seller.ProductConfirm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package com.example.Ecommerce.product.domain;
 
 import com.example.Ecommerce.product.domain.form.AddProductForm;
-import com.example.Ecommerce.product.dto.ProductConfirm;
-import com.example.Ecommerce.product.dto.ProductState;
+import com.example.Ecommerce.product.dto.seller.ProductConfirm;
+import com.example.Ecommerce.product.dto.seller.ProductState;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
