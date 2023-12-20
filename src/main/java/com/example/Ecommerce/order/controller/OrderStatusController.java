@@ -31,6 +31,19 @@ public class OrderStatusController {
     return ResponseEntity.ok(response);
   }
 
+  // 판매자의 주문 상태 변경 API - 배송중/ 반품완료/ 교환완료/ 환불완료
+  @PatchMapping("/seller")
+  public ResponseEntity<?> updateStatusBySeller(
+      @RequestBody UpdateStatusDto.Request request,
+      @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+    // 로그인한 회원 정보
+    Long sellerId = userDetails.getUser().getId();
+
+    UpdateStatusDto.Response response = orderStatusService.updateStatusBySeller(sellerId, request);
+    return ResponseEntity.ok(response);
+  }
+
 
 
 }
