@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/login").permitAll()
                 .requestMatchers("/api/user/verify/{id}").permitAll()
                 .requestMatchers("/api/user/address").hasRole("CUSTOMER")
+                .requestMatchers("/api/user/find/userId").permitAll()
 
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api-docs/**").permitAll()

@@ -2,6 +2,7 @@ package com.example.Ecommerce.user.controller;
 
 import static com.example.Ecommerce.security.jwt.JwtTokenUtil.AUTHORIZATION_HEADER;
 
+import com.example.Ecommerce.order.dto.FindUserIdDto;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserInfoDto;
@@ -123,6 +124,14 @@ public class UserController {
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody @Valid UserInfoDto.Request request) {
     userService.modifyUserInfo(userDetails, request);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/find/userId")
+  public ResponseEntity<Void> findUserId(
+      @RequestBody @Valid FindUserIdDto.Request request) {
+    userService.findUserId(request);
 
     return ResponseEntity.ok().build();
   }

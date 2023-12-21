@@ -11,6 +11,7 @@ import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
 import com.example.Ecommerce.coupon.service.CouponService;
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
+import com.example.Ecommerce.order.dto.FindUserIdDto;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.domain.DeliveryAddress;
@@ -226,5 +227,13 @@ public class UserServiceImpl implements UserService {
     request.setPassword(encryptedPassword);
 
     user.modifyUserInfo(request);
+  }
+
+  @Override
+  public void findUserId(FindUserIdDto.Request request) {
+    User user = userRepository.findByEmailAndName(request.getEmail(), request.getName())
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_EMAIL_NAME_UN_MATCH));
+
+    mailComponent.sendUserId(user.getUserId(), request.getEmail(), request.getName());
   }
 }

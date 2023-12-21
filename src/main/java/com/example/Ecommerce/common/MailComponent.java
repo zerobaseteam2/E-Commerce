@@ -64,40 +64,13 @@ public class MailComponent {
     return address;
   }
   
-  public void sendUsername(String toEmail, String toName) {
+  public void sendUserId(String userId, String toEmail, String toName) {
     String title = "[ZB E-Commerce] 요청하신 아이디를 확인해주세요.";
     
     Context context = new Context();
-    context.setVariable("name", toName);
+    context.setVariable("userId", userId);
     
-    String contents = templateEngine.process("findUsername", context);
-    
-    MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
-      MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-      
-      InternetAddress from = addressFromTo(fromEmail, fromName);
-      
-      InternetAddress to = addressFromTo(toEmail, toName);
-      
-      mimeMessageHelper.setFrom(from);
-      mimeMessageHelper.setTo(to);
-      mimeMessageHelper.setSubject(title);
-      mimeMessageHelper.setText(contents, true);
-    };
-    try {
-      javaMailSender.send(mimeMessagePreparator);
-    } catch (Exception e) {
-      log.info(e.getMessage());
-    }
-  }
-  
-  public void sendTemporaryPassword(String toEmail, String toName, String temporaryPassword) {
-    String title = "[ZB E-Commerce] 요청하신 비밀번호를 확인해주세요.";
-    
-    Context context = new Context();
-    context.setVariable("temporaryPassword", temporaryPassword);
-    
-    String contents = templateEngine.process("findPassword", context);
+    String contents = templateEngine.process("findUserId", context);
     
     MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
       MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");

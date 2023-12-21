@@ -1,5 +1,6 @@
 package com.example.Ecommerce.user.service;
 
+import com.example.Ecommerce.order.dto.FindUserIdDto;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserAddressDto.Request;
@@ -32,4 +33,6 @@ public interface UserService {
   void setUserRepresentAddress(UserDetailsImpl userDetails, Long deliveryAddressId);
 
   void modifyUserInfo(UserDetailsImpl userDetails, UserInfoDto.Request request);
+
+  void findUserId(FindUserIdDto.Request request);
 }
