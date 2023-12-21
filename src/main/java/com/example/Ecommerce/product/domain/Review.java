@@ -1,5 +1,7 @@
 package com.example.Ecommerce.product.domain;
 
+import com.example.Ecommerce.order.domain.Order;
+import com.example.Ecommerce.order.domain.OrderProduct;
 import com.example.Ecommerce.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,16 +24,16 @@ public class Review extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "User", nullable = false)
-    private User userId;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_Id", nullable = false)
-    private Product productId;
-
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "orderDetailId", nullable = false)
-//    private OrderDetail orderDetailId;
+    @JoinColumn(name = "orderProduct_id", nullable = false)
+    private OrderProduct orderProduct;
 
     @Column(name = "title", nullable = false)
     private String title;
