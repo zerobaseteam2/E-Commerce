@@ -56,10 +56,11 @@ public class UserServiceImpl implements UserService {
 
     String encryptedPassword = passwordEncoder.encode(request.getPassword());
     User user = userRepository.save(request.toEntity(encryptedPassword));
-    
-    CouponIssuanceDto.Request couponRequest = new CouponIssuanceDto.Request(user.getId(), CouponType.MEMBERSHIP_SIGNUP_COUPON, null);
+
+    CouponIssuanceDto.Request couponRequest = new CouponIssuanceDto.Request(user.getId(),
+        CouponType.MEMBERSHIP_SIGNUP_COUPON, null);
     couponService.issuanceCoupon(couponRequest);
-    
+
     mailComponent.sendVerifyLink(user.getId(), user.getEmail(), user.getName());
 
     return new UserRegisterDto.Response(user.getUserId());
@@ -106,9 +107,9 @@ public class UserServiceImpl implements UserService {
     if (refreshToken == null) {
       throw new CustomException(ErrorCode.REFRESH_TOKEN_NULL);
     }
-    
+
     RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username)
-            .orElseThrow(NoSuchElementException::new);
+        .orElseThrow(NoSuchElementException::new);
 
     if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {
       return reissueAccessToken(refreshToken, username);
@@ -179,18 +180,36 @@ public class UserServiceImpl implements UserService {
     User user = userDetails.getUser();
 
     DeliveryAddress deliveryAddress = deliveryAddressRepository.findByUserAndId(user,
-        deliveryAddressId)
+            deliveryAddressId)
         .orElseThrow(() -> new CustomException(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND));
 
     deliveryAddressRepository.delete(deliveryAddress);
   }
 
   @Override
-  public List<UserAddressDto.Response> getUserAddressList(UserDetailsImpl userDetails, Pageable pageable) {
+  public List<UserAddressDto.Response> getUserAddressList(UserDetailsImpl userDetails,
+      Pageable pageable) {
     User user = userDetails.getUser();
 
-    Page<DeliveryAddress> deliveryAddressPage = deliveryAddressRepository.findAllByUser(user, pageable);
+    Page<DeliveryAddress> deliveryAddressPage = deliveryAddressRepository.findAllByUser(user,
+        pageable);
     return deliveryAddressPage.stream().map(Response::fromEntity)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  @Transactional
+  public void setUserRepresentAddress(UserDetailsImpl userDetails, Long deliveryAddressId) {
+    User user = userDetails.getUser();
+
+    DeliveryAddress beforeRepresentAddress =
+        deliveryAddressRepository.findByUserAndIsRepresentAddress(user, true)
+            .orElseThrow(() -> new CustomException(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND));
+    beforeRepresentAddress.modifyRepresent();
+
+    DeliveryAddress afterRepresentAddress =
+        deliveryAddressRepository.findByUserAndId(user, deliveryAddressId)
+            .orElseThrow(() -> new CustomException(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND));
+    afterRepresentAddress.modifyRepresent();
   }
 }

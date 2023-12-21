@@ -1,6 +1,7 @@
 package com.example.Ecommerce.order.domain;
 
 import com.example.Ecommerce.order.dto.NewOrderDto;
+import com.example.Ecommerce.order.dto.UpdateShippingDto;
 import com.example.Ecommerce.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -88,6 +89,24 @@ public class Order {
     return order;
   }
 
+  // 주문 배송지 정보 수정
+  public void updateShippingInfo(UpdateShippingDto.Request request){
+    if (request.getRecipientName() != null) {
+      this.recipientName = request.getRecipientName();
+    }
+    if (request.getRecipientPhone() != null) {
+      this.recipientPhone = request.getRecipientPhone();
+    }
+    if (request.getZoneNo() != null) {
+      this.zoneNo = request.getZoneNo();
+    }
+    if (request.getRoadAddress() != null) {
+      this.roadAddress = request.getRoadAddress();
+    }
+    if (request.getDetailedAddress() != null) {
+      this.detailedAddress = request.getDetailedAddress();
+    }
+  }
 
   // 주문상품 리스트에 주문상품 추가
   public void addOrderProduct(OrderProduct orderProduct) {

@@ -29,43 +29,46 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
-  
+
   private final UserService userService;
-  
+
   @PostMapping("/register")
   public ResponseEntity<UserRegisterDto.Response> registerUser(
-          @RequestBody @Valid UserRegisterDto.Request request) {
+      @RequestBody @Valid UserRegisterDto.Request request) {
     UserRegisterDto.Response response = userService.registerUser(request);
-    
+
     return ResponseEntity.ok(response);
   }
-  
+
   @GetMapping("/verify/{id}")
   public ResponseEntity<Void> verifyUserEmail(@PathVariable Long id) {
     userService.verifyUserEmail(id);
-    
+
     return ResponseEntity.ok().build();
   }
-  
+
   @PostMapping("/login")
   public ResponseEntity<String> login(@RequestBody @Valid UserLoginDto.Request request) {
     UserLoginDto.Response response = userService.login(request);
-    
+
     HttpHeaders headers = new HttpHeaders();
     headers.add(AUTHORIZATION_HEADER, response.getAccessToken());
     headers.add("refreshToken", response.getRefreshToken());
 
     return ResponseEntity.ok().headers(headers).body("login success");
   }
-  
+
   @PostMapping("/reissue")
-  public ResponseEntity<UserLoginDto.Response> reissue(@RequestHeader("RefreshToken") String refreshToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  public ResponseEntity<UserLoginDto.Response> reissue(
+      @RequestHeader("RefreshToken") String refreshToken,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
     String username = userDetails.getUser().getUserId();
     return ResponseEntity.ok(userService.reissue(refreshToken, username));
   }
-  
+
   @PostMapping("/logout")
-  public void logout(@RequestHeader("Authorization") String accessToken, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  public void logout(@RequestHeader("Authorization") String accessToken,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
     String username = userDetails.getUser().getUserId();
     userService.logout(accessToken, username);
   }
@@ -103,5 +106,14 @@ public class UserController {
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PageableDefault Pageable pageable) {
     return ResponseEntity.ok(userService.getUserAddressList(userDetails, pageable));
+  }
+
+  @PutMapping("/address/represent/{deliveryAddressId}")
+  public ResponseEntity<Void> setUserRepresentAddress(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @PathVariable Long deliveryAddressId) {
+    userService.setUserRepresentAddress(userDetails, deliveryAddressId);
+
+    return ResponseEntity.ok().build();
   }
 }

@@ -41,5 +41,10 @@ public class OrderProduct {
   @Enumerated(value = EnumType.STRING)
   private OrderStatus status; //주문상태
 
+  // 주문 상품 수량 수정
+  public void updateQuantity(int quantity) {
+    this.quantity = quantity;
+  }
+
 }
 

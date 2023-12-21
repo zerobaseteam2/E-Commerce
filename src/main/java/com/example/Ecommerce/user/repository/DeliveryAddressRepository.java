@@ -14,4 +14,6 @@ public interface DeliveryAddressRepository extends JpaRepository<DeliveryAddress
   Optional<DeliveryAddress> findByUserAndId(User user, Long deliveryAddressId);
 
   Page<DeliveryAddress> findAllByUser(User user, Pageable pageable);
+
+  Optional<DeliveryAddress> findByUserAndIsRepresentAddress(User user, boolean isRepresentAddress);
 }
