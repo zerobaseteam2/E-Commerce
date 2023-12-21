@@ -8,10 +8,14 @@ import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +41,7 @@ public class UserController {
   }
   
   @GetMapping("/verify/{id}")
-  public ResponseEntity verifyUserEmail(@PathVariable Long id) {
+  public ResponseEntity<Void> verifyUserEmail(@PathVariable Long id) {
     userService.verifyUserEmail(id);
     
     return ResponseEntity.ok().build();
@@ -83,5 +87,21 @@ public class UserController {
     userService.modifyUserAddress(request, userDetails, deliveryAddressId);
 
     return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/address/{deliveryAddressId}")
+  public ResponseEntity<Void> deleteUserAddress(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @PathVariable Long deliveryAddressId) {
+    userService.deleteUserAddress(userDetails, deliveryAddressId);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/address")
+  public ResponseEntity<List<UserAddressDto.Response>> getUserAddressList(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @PageableDefault Pageable pageable) {
+    return ResponseEntity.ok(userService.getUserAddressList(userDetails, pageable));
   }
 }
