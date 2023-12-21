@@ -6,14 +6,6 @@ import lombok.*;
 import java.time.LocalDate;
 
 public class ViewCouponsDto {
-  @Getter
-  @Setter
-  @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class Request {
-    private SearchFilterType filter;
-  }
   
   @Getter
   @Setter
@@ -21,7 +13,7 @@ public class ViewCouponsDto {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Response {
-    private Long id;
+    private Long couponId;
     private Long customerId;
     private Long orderDetailNo;
     private String couponName;
@@ -32,7 +24,7 @@ public class ViewCouponsDto {
     
     public Response toDto(Coupon coupon) {
       return Response.builder()
-              .id(coupon.getId())
+              .couponId(coupon.getId())
               .customerId(coupon.getCustomerId())
               .orderDetailNo(coupon.getOrderDetailNo())
               .couponName(coupon.getCouponName())

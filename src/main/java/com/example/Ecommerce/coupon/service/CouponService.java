@@ -12,7 +12,7 @@ public interface CouponService {
   
   void checkExpiredCoupon();
   
-  PageResponse viewCoupons(ViewCouponsDto.Request request, int pageNo, User user);
+  PageResponse viewCoupons(SearchFilterType filter, int pageNo, User user);
   
   
 }

@@ -87,13 +87,12 @@ public class CouponServiceImpl implements CouponService {
   
   // 보유 쿠폰 조회
   @Override
-  public PageResponse viewCoupons(ViewCouponsDto.Request request, int pageNo, User user) {
+  public PageResponse viewCoupons(SearchFilterType filterType, int pageNo, User user) {
     // 정렬 기준에 따라 pageable 객체 초기화
     Pageable pageable = createPageable(pageNo);
     
     // 찾아온 데이터 Page 객체
-    Page<Coupon> couponPage = filtering(request.getFilter(), pageable, user.getId());
-    
+    Page<Coupon> couponPage = filtering(filterType, pageable, user.getId());
     // page 객체에서 쿠폰 리스트를 추출하여 responseDto에 저장
     List<ViewCouponsDto.Response> responseDto = createListResponseDto(couponPage);
     
@@ -111,12 +110,12 @@ public class CouponServiceImpl implements CouponService {
       return couponRepository.findAllByCustomerId(pageable, customerId);
     }
     
-    // 사용 완료 쿠폰 조회
+    // 사용 가능 쿠폰 조회
     if (filter == SearchFilterType.USABLE) {
       return couponRepository.findAllByCustomerIdAndOrderDetailNoNullAndExpiresFalse(pageable, customerId);
     }
     
-    // 사용 가능 쿠폰 조회
+    // 사용 완료 쿠폰 조회
     if (filter == SearchFilterType.USED) {
       return couponRepository.findAllByCustomerIdAndOrderDetailNoNotNull(pageable, customerId);
     }

@@ -50,9 +50,9 @@ public class CouponController {
   public ResponseEntity<PageResponse> viewCoupons(
           @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
           @AuthenticationPrincipal UserDetailsImpl userDetails,
-          @RequestBody ViewCouponsDto.Request request
+          @RequestParam(value = "filter", defaultValue = "ALL", required = false) SearchFilterType filter
           ) {
-    PageResponse pageResponse = couponService.viewCoupons(request, pageNo, userDetails.getUser());
+    PageResponse pageResponse = couponService.viewCoupons(filter, pageNo, userDetails.getUser());
     
     return ResponseEntity.ok(pageResponse);
   }
