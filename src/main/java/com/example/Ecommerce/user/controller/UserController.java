@@ -4,6 +4,7 @@ import static com.example.Ecommerce.security.jwt.JwtTokenUtil.AUTHORIZATION_HEAD
 
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.user.dto.UserAddressDto;
+import com.example.Ecommerce.user.dto.UserInfoDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
@@ -113,6 +114,15 @@ public class UserController {
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @PathVariable Long deliveryAddressId) {
     userService.setUserRepresentAddress(userDetails, deliveryAddressId);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PutMapping("/info")
+  public ResponseEntity<Void> modifyUserInfo(
+      @AuthenticationPrincipal UserDetailsImpl userDetails,
+      @RequestBody @Valid UserInfoDto.Request request) {
+    userService.modifyUserInfo(userDetails, request);
 
     return ResponseEntity.ok().build();
   }

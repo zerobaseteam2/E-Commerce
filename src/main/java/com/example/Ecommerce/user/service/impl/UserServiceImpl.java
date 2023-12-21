@@ -5,6 +5,7 @@ import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 import com.example.Ecommerce.common.MailComponent;
 import com.example.Ecommerce.config.CacheConfig;
+import com.example.Ecommerce.config.CacheConfig.CacheKey;
 import com.example.Ecommerce.coupon.domain.CouponType;
 import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
 import com.example.Ecommerce.coupon.service.CouponService;
@@ -18,6 +19,7 @@ import com.example.Ecommerce.user.domain.RefreshToken;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserAddressDto.Response;
+import com.example.Ecommerce.user.dto.UserInfoDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
@@ -30,6 +32,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -211,5 +214,17 @@ public class UserServiceImpl implements UserService {
         deliveryAddressRepository.findByUserAndId(user, deliveryAddressId)
             .orElseThrow(() -> new CustomException(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND));
     afterRepresentAddress.modifyRepresent();
+  }
+
+  @Override
+  @Transactional
+  @CachePut(value = CacheKey.USER, key = "#userDetails.user.userId")
+  public void modifyUserInfo(UserDetailsImpl userDetails, UserInfoDto.Request request) {
+    User user = userDetails.getUser();
+
+    String encryptedPassword = passwordEncoder.encode(request.getPassword());
+    request.setPassword(encryptedPassword);
+
+    user.modifyUserInfo(request);
   }
 }
