@@ -30,15 +30,6 @@ public class CouponController {
     
     return ResponseEntity.ok("Success");
   }
-  
-  
-  @PostMapping("/using")
-  public ResponseEntity<UseCouponDto.Response> useCoupon(
-          @RequestBody @Valid UseCouponDto.Request request) {
-    UseCouponDto.Response response = couponService.useCoupon(request);
-    
-    return ResponseEntity.ok(response);
-  }
   //테스트용
   @PostMapping("/expires")
   public ResponseEntity<String> expiresCoupon() {

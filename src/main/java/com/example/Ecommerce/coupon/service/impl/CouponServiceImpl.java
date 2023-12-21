@@ -56,23 +56,6 @@ public class CouponServiceImpl implements CouponService {
     }
   }
   
-  // 쿠폰 사용
-  @Override
-  @Transactional
-  public UseCouponDto.Response useCoupon(UseCouponDto.Request request) {
-    // 쿠폰 id 검증
-    Coupon nowCoupon = couponRepository.findById(request.getCouponId()).orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
-    
-    // 만료된 쿠폰인지 확인
-    if (nowCoupon.isExpires()) {
-      throw new CustomException(ErrorCode.EXPIRES_COUPON);
-    }
-    
-    nowCoupon.useCoupon(request.getOrderDetailNo());
-    
-    return new UseCouponDto.Response().toDto(nowCoupon);
-  }
-  
   // 쿠폰 만료 처리
   // 매일 자정 실행
   @Override

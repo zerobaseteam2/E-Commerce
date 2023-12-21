@@ -8,8 +8,6 @@ public interface CouponService {
   
   void issuanceBirthDayCoupon();
   
-  UseCouponDto.Response useCoupon(UseCouponDto.Request request);
-  
   void checkExpiredCoupon();
   
   PageResponse viewCoupons(SearchFilterType filter, int pageNo, User user);
