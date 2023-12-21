@@ -41,8 +41,7 @@ public class JwtTokenUtil {
   public String generateAccessToken(String username, UserRole role) {
     Claims claims = Jwts.claims().setSubject(username);
     claims.put("auth", role);
-    return BEARER_PREFIX +
-            Jwts.builder()
+    return Jwts.builder()
                     .setClaims(claims)
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME.getValue()))

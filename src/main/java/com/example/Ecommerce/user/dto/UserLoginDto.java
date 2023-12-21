@@ -33,7 +33,7 @@ public class UserLoginDto {
     
     public static Response of(String accessToken, String refreshToken) {
       return Response.builder()
-              .accessToken(accessToken)
+              .accessToken(BEARER_PREFIX + accessToken)
               .refreshToken(BEARER_PREFIX + refreshToken)
               .build();
     }

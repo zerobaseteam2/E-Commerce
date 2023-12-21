@@ -1,6 +1,5 @@
 package com.example.Ecommerce.user.service.impl;
 
-import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 import com.example.Ecommerce.common.MailComponent;
@@ -22,7 +21,7 @@ import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
 import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
-import com.example.Ecommerce.user.repository.RefreshTokenRedisRepository;
+import com.example.Ecommerce.user.repository.RefreshTokenRepository;
 import com.example.Ecommerce.user.repository.UserRepository;
 import com.example.Ecommerce.user.service.UserService;
 import java.util.List;
@@ -43,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
-  private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
   private final DeliveryAddressRepository deliveryAddressRepository;
   private final JwtTokenUtil jwtTokenUtil;
@@ -108,7 +107,7 @@ public class UserServiceImpl implements UserService {
       throw new CustomException(ErrorCode.REFRESH_TOKEN_NULL);
     }
 
-    RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username)
+    RefreshToken redisRefreshToken = refreshTokenRepository.findById(username)
         .orElseThrow(NoSuchElementException::new);
 
     if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {
@@ -121,7 +120,7 @@ public class UserServiceImpl implements UserService {
   public void logout(String accessToken, String username) {
     accessToken = resolveToken(accessToken);
     long remainMilliSeconds = jwtTokenUtil.getRemainMilliSeconds(accessToken);
-    refreshTokenRedisRepository.deleteById(username);
+    refreshTokenRepository.deleteById(username);
     logoutAccessTokenRedisRepository.save(
         LogoutAccessToken.of(accessToken, username, remainMilliSeconds));
   }
@@ -133,8 +132,8 @@ public class UserServiceImpl implements UserService {
   }
 
   private RefreshToken saveRefreshToken(String username) {
-    return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(username,
-        jwtTokenUtil.generateRefreshToken(username), REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
+    return refreshTokenRepository.save(RefreshToken.createRefreshToken(username,
+        jwtTokenUtil.generateRefreshToken(username)));
   }
 
   private UserLoginDto.Response reissueAccessToken(String refreshToken, String username) {
