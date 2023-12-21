@@ -1,10 +1,12 @@
-package com.example.Ecommerce.product.dto;
+package com.example.Ecommerce.product.dto.seller;
 
 import lombok.Getter;
 
 @Getter
 public enum ProductConfirm {
   WAITING("승인대기중"),
+  REQUEST_CANCEL_SELLING("등록 취소 요청"),
+  APPROVED_CANCEL_SELLING("등록 취소 승인"),
   APPROVED("승인됨"),
   NOT_APPROVED("승인거절됨");
 
