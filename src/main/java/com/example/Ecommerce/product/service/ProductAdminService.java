@@ -4,9 +4,9 @@ import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.product.domain.Product;
 import com.example.Ecommerce.product.domain.form.admin.ProductProcessForm;
-import com.example.Ecommerce.product.dto.ProductConfirm;
-import com.example.Ecommerce.product.dto.ProductDto;
-import com.example.Ecommerce.product.dto.ProductState;
+import com.example.Ecommerce.product.dto.seller.ProductConfirm;
+import com.example.Ecommerce.product.dto.seller.ProductDto;
+import com.example.Ecommerce.product.dto.seller.ProductState;
 import com.example.Ecommerce.product.dto.admin.ProductProcessDto;
 import com.example.Ecommerce.product.dto.admin.WaitingListResponse;
 import com.example.Ecommerce.product.repository.ProductCustomRepository;
@@ -92,5 +92,8 @@ public class ProductAdminService {
         .build();
   }
 
+  // 승인된 내역 상품 보기
+
+  // 승인 거절한 상품 보기
 
 }

@@ -1,6 +1,6 @@
 package com.example.Ecommerce.product.dto.admin;
 
-import com.example.Ecommerce.product.dto.ProductDto;
+import com.example.Ecommerce.product.dto.seller.ProductDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
