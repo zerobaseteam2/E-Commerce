@@ -3,6 +3,8 @@ package com.example.Ecommerce.security.jwt;
 import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.ACCESS_TOKEN_EXPIRATION_TIME;
 import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 
+import com.example.Ecommerce.exception.CustomException;
+import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.user.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -74,12 +76,16 @@ public class JwtTokenUtil {
       return true;
     } catch (SecurityException | MalformedJwtException e) {
       log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+      throw new CustomException(ErrorCode.INVAILD_JWT_SIGNATURE);
     } catch (ExpiredJwtException e) {
       log.error("Expired JWT token, 만료된 JWT token 입니다.");
+      throw new CustomException(ErrorCode.EXPIRED_JWT_TOKEN);
     } catch (UnsupportedJwtException e) {
       log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+      throw new CustomException(ErrorCode.UNSUPPORTED_JWT_TOKEN);
     } catch (IllegalArgumentException e) {
       log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+      throw new CustomException(ErrorCode.JWT_CLAIMS_IS_EMPTY);
     }
     return false;
   }

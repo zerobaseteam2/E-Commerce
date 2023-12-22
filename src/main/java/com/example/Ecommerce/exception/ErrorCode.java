@@ -17,6 +17,10 @@ public enum ErrorCode {
   REFRESH_TOKEN_NULL(HttpStatus.BAD_REQUEST, "Refresh token has not been entered."),
   REFRESH_TOKEN_NOT_EXIST(HttpStatus.BAD_REQUEST, "Refresh token does not exist."),
   REFRESH_TOKEN_HAS_EXPIRED(HttpStatus.BAD_REQUEST, "Refresh token has expired."),
+  INVAILD_JWT_SIGNATURE(HttpStatus.FORBIDDEN, "유효하지 않는 JWT 서명입니다."),
+  EXPIRED_JWT_TOKEN(HttpStatus.FORBIDDEN, "만료된 JWT 토큰입니다."),
+  UNSUPPORTED_JWT_TOKEN(HttpStatus.FORBIDDEN, "지원되지 않는 JWT 토큰입니다."),
+  JWT_CLAIMS_IS_EMPTY(HttpStatus.FORBIDDEN, "잘못된 JWT 토큰입니다."),
 
   // 판매자 exception
   SELLING_PRODUCT_NOT_EXIST(HttpStatus.BAD_REQUEST,"판매하는 상품이 없습니다."),
