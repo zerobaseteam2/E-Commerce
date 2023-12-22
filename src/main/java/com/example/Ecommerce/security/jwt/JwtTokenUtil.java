@@ -87,7 +87,6 @@ public class JwtTokenUtil {
       log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
       throw new CustomException(ErrorCode.JWT_CLAIMS_IS_EMPTY);
     }
-    return false;
   }
   
   public Claims extractAllClaims(String token) { // 토큰 추출
