@@ -2,8 +2,14 @@ package com.example.Ecommerce.product.service.impl;
 
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
+import com.example.Ecommerce.exception.InvalidOrderStatusException;
+import com.example.Ecommerce.exception.UnauthorizedUserException;
+import com.example.Ecommerce.order.domain.Order;
+import com.example.Ecommerce.order.domain.OrderProduct;
+import com.example.Ecommerce.order.domain.OrderStatus;
 import com.example.Ecommerce.product.domain.Product;
 import com.example.Ecommerce.product.domain.Review;
+import com.example.Ecommerce.product.domain.form.ReplyForm;
 import com.example.Ecommerce.product.domain.form.ReviewForm;
 import com.example.Ecommerce.product.dto.ReviewDto;
 import com.example.Ecommerce.product.repository.ReviewRepository;
@@ -11,6 +17,7 @@ import com.example.Ecommerce.product.service.ReviewService;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.domain.UserRole;
 import com.example.Ecommerce.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.hibernate.internal.util.collections.ReadOnlyMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,28 +36,25 @@ import java.util.stream.Collectors;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
-    // 추가로 필요한 Repository 주입
 
     @Autowired
-    public ReviewServiceImpl(ReviewRepository reviewRepository ,UserRepository userRepository) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository ) {
         this.reviewRepository = reviewRepository;
-        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
-    public ReviewDto createReview(ReviewForm form, User userId, Product productId) { //, OrderDetailId orderDetailId.
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            // 사용자가 로그인하지 않았을 경우 예외 발생
-            throw new CustomException(ErrorCode.UN_AUTHORIZED);
+    public ReviewDto createReview(ReviewForm form,  User user, Order order) {
+        // 주문 상태 확인
+        if (order.getOrderStatus() != OrderStatus.PURCHASE_CONFIRMED) {
+            throw new InvalidOrderStatusException("주문이 구매 확정 상태가 아닙니다.");
         }
-
         Review review = new Review();
         review.setTitle(form.getTitle());
         review.setContent(form.getContent());
         review.setStars(form.getStars());
+        review.setUser(user);          // 회원 정보 설정
+        review.setOrder(order); // OrderProduct 설정
         review = reviewRepository.save(review);
 
         return ReviewDto.from(review);
@@ -59,95 +63,44 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public ReviewDto updateReview(Long reviewId, ReviewForm form) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            // 사용자가 로그인하지 않았을 경우 예외 발생
-            throw new CustomException(ErrorCode.UN_AUTHORIZED);
-        }
-        // 현재 로그인한 사용자의 ID 확인
-        String currentUsername = authentication.getName();
-        User currentUser = userRepository.findByUserId(currentUsername)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
+        // Retrieve the existing review
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("Review not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
 
-        // 리뷰 작성자와 현재 사용자가 동일한지 확인
-        if (!review.getUserId().equals(currentUser.getId())) {
-            throw new CustomException(ErrorCode.UN_AUTHORIZED);
-        }
-
+        // Update the review's fields
         review.setTitle(form.getTitle());
         review.setContent(form.getContent());
         review.setStars(form.getStars());
+
+        // Save the updated review
         review = reviewRepository.save(review);
 
+        // Convert to DTO and return
         return ReviewDto.from(review);
     }
+
 
     @Override
     @Transactional
     public void deleteReview(Long reviewId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            // 사용자가 로그인하지 않았을 경우 예외 발생
-            throw new CustomException(ErrorCode.UN_AUTHORIZED);
-        }
         reviewRepository.deleteById(reviewId);
     }
 
-    @Override
-    public ReviewDto getReviewById(Long reviewId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            // 사용자가 로그인하지 않았을 경우 예외 발생
-            throw new CustomException(ErrorCode.UN_AUTHORIZED);
-        }
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("Review not found"));
-
-        return ReviewDto.from(review);
-    }
-
-//    @Override
-//    public List<ReviewDto> getAllReviewsByCustomerId(Long customerId) {
-//        List<Review> reviews = reviewRepository.findAllByCustomerId(customerId);
-//        return reviews.stream()
-//                .map(ReviewDTO::from)
-//                .collect(Collectors.toList());
-//    }
 
     @Override
     @Transactional
-    public void addReplyToReview(Long reviewId, String reply, String username) {
-        if (reply == null || reply.trim().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_INPUT);
-        }
-
-        User user = userRepository.findByUserId(username)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        if (!user.getRole().equals(UserRole.SELLER)) {
-            throw new CustomException(ErrorCode.UN_AUTHORIZED);
-        }
-
+    public ReviewDto addReplyToReview(Long reviewId, String replyContent) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
 
-        if (review.getReply() != null && !review.getReply().trim().isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_OPERATION);
-        }
-
-//        Product product = productRepository.findById(review.getProductId())
-//                .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
-//
-//        if (!product.getSellerId().equals(user.getId())) {
-//            throw new CustomException(ErrorCode.UN_AUTHORIZED);
-//        }
-        review.setReply(reply);
+        review.setReply(replyContent);
         review.setReplyState(true);
-        reviewRepository.save(review);
+
+        Review updatedReview = reviewRepository.save(review);
+
+        return ReviewDto.from(updatedReview);
     }
+
 
     @Override
     @Transactional
@@ -161,8 +114,6 @@ public class ReviewServiceImpl implements ReviewService {
     public Page<ReviewDto> getReviewsByUserId(Long userId, Pageable pageable) {
         return reviewRepository.findByUserId(userId, pageable).map(ReviewDto::from);
     }
-
-
 }
 
 
