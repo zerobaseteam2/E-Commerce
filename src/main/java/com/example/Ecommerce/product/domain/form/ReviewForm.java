@@ -26,7 +26,7 @@ public class ReviewForm {
     @Min(value = 0, message = "별점은 0점 이상이어야 합니다")
     @Max(value = 5, message = "별점은 5점을 초과할 수 없습니다")
     private Double stars;
-
+  
     private String userName;   // 회원 이름
     private Long orderId;      // 주문 번호
 

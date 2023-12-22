@@ -31,7 +31,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ResponseStatusExcep
 
 
 @RestController
@@ -124,7 +124,6 @@ public class ReviewController {
         }
     }
 
-
     @GetMapping("/products/{productId}/reviews")
     public Page<ReviewDto> listReviews(@PathVariable Long productId,
                                        @RequestParam(defaultValue = "0") int page,
@@ -143,6 +142,4 @@ public class ReviewController {
         Page<ReviewDto> reviewPage = reviewService.getReviewsByUserId(currentUserId, pageable);
         return ResponseEntity.ok(reviewPage);
     }
-
-
 }

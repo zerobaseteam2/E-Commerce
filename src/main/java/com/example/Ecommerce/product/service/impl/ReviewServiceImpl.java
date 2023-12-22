@@ -114,7 +114,6 @@ public class ReviewServiceImpl implements ReviewService {
     public Page<ReviewDto> getReviewsByUserId(Long userId, Pageable pageable) {
         return reviewRepository.findByUserId(userId, pageable).map(ReviewDto::from);
     }
-
 }
 
 
