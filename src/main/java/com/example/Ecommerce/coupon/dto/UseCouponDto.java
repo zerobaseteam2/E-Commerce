@@ -1,8 +1,6 @@
 package com.example.Ecommerce.coupon.dto;
 
 import com.example.Ecommerce.coupon.domain.Coupon;
-import com.example.Ecommerce.coupon.domain.CouponType;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -16,7 +14,7 @@ public class UseCouponDto {
     @NotNull
     private Long couponId;
     @NotNull
-    private Long orderDetailNo;
+    private Long orderNo;
   }
   
   @Getter
@@ -26,14 +24,14 @@ public class UseCouponDto {
   @AllArgsConstructor
   public static class Response {
     private Long couponId;
-    private Long orderDetailNo;
+    private Long orderNo;
     private String couponName;
     private double discountRate;
     
     public Response toDto(Coupon coupon) {
       return Response.builder()
               .couponId(coupon.getId())
-              .orderDetailNo(coupon.getOrderDetailNo())
+              .orderNo(coupon.getOrderNo())
               .couponName(coupon.getCouponName())
               .discountRate(coupon.getDiscountRate())
               .build();

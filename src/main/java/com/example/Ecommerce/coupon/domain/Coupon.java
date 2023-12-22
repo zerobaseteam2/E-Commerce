@@ -28,7 +28,7 @@ public class Coupon {
   private Long customerId;
   
   @Column(unique = true)
-  private Long orderDetailNo;
+  private Long orderNo;
   
   @Column(nullable = false)
   private String couponName;
@@ -49,8 +49,8 @@ public class Coupon {
   @Column(nullable = false)
   private boolean expires;
   
-  public void useCoupon(Long orderDetailNo) {
-    this.orderDetailNo = orderDetailNo;
+  public void useCoupon(Long orderNo) {
+    this.orderNo = orderNo;
   }
   
   public void couponExpires() {

@@ -26,7 +26,7 @@ public class ViewCouponsDto {
       return Response.builder()
               .couponId(coupon.getId())
               .customerId(coupon.getCustomerId())
-              .orderDetailNo(coupon.getOrderDetailNo())
+              .orderDetailNo(coupon.getOrderNo())
               .couponName(coupon.getCouponName())
               .usableCategory(coupon.getUsableCategory())
               .discountRate(coupon.getDiscountRate())
