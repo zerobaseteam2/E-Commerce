@@ -60,10 +60,8 @@ public class UserController {
 
   @PostMapping("/reissue")
   public ResponseEntity<UserLoginDto.Response> reissue(
-      @RequestHeader("RefreshToken") String refreshToken,
-      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    String username = userDetails.getUser().getUserId();
-    return ResponseEntity.ok(userService.reissue(refreshToken, username));
+      @RequestHeader("RefreshToken") String refreshToken) {
+    return ResponseEntity.ok(userService.reissue(refreshToken));
   }
 
   @PostMapping("/logout")

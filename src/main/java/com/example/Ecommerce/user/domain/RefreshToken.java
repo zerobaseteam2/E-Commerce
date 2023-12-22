@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 // DB에 저장하는 것으로 변경
 @Getter
@@ -27,7 +27,7 @@ public class RefreshToken {
   private String refreshToken;
   
   @CreatedDate
-  private LocalDate createdDate;
+  private LocalDateTime createdDate;
   
   public static RefreshToken createRefreshToken(String username, String refreshToken) {
     return RefreshToken.builder()
