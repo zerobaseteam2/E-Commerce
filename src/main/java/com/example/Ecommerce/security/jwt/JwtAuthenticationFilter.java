@@ -22,12 +22,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
   private final JwtTokenUtil jwtTokenUtil;
   private final UserDetailServiceImpl userDetailsService;
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
-  
+
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
     String accessToken = jwtTokenUtil.getToken(request);
     if (StringUtils.hasText(accessToken)) {
       checkLogout(accessToken);
@@ -35,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.error("Token Error");
         return;
       }
-      
+
       try {
         setAuthentication(jwtTokenUtil.getUsername(accessToken)); // 인증 처리
       } catch (Exception e) {
@@ -43,30 +45,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return;
       }
     }
-    
+
     filterChain.doFilter(request, response);
   }
-  
+
   private void checkLogout(String accessToken) {
     if (logoutAccessTokenRedisRepository.existsById(accessToken)) {
       throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
     }
   }
-  
+
   public void setAuthentication(String username) {
     // SecurityContextHolder : authentication을 담고 있는 Holder
     SecurityContext context = SecurityContextHolder.createEmptyContext();
     // 인증 객체 생성
     Authentication authentication = createAuthentication(username);
     context.setAuthentication(authentication);
-    
+
     // SecurityContextHolder에 인증된 객체를 저장하면, 해당 인증 객체를 전역적으로 사용할 수 있음
     SecurityContextHolder.setContext(context);
   }
-  
+
   // 인증 객체 생성
   private Authentication createAuthentication(String username) {
     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()); // 인증된 사용자의 정보와 권한을 담은 UsernamePaswordAuthenticationToken 생성
+    return new UsernamePasswordAuthenticationToken(userDetails, null,
+        userDetails.getAuthorities()); // 인증된 사용자의 정보와 권한을 담은 UsernamePaswordAuthenticationToken 생성
   }
 }

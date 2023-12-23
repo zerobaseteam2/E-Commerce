@@ -59,11 +59,15 @@ public class UserController {
   }
 
   @PostMapping("/reissue")
-  public ResponseEntity<UserLoginDto.Response> reissue(
-      @RequestHeader("RefreshToken") String refreshToken,
-      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-    String username = userDetails.getUser().getUserId();
-    return ResponseEntity.ok(userService.reissue(refreshToken, username));
+  public ResponseEntity<String> reissue(
+      @RequestHeader("RefreshToken") String refreshToken) {
+    UserLoginDto.Response response = userService.reissue(refreshToken);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(AUTHORIZATION_HEADER, response.getAccessToken());
+    headers.add("refreshToken", response.getRefreshToken());
+
+    return ResponseEntity.ok().headers(headers).body("login success");
   }
 
   @PostMapping("/logout")

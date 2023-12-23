@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @TestConfiguration
 @EnableWebSecurity
 public class TestConfig {
+
   @Autowired
   private JwtAuthenticationFilter jwtAuthenticationFilter;
   @MockBean
@@ -26,15 +27,16 @@ public class TestConfig {
   private UserDetailServiceImpl userDetailService;
   @MockBean
   private LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
-  
+
   @Bean
   public BCryptPasswordEncoder bCryptPasswordEncoder() {
     return new BCryptPasswordEncoder();
   }
-  
+
   @Bean
   public JwtAuthenticationFilter jwtAuthorizationFilter() {
-    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService, logoutAccessTokenRedisRepository);
+    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService,
+        logoutAccessTokenRedisRepository);
   }
 
   @Bean

@@ -3,12 +3,11 @@ package com.example.Ecommerce.security.jwt;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 /*
 Spring Security에서 인증이 실패했을 때 호출되는 핸들러.
@@ -17,9 +16,10 @@ Spring Security에서 인증이 실패했을 때 호출되는 핸들러.
 @Component
 @Slf4j
 public class JwtEntryPoint implements AuthenticationEntryPoint {
-  
+
   @Override
-  public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+  public void commence(HttpServletRequest request, HttpServletResponse response,
+      AuthenticationException authException) throws IOException, ServletException {
     log.error("Unauthorized error: {}", authException.getMessage());
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
   }

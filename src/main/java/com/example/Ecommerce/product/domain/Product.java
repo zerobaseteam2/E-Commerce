@@ -86,7 +86,6 @@ public class Product extends BaseEntity {
   @JoinColumn(name = "product_id")
   private List<ProductTag> productTags = new ArrayList<>();
 
-
   //찜 상품 내역
 //  @OneToMany(cascade = CascadeType.ALL)
 //  @JoinColumn(name = "product_id")
