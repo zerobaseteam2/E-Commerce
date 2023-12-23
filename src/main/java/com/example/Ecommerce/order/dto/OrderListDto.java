@@ -19,7 +19,7 @@ public class OrderListDto {
   private List<OrderProductDto> orderProductDtos; //주문상품 리스트
 
   // page 정보와 주문상품 리스트를 반환
-  public static OrderListDto of(Page<OrderProductDto> result){
+  public static OrderListDto of(Page<OrderProductDto> result) {
 
     PageInfoDto pageInfoDto = PageInfoDto.builder()
         .page(result.getNumber()) //해당 페이지

@@ -237,7 +237,8 @@ class UserServiceImplTest {
     given(deliveryAddressRepository.findAllByUser(any(), any()))
         .willReturn(deliveryAddressPage);
     //when
-    List<UserAddressDto.Response> response = userServiceImpl.getUserAddressList(userDetails, requestPageable);
+    List<UserAddressDto.Response> response = userServiceImpl.getUserAddressList(userDetails,
+        requestPageable);
     //then
     assertEquals(response.get(0).getRoadAddress(), "서울특별시 샘플구 테스트로 1");
     assertEquals(response.get(1).getRoadAddress(), "서울특별시 샘플구 테스트로 2");

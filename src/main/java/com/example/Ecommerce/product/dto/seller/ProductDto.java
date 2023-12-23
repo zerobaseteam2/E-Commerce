@@ -51,7 +51,7 @@ public class ProductDto {
   }
 
 
-  public static ProductDto exceptOptionTags(Product product){
+  public static ProductDto exceptOptionTags(Product product) {
 
     return ProductDto.builder()
         .id(product.getId())

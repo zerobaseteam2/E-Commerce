@@ -3,7 +3,11 @@ package com.example.Ecommerce.user.dto;
 import com.example.Ecommerce.user.domain.DeliveryAddress;
 import com.example.Ecommerce.user.domain.User;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class UserAddressDto {
 
