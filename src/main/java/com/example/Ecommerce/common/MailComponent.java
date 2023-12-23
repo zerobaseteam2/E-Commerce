@@ -1,12 +1,12 @@
 package com.example.Ecommerce.common;
 
-import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
-import java.security.Key;
 import java.util.Base64;
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,17 +28,14 @@ public class MailComponent {
   @Value("${spring.mail.username}")
   private String fromEmail;
 
-  @Value("${spring.find.password.secret}")
-  private String SECRET_KEY;
-  private static Key key;
+  private SecretKey secretKey;
   private Cipher cipher;
 
   @PostConstruct
   public void init() {
-    byte[] bytes = Base64.getDecoder().decode(SECRET_KEY);
-    key = Keys.hmacShaKeyFor(bytes);
     try {
       cipher = Cipher.getInstance("AES");
+      secretKey = KeyGenerator.getInstance("AES").generateKey();
     } catch (Exception e) {
       log.info(e.getMessage());
     }
@@ -113,9 +110,10 @@ public class MailComponent {
 
   public void sendResetPasswordForm(String userId, String toEmail, String toName)
       throws Exception {
-    cipher.init(Cipher.ENCRYPT_MODE, key);
+    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
     byte[] encryptedBytes = cipher.doFinal(userId.getBytes());
     String encryptedUserId = Base64.getEncoder().encodeToString(encryptedBytes);
+    encryptedUserId = encryptedUserId.replace("/", "");
 
     String title = "[ZB E-Commerce] 비밀번호를 재설정해주세요.";
     String resetPasswordForm_url =
@@ -146,9 +144,9 @@ public class MailComponent {
     }
   }
 
-  public String decryptUserId(String encryptedUserId) throws Exception{
+  public String decryptUserId(String encryptedUserId) throws Exception {
     byte[] encryptedBytes = Base64.getDecoder().decode(encryptedUserId.getBytes());
-    cipher.init(Cipher.DECRYPT_MODE, key);
+    cipher.init(Cipher.DECRYPT_MODE, secretKey);
     byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
 
     return new String(decryptedBytes);
