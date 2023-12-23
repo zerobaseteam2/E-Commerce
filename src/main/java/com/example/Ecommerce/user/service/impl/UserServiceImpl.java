@@ -270,7 +270,7 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void resetPassword(ResetPasswordDto.Request request, String encryptedUserId) {
-    String userId = null;
+    String userId;
 
     try {
       userId = mailComponent.decryptUserId(encryptedUserId);
