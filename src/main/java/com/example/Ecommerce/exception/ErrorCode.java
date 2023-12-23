@@ -25,7 +25,15 @@ public enum ErrorCode {
   // 관리자 상품 요청 승인 거절관련 exception
   PRODUCT_NOT_WAITING(HttpStatus.BAD_REQUEST, "승인 대기중인 상품이 아닙니다."),
   PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 상품을 찾을수 없습니다."),
-  DELIVERY_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Address not found");
+  DELIVERY_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Address not found"),
+  
+  // 리뷰 관련
+  ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 상품주문정보가 없습니다."),
+  NOT_PURCHASE_CONFIRMED(HttpStatus.BAD_REQUEST, "구매 확정 상태가 아닙니다."),
+  REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
+  REPLY_EXISTS(HttpStatus.BAD_REQUEST, "이미 답변이 등록된 리뷰입니다."),
+  NOT_SELLER_OF_THE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품의 판매자가 아닙니다.")
+  ;
 
   
   private HttpStatus status;
