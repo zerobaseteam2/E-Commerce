@@ -46,5 +46,9 @@ public class OrderProduct {
     this.quantity = quantity;
   }
 
+  // 주문 상태 변경
+  public void updateStatus(OrderStatus newStatus) {
+    this.status = newStatus;
+  }
 }
 
