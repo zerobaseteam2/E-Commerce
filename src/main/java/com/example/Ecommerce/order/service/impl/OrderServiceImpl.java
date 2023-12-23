@@ -5,8 +5,6 @@ import com.example.Ecommerce.coupon.repository.CouponRepository;
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.exception.InvalidOrderStatusException;
-import com.example.Ecommerce.exception.InvalidQuantityException;
-import com.example.Ecommerce.exception.OrderNotFoundException;
 import com.example.Ecommerce.exception.UnauthorizedUserException;
 import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
@@ -58,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
     newOrderDto.getProductQuantityMap().forEach((productId, quantity) -> {
       // 상품 id 에 따른 상품 불러오기, id가 없어진 경우 exception 발생
       Product product = productRepository.findById(productId)
-          .orElseThrow(() -> new RuntimeException("다음 상품이 존재하지 않습니다: " + productId));
+          .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
       // 주문상품 생성 및 저장
       OrderProduct orderProduct = OrderProduct.builder()
           .order(order)
@@ -98,11 +96,11 @@ public class OrderServiceImpl implements OrderService {
       (Long id, UpdateShippingDto.Request request, String customerId) {
     // 수정하려는 주문 가져오기
     Order order = orderRepository.findById(id)
-        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문이 존재하지 않습니다."));
+        .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
     // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!order.getUser().getUserId().equals(customerId)) {
-      throw new UnauthorizedUserException("해당 주문에 접근할 권한이 없습니다.");
+      throw new CustomException(ErrorCode.UN_AUTHORIZED);
     }
 
     // 상태 확인
@@ -123,7 +121,7 @@ public class OrderServiceImpl implements OrderService {
     // 수정하려는 주문상품 가져오기
     OrderProduct orderProduct = orderProductRepository.findById(
             updateQuantityDto.getOrderProductId())
-        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문이 존재하지 않습니다."));
+        .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
     // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!orderProduct.getOrder().getUser().getUserId().equals(customerId)) {
@@ -136,7 +134,7 @@ public class OrderServiceImpl implements OrderService {
     // 상품 수량 수정
     int quantity = updateQuantityDto.getQuantity();
     if (quantity == 0) {
-      throw new InvalidQuantityException("상품 수량은 1개 이상으로 변경 가능합니다.");
+      throw new CustomException(ErrorCode.INVALID_QUANTITY);
     }
     orderProduct.updateQuantity(quantity);
 
@@ -164,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
 
     // 조회하려는 주문 가져오기
     Order order = orderRepository.findById(id)
-        .orElseThrow(() -> new OrderNotFoundException("조회하려는 주문 상세 내역이 존재하지 않습니다."));
+        .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
     // 권한 확인 - 조회하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!order.getUser().getUserId().equals(customerId)) {
@@ -182,7 +180,7 @@ public class OrderServiceImpl implements OrderService {
 
     // 해당 회원의 주문이 없는 경우 exception 발생
     if (orderList.isEmpty()) {
-      throw new OrderNotFoundException("주문이 존재하지 않습니다.");
+      throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
     }
     // 주문 id 리스트
     List<Long> orderIds = orderList.stream()
