@@ -133,7 +133,19 @@ public class Order {
     double discountedDouble = this.totalPaymentPrice * coupon.getDiscountRate();
     // 할인금액 적용
     this.totalDiscountPrice = (int) Math.round(discountedDouble);
-    // 총금액 다시 계산후 적용
+    // 할인금액을 제외한 총결제금액 다시 계산후 적용
+    this.totalPaymentPrice = this.totalPaymentPrice - this.totalDiscountPrice;
+  }
+
+  // 수량이 바뀌었을때 다시 할인금액과 총금액 계산
+  public void recalculateTotalDiscountPrice(Coupon coupon){
+    // 총금액 다시 계산
+    calculateTotalPrice();
+    // 할인금액 계산
+    double discountedDouble = this.totalPaymentPrice * coupon.getDiscountRate();
+    // 할인금액 적용
+    this.totalDiscountPrice = (int) Math.round(discountedDouble);
+    // 할인금액을 제외한 총결제금액 다시 계산후 적용
     this.totalPaymentPrice = this.totalPaymentPrice - this.totalDiscountPrice;
   }
 

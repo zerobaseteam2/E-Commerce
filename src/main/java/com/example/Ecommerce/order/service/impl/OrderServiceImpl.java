@@ -141,9 +141,22 @@ public class OrderServiceImpl implements OrderService {
     orderProduct.updateQuantity(quantity);
 
     // 계산 다시하기
-    orderProduct.getOrder().calculateTotalPrice();
-
+    recalculateOrderTotalPrice(orderProduct.getOrder());
     return OrderDetailDto.of(orderProduct.getOrder());
+  }
+
+  // 상품수량 수정시 재계산
+  public void recalculateOrderTotalPrice(Order order) {
+    // 해당 주문에 쿠폰 사용 내역이 존재한다면, 쿠폰 정보 가져와서 다시 계산
+    if (order.getCouponId() != null) {
+      Coupon coupon = couponRepository.findById(order.getCouponId())
+          .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+      // 수정된 상품 수량으로 다시 계산
+      order.recalculateTotalDiscountPrice(coupon);
+    }
+
+    // 해당 주문에 쿠폰 사용 내역이 없다면
+    order.calculateTotalPrice();
   }
 
   @Override
