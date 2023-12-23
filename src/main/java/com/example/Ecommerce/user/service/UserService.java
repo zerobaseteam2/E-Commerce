@@ -1,7 +1,9 @@
 package com.example.Ecommerce.user.service;
 
-import com.example.Ecommerce.order.dto.FindUserIdDto;
+import com.example.Ecommerce.user.dto.FindUserIdDto;
 import com.example.Ecommerce.security.UserDetailsImpl;
+import com.example.Ecommerce.user.dto.FindUserPasswordDto;
+import com.example.Ecommerce.user.dto.ResetPasswordDto;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserAddressDto.Request;
 import com.example.Ecommerce.user.dto.UserInfoDto;
@@ -35,4 +37,8 @@ public interface UserService {
   void modifyUserInfo(UserDetailsImpl userDetails, UserInfoDto.Request request);
 
   void findUserId(FindUserIdDto.Request request);
+
+  void sendToEmailResetPasswordForm(FindUserPasswordDto.Request request);
+
+  void resetPassword(ResetPasswordDto.Request request, String encryptedUserId);
 }

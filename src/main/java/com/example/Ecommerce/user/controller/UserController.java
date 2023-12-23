@@ -2,8 +2,10 @@ package com.example.Ecommerce.user.controller;
 
 import static com.example.Ecommerce.security.jwt.JwtTokenUtil.AUTHORIZATION_HEADER;
 
-import com.example.Ecommerce.order.dto.FindUserIdDto;
+import com.example.Ecommerce.user.dto.FindUserIdDto;
 import com.example.Ecommerce.security.UserDetailsImpl;
+import com.example.Ecommerce.user.dto.FindUserPasswordDto;
+import com.example.Ecommerce.user.dto.ResetPasswordDto;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserInfoDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
@@ -132,6 +134,23 @@ public class UserController {
   public ResponseEntity<Void> findUserId(
       @RequestBody @Valid FindUserIdDto.Request request) {
     userService.findUserId(request);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/reset/password")
+  public ResponseEntity<Void> sendToEmailResetPasswordForm(
+      @RequestBody @Valid FindUserPasswordDto.Request request) {
+   userService.sendToEmailResetPasswordForm(request);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PutMapping("/reset/password/{encryptedUserId}")
+  public ResponseEntity<Void> resetPassword(
+      @RequestBody @Valid ResetPasswordDto.Request request,
+      @PathVariable String encryptedUserId) {
+    userService.resetPassword(request, encryptedUserId);
 
     return ResponseEntity.ok().build();
   }

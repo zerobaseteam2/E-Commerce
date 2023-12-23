@@ -11,13 +11,15 @@ import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
 import com.example.Ecommerce.coupon.service.CouponService;
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
-import com.example.Ecommerce.order.dto.FindUserIdDto;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
 import com.example.Ecommerce.user.domain.DeliveryAddress;
 import com.example.Ecommerce.user.domain.LogoutAccessToken;
 import com.example.Ecommerce.user.domain.RefreshToken;
 import com.example.Ecommerce.user.domain.User;
+import com.example.Ecommerce.user.dto.FindUserIdDto;
+import com.example.Ecommerce.user.dto.FindUserPasswordDto;
+import com.example.Ecommerce.user.dto.ResetPasswordDto;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserAddressDto.Response;
 import com.example.Ecommerce.user.dto.UserInfoDto;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
@@ -41,6 +44,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -232,8 +236,44 @@ public class UserServiceImpl implements UserService {
   @Override
   public void findUserId(FindUserIdDto.Request request) {
     User user = userRepository.findByEmailAndName(request.getEmail(), request.getName())
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_EMAIL_NAME_UN_MATCH));
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
     mailComponent.sendUserId(user.getUserId(), request.getEmail(), request.getName());
+  }
+
+  @Override
+  public void sendToEmailResetPasswordForm(FindUserPasswordDto.Request request) {
+    User user = userRepository.findByEmailAndUserId(request.getEmail(), request.getUserId())
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    try {
+      mailComponent.sendResetPasswordForm(user.getUserId(), request.getEmail(), user.getName());
+    } catch (Exception e) {
+      log.info(e.getMessage());
+      throw new RuntimeException("Sending email failed.");
+    }
+  }
+
+  @Override
+  @Transactional
+  public void resetPassword(ResetPasswordDto.Request request, String encryptedUserId) {
+    String userId = null;
+
+    try {
+      userId = mailComponent.decryptUserId(encryptedUserId);
+    } catch (Exception e) {
+      log.info(e.getMessage());
+      throw new RuntimeException("Decrypt request failed.");
+    }
+
+    if (userId == null) {
+      throw new RuntimeException("Decrypt request failed.");
+    }
+
+    String encryptedPassword = passwordEncoder.encode(request.getNewPassword());
+
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    user.modifyUserPassword(encryptedPassword);
   }
 }

@@ -73,4 +73,8 @@ public class User {
     this.phone = request.getPhone();
     this.birth = request.getBirth();
   }
+
+  public void modifyUserPassword(String encryptedPassword) {
+    this.password = encryptedPassword;
+  }
 }
