@@ -1,2 +1,3 @@
-package com.example.Ecommerce.product.service;public interface CommentService {
+package com.example.Ecommerce.product.service;
+public interface CommentService {
 }

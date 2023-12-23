@@ -72,8 +72,7 @@ public class Order {
   // 주문상품과의 관계
   @OneToMany(mappedBy = "order")
   private List<OrderProduct> orderProductList;
-
-
+  
   // newOrderDto 로 주문 생성
   public static Order createOrder(NewOrderDto newOrderDto, User user) {
     Order order = Order.builder()
