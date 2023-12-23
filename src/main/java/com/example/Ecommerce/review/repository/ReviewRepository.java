@@ -1,6 +1,5 @@
 package com.example.Ecommerce.review.repository;
 
-import com.example.Ecommerce.order.domain.OrderProduct;
 import com.example.Ecommerce.product.domain.Product;
 import com.example.Ecommerce.review.domain.Review;
 import org.springframework.data.domain.Page;
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-  
-    Page<Review> findByProduct(Product product, Pageable pageable);
 
-    Page<Review> findByUserId(Long userId,  Pageable pageable);
+  Page<Review> findByProduct(Product product, Pageable pageable);
+
+  Page<Review> findByUserId(Long userId, Pageable pageable);
 }

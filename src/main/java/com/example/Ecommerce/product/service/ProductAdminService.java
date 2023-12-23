@@ -5,6 +5,8 @@ import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.product.domain.Product;
 import com.example.Ecommerce.product.domain.form.CancelProductForm;
 import com.example.Ecommerce.product.domain.form.admin.ProductProcessForm;
+import com.example.Ecommerce.product.dto.admin.ProductProcessDto;
+import com.example.Ecommerce.product.dto.admin.WaitingListResponse;
 import com.example.Ecommerce.product.dto.seller.ProductConfirm;
 import com.example.Ecommerce.product.dto.seller.ProductDto;
 import com.example.Ecommerce.product.dto.seller.ProductState;

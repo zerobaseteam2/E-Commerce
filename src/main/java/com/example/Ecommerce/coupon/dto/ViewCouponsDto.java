@@ -1,27 +1,22 @@
 package com.example.Ecommerce.coupon.dto;
 
 import com.example.Ecommerce.coupon.domain.Coupon;
-import lombok.*;
-
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class ViewCouponsDto {
-  @Getter
-  @Setter
-  @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class Request {
-    private SearchFilterType filter;
-  }
-  
+
   @Getter
   @Setter
   @Builder
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Response {
-    private Long id;
+    private Long couponId;
     private Long customerId;
     private Long orderDetailNo;
     private String couponName;
@@ -29,12 +24,12 @@ public class ViewCouponsDto {
     private double discountRate;
     private LocalDate issuanceDate;
     private LocalDate expirationDate;
-    
+
     public Response toDto(Coupon coupon) {
       return Response.builder()
-              .id(coupon.getId())
+              .couponId(coupon.getId())
               .customerId(coupon.getCustomerId())
-              .orderDetailNo(coupon.getOrderDetailNo())
+              .orderDetailNo(coupon.getOrderNo())
               .couponName(coupon.getCouponName())
               .usableCategory(coupon.getUsableCategory())
               .discountRate(coupon.getDiscountRate())

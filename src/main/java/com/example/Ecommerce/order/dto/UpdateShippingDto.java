@@ -16,7 +16,7 @@ public class UpdateShippingDto {
   @Builder
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Request{
+  public static class Request {
 
     // 수정할수 있는 배송 관련 정보
     private String recipientName;
@@ -31,7 +31,7 @@ public class UpdateShippingDto {
   @Builder
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Response{
+  public static class Response {
 
     // 수정된 배송 관련 정보
     private String recipientName;
@@ -42,7 +42,7 @@ public class UpdateShippingDto {
 
 
     // Order entity -> UpdateShipping dto
-    public static Response of(Order order){
+    public static Response of(Order order) {
       return Response.builder()
           .recipientName(order.getRecipientName())
           .recipientPhone(order.getRecipientPhone())
