@@ -103,26 +103,30 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserLoginDto.Response reissue(String refreshToken) {
+    // Bearer 삭제
     refreshToken = resolveToken(refreshToken);
 
+    // 토큰이 없을 경우 예외처리
     if (refreshToken == null) {
       throw new CustomException(ErrorCode.REFRESH_TOKEN_NULL);
     }
 
+    // 입력된 refreshToken이 db에 있는지 확인
     RefreshToken dbRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
         .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_EXIST));
 
-    LocalDateTime expirationDate = LocalDateTime.now().minusDays(7);
+    // refreshToken 만료 체크
+    LocalDateTime expirationDate = LocalDateTime.now().minusDays(7); // 현재 시점 만료 기준일
+
+    // 만료기준일보다 이전 혹은 같으면 만료된 토큰 예외처리
     if (dbRefreshToken.getCreatedDate().isBefore(expirationDate) || dbRefreshToken.getCreatedDate()
         .isEqual(expirationDate)) {
       refreshTokenRepository.deleteByRefreshToken(refreshToken);
       throw new CustomException(ErrorCode.REFRESH_TOKEN_HAS_EXPIRED);
     }
 
-    if (refreshToken.equals(dbRefreshToken.getRefreshToken())) {
-      return reissueAccessToken(refreshToken, dbRefreshToken.getId());
-    }
-    throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
+    // 액세스 토큰 재발급해서 return
+    return reissueAccessToken(refreshToken, dbRefreshToken.getId());
   }
 
   @CacheEvict(value = CacheConfig.CacheKey.USER, key = "#username")
@@ -146,10 +150,11 @@ public class UserServiceImpl implements UserService {
   }
 
   private UserLoginDto.Response reissueAccessToken(String refreshToken, String username) {
+
     User user = userRepository.findByUserId(username)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-    return new UserLoginDto.Response(jwtTokenUtil.generateAccessToken(username, user.getRole()),
+    return UserLoginDto.Response.of(jwtTokenUtil.generateAccessToken(username, user.getRole()),
         refreshToken);
   }
 
