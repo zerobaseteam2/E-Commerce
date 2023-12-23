@@ -72,15 +72,7 @@ public class Order {
   // 주문상품과의 관계
   @OneToMany(mappedBy = "order")
   private List<OrderProduct> orderProductList;
-
-  private OrderStatus orderStatus;
-
-  // 주문 상태를 반환
-  public OrderStatus getOrderStatus() {
-    return this.orderStatus;
-  }
-
-
+  
   // newOrderDto 로 주문 생성
   public static Order createOrder(NewOrderDto newOrderDto, User user) {
     Order order = Order.builder()
