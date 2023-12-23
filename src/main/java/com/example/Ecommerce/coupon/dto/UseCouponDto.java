@@ -20,7 +20,7 @@ public class UseCouponDto {
     @NotNull
     private Long couponId;
     @NotNull
-    private Long orderDetailNo;
+    private Long orderNo;
   }
 
   @Getter
@@ -31,17 +31,17 @@ public class UseCouponDto {
   public static class Response {
 
     private Long couponId;
-    private Long orderDetailNo;
+    private Long orderNo;
     private String couponName;
     private double discountRate;
 
     public Response toDto(Coupon coupon) {
       return Response.builder()
-          .couponId(coupon.getId())
-          .orderDetailNo(coupon.getOrderDetailNo())
-          .couponName(coupon.getCouponName())
-          .discountRate(coupon.getDiscountRate())
-          .build();
+              .couponId(coupon.getId())
+              .orderNo(coupon.getOrderNo())
+              .couponName(coupon.getCouponName())
+              .discountRate(coupon.getDiscountRate())
+              .build();
     }
 
   }

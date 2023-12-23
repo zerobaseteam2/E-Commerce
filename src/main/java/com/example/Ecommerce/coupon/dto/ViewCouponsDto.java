@@ -15,19 +15,8 @@ public class ViewCouponsDto {
   @Builder
   @NoArgsConstructor
   @AllArgsConstructor
-  public static class Request {
-
-    private SearchFilterType filter;
-  }
-
-  @Getter
-  @Setter
-  @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
   public static class Response {
-
-    private Long id;
+    private Long couponId;
     private Long customerId;
     private Long orderDetailNo;
     private String couponName;
@@ -38,15 +27,15 @@ public class ViewCouponsDto {
 
     public Response toDto(Coupon coupon) {
       return Response.builder()
-          .id(coupon.getId())
-          .customerId(coupon.getCustomerId())
-          .orderDetailNo(coupon.getOrderDetailNo())
-          .couponName(coupon.getCouponName())
-          .usableCategory(coupon.getUsableCategory())
-          .discountRate(coupon.getDiscountRate())
-          .issuanceDate(coupon.getIssuanceDate())
-          .expirationDate(coupon.getExpirationDate())
-          .build();
+              .couponId(coupon.getId())
+              .customerId(coupon.getCustomerId())
+              .orderDetailNo(coupon.getOrderNo())
+              .couponName(coupon.getCouponName())
+              .usableCategory(coupon.getUsableCategory())
+              .discountRate(coupon.getDiscountRate())
+              .issuanceDate(coupon.getIssuanceDate())
+              .expirationDate(coupon.getExpirationDate())
+              .build();
     }
   }
 }

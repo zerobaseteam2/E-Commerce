@@ -63,31 +63,13 @@ public class CouponServiceImpl implements CouponService {
     }
   }
 
-  // 쿠폰 사용
-  @Override
-  @Transactional
-  public UseCouponDto.Response useCoupon(UseCouponDto.Request request) {
-    // 쿠폰 id 검증
-    Coupon nowCoupon = couponRepository.findById(request.getCouponId())
-        .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
-
-    // 만료된 쿠폰인지 확인
-    if (nowCoupon.isExpires()) {
-      throw new CustomException(ErrorCode.EXPIRES_COUPON);
-    }
-
-    nowCoupon.useCoupon(request.getOrderDetailNo());
-
-    return new UseCouponDto.Response().toDto(nowCoupon);
-  }
-
   // 쿠폰 만료 처리
   // 매일 자정 실행
   @Override
   @Transactional
   @Scheduled(cron = "0 0 0 * * ?")
   public void checkExpiredCoupon() {
-    List<Coupon> couponList = couponRepository.findAllByExpiresFalseAndOrderDetailNoNullAndExpirationDateBefore(
+    List<Coupon> couponList = couponRepository.findAllByExpiresFalseAndOrderNoNullAndExpirationDateBefore(
         LocalDate.now());
     for (Coupon coupon : couponList) {
       coupon.couponExpires();
@@ -96,12 +78,12 @@ public class CouponServiceImpl implements CouponService {
 
   // 보유 쿠폰 조회
   @Override
-  public PageResponse viewCoupons(ViewCouponsDto.Request request, int pageNo, User user) {
+  public PageResponse viewCoupons(SearchFilterType filterType, int pageNo, User user) {
     // 정렬 기준에 따라 pageable 객체 초기화
     Pageable pageable = createPageable(pageNo);
 
     // 찾아온 데이터 Page 객체
-    Page<Coupon> couponPage = filtering(request.getFilter(), pageable, user.getId());
+    Page<Coupon> couponPage = filtering(filterType, pageable, user.getId());
 
     // page 객체에서 쿠폰 리스트를 추출하여 responseDto에 저장
     List<ViewCouponsDto.Response> responseDto = createListResponseDto(couponPage);
@@ -120,15 +102,15 @@ public class CouponServiceImpl implements CouponService {
       return couponRepository.findAllByCustomerId(pageable, customerId);
     }
 
-    // 사용 완료 쿠폰 조회
+    // 사용 가능 쿠폰 조회
     if (filter == SearchFilterType.USABLE) {
-      return couponRepository.findAllByCustomerIdAndOrderDetailNoNullAndExpiresFalse(pageable,
+      return couponRepository.findAllByCustomerIdAndOrderNoNullAndExpiresFalse(pageable,
           customerId);
     }
 
-    // 사용 가능 쿠폰 조회
+    // 사용 완료 쿠폰 조회
     if (filter == SearchFilterType.USED) {
-      return couponRepository.findAllByCustomerIdAndOrderDetailNoNotNull(pageable, customerId);
+      return couponRepository.findAllByCustomerIdAndOrderNoNotNull(pageable, customerId);
     }
 
     // 만료된 쿠폰 조회

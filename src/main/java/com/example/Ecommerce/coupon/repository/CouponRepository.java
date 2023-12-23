@@ -12,16 +12,16 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
   Optional<Coupon> findById(Long couponId);
 
-  List<Coupon> findAllByExpiresFalseAndOrderDetailNoNullAndExpirationDateBefore(LocalDate today);
+  List<Coupon> findAllByExpiresFalseAndOrderNoNullAndExpirationDateBefore(LocalDate today);
 
   // 전체 쿠폰 조회
   Page<Coupon> findAllByCustomerId(Pageable pageable, Long customerId);
 
   // 사용 완료 쿠폰 조회
-  Page<Coupon> findAllByCustomerIdAndOrderDetailNoNotNull(Pageable pageable, Long customerId);
+  Page<Coupon> findAllByCustomerIdAndOrderNoNotNull(Pageable pageable, Long customerId);
 
   // 사용 가능 쿠폰 조회
-  Page<Coupon> findAllByCustomerIdAndOrderDetailNoNullAndExpiresFalse(Pageable pageable,
+  Page<Coupon> findAllByCustomerIdAndOrderNoNullAndExpiresFalse(Pageable pageable,
       Long customerId);
 
   // 만료된 쿠폰 조회

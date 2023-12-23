@@ -2,8 +2,7 @@ package com.example.Ecommerce.coupon.controller;
 
 import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
 import com.example.Ecommerce.coupon.dto.PageResponse;
-import com.example.Ecommerce.coupon.dto.UseCouponDto;
-import com.example.Ecommerce.coupon.dto.ViewCouponsDto;
+import com.example.Ecommerce.coupon.dto.SearchFilterType;
 import com.example.Ecommerce.coupon.service.CouponService;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -40,15 +39,6 @@ public class CouponController {
     return ResponseEntity.ok("Success");
   }
 
-
-  @PostMapping("/using")
-  public ResponseEntity<UseCouponDto.Response> useCoupon(
-      @RequestBody @Valid UseCouponDto.Request request) {
-    UseCouponDto.Response response = couponService.useCoupon(request);
-
-    return ResponseEntity.ok(response);
-  }
-
   //테스트용
   @PostMapping("/expires")
   public ResponseEntity<String> expiresCoupon() {
@@ -58,11 +48,11 @@ public class CouponController {
 
   @GetMapping("/list")
   public ResponseEntity<PageResponse> viewCoupons(
-      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-      @AuthenticationPrincipal UserDetailsImpl userDetails,
-      @RequestBody ViewCouponsDto.Request request
-  ) {
-    PageResponse pageResponse = couponService.viewCoupons(request, pageNo, userDetails.getUser());
+          @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+          @AuthenticationPrincipal UserDetailsImpl userDetails,
+          @RequestParam(value = "filter", defaultValue = "ALL", required = false) SearchFilterType filter
+          ) {
+    PageResponse pageResponse = couponService.viewCoupons(filter, pageNo, userDetails.getUser());
 
     return ResponseEntity.ok(pageResponse);
   }
