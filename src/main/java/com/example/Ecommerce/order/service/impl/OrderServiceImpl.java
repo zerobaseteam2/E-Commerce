@@ -1,5 +1,9 @@
 package com.example.Ecommerce.order.service.impl;
 
+import com.example.Ecommerce.coupon.domain.Coupon;
+import com.example.Ecommerce.coupon.repository.CouponRepository;
+import com.example.Ecommerce.exception.CustomException;
+import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.exception.InvalidOrderStatusException;
 import com.example.Ecommerce.exception.InvalidQuantityException;
 import com.example.Ecommerce.exception.OrderNotFoundException;
@@ -36,6 +40,8 @@ public class OrderServiceImpl implements OrderService {
   private final OrderProductRepository orderProductRepository;
   private final UserRepository userRepository;
   private final ProductRepository productRepository;
+  private final CouponRepository couponRepository;
+
 
   @Override
   @Transactional
@@ -53,7 +59,6 @@ public class OrderServiceImpl implements OrderService {
       // 상품 id 에 따른 상품 불러오기, id가 없어진 경우 exception 발생
       Product product = productRepository.findById(productId)
           .orElseThrow(() -> new RuntimeException("다음 상품이 존재하지 않습니다: " + productId));
-
       // 주문상품 생성 및 저장
       OrderProduct orderProduct = OrderProduct.builder()
           .order(order)
@@ -67,11 +72,19 @@ public class OrderServiceImpl implements OrderService {
       order.addOrderProduct(orderProduct);
     });
 
-    // 총할인금액 계산 - 쿠폰 확인하기
+    // 총금액 계산
+    order.calculateTotalPrice();
 
-    // 총결제금액 계산
-    order.calculateTotalPaymentPrice();
-
+    // 총할인금액 계산
+    // 쿠폰이 있는경우만 사용
+    if (newOrderDto.getCouponId() != null){
+      Coupon coupon  = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(), user.get().getId())
+          .orElseThrow(()-> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+      // 쿠폰 사용
+      coupon.useCoupon(coupon, order.getId());
+      // 할인금액과 총금액 계산
+      order.calculateTotalDiscountPrice(coupon);
+    }
     // 주문 저장
     orderRepository.save(order);
 
@@ -128,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
     orderProduct.updateQuantity(quantity);
 
     // 계산 다시하기
-    orderProduct.getOrder().calculateTotalPaymentPrice();
+    orderProduct.getOrder().calculateTotalPrice();
 
     return OrderDetailDto.of(orderProduct.getOrder());
   }

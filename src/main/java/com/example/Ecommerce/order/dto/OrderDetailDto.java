@@ -26,6 +26,7 @@ public class OrderDetailDto {
   private Long zoneNo;
   private String roadAddress;
   private String detailedAddress;
+  private Long couponId;
   private int totalDiscountPrice;
   private int totalPaymentPrice;
 
@@ -43,6 +44,7 @@ public class OrderDetailDto {
         .zoneNo(order.getZoneNo())
         .roadAddress(order.getRoadAddress())
         .detailedAddress(order.getDetailedAddress())
+        .couponId(order.getCouponId())
         .totalDiscountPrice(order.getTotalDiscountPrice())
         .totalPaymentPrice(order.getTotalPaymentPrice())
         .orderProductList(getOrderProductDtos(order.getOrderProductList()))
