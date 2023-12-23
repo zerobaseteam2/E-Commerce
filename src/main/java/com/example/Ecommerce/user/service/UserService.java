@@ -18,7 +18,7 @@ public interface UserService {
 
   UserLoginDto.Response login(UserLoginDto.Request request);
 
-  UserLoginDto.Response reissue(String refreshToken, String username);
+  UserLoginDto.Response reissue(String refreshToken);
 
   void logout(String accessToken, String username);
 

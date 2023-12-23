@@ -1,2 +1,5 @@
-package com.example.Ecommerce.product.repository;public interface CommentRepository {
+package com.example.Ecommerce.product.repository;
+
+public interface CommentRepository {
+
 }

@@ -73,7 +73,6 @@ public class Order {
   @OneToMany(mappedBy = "order")
   private List<OrderProduct> orderProductList;
 
-
   // newOrderDto 로 주문 생성
   public static Order createOrder(NewOrderDto newOrderDto, User user) {
     Order order = Order.builder()
@@ -90,7 +89,7 @@ public class Order {
   }
 
   // 주문 배송지 정보 수정
-  public void updateShippingInfo(UpdateShippingDto.Request request){
+  public void updateShippingInfo(UpdateShippingDto.Request request) {
     if (request.getRecipientName() != null) {
       this.recipientName = request.getRecipientName();
     }

@@ -10,10 +10,10 @@ public enum OrderStatus {
 
   // 시스템 상태변경 가능
   ORDER_COMPLETE, //주문완료
-  SHIPPING, //배송중
   SHIPPING_COMPLETE, //배송완료
 
   // 판매자 변경가능
+  SHIPPING, //배송중
   RETURN_COMPLETE, //반품완료
   EXCHANGE_COMPLETE,//교환완료
   REFUND_COMPLETE //환불완료
