@@ -5,7 +5,6 @@ import com.example.Ecommerce.coupon.domain.CouponType;
 import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
 import com.example.Ecommerce.coupon.dto.PageResponse;
 import com.example.Ecommerce.coupon.dto.SearchFilterType;
-import com.example.Ecommerce.coupon.dto.UseCouponDto;
 import com.example.Ecommerce.coupon.dto.ViewCouponsDto;
 import com.example.Ecommerce.coupon.repository.CouponRepository;
 import com.example.Ecommerce.coupon.service.CouponService;
@@ -37,7 +36,7 @@ public class CouponServiceImpl implements CouponService {
   public CouponIssuanceDto.Response issuanceCoupon(CouponIssuanceDto.Request request) {
 
     // 회원 검증
-    userRepository.findById(request.getCustomerId())
+    User user = userRepository.findById(request.getCustomerId())
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
     LocalDate expirationDate = LocalDate.now()
@@ -69,7 +68,7 @@ public class CouponServiceImpl implements CouponService {
   @Transactional
   @Scheduled(cron = "0 0 0 * * ?")
   public void checkExpiredCoupon() {
-    List<Coupon> couponList = couponRepository.findAllByExpiresFalseAndOrderNoNullAndExpirationDateBefore(
+    List<Coupon> couponList = couponRepository.findAllByIsExpiredFalseAndOrderNoNullAndExpirationDateBefore(
         LocalDate.now());
     for (Coupon coupon : couponList) {
       coupon.couponExpires();
@@ -96,6 +95,8 @@ public class CouponServiceImpl implements CouponService {
     return PageRequest.of(pageNo, 10, Sort.by("issuanceDate").descending());
   }
 
+
+
   private Page<Coupon> filtering(SearchFilterType filter, Pageable pageable, Long customerId) {
     // 전체 조회
     if (filter == SearchFilterType.ALL) {
@@ -104,7 +105,7 @@ public class CouponServiceImpl implements CouponService {
 
     // 사용 가능 쿠폰 조회
     if (filter == SearchFilterType.USABLE) {
-      return couponRepository.findAllByCustomerIdAndOrderNoNullAndExpiresFalse(pageable,
+      return couponRepository.findAllByCustomerIdAndOrderNoNullAndIsExpiredFalse(pageable,
           customerId);
     }
 
@@ -115,7 +116,7 @@ public class CouponServiceImpl implements CouponService {
 
     // 만료된 쿠폰 조회
     if (filter == SearchFilterType.EXPIRES) {
-      return couponRepository.findAllByCustomerIdAndExpiresTrue(pageable, customerId);
+      return couponRepository.findAllByCustomerIdAndIsExpiredTrue(pageable, customerId);
     }
 
     throw new CustomException(ErrorCode.FILTER_TYPE_ERROR);

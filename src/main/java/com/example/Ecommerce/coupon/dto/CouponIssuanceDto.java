@@ -36,10 +36,9 @@ public class CouponIssuanceDto {
       return Coupon.builder()
           .customerId(customerId)
           .couponName(couponType.getCouponName())
-          .usableCategory(category)
           .discountRate(couponType.getDiscountRate())
           .expirationDate(expirationDate)
-          .expires(false)
+          .isExpired(false)
           .build();
     }
   }

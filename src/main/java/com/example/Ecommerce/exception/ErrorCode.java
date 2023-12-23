@@ -24,9 +24,6 @@ public enum ErrorCode {
 
   // 판매자 exception
   SELLING_PRODUCT_NOT_EXIST(HttpStatus.BAD_REQUEST, "판매하는 상품이 없습니다."),
-
-  COUPON_NOT_FOUND(HttpStatus.BAD_REQUEST, "Coupon not found."),
-  EXPIRES_COUPON(HttpStatus.BAD_REQUEST, "Coupon has expired."),
   FILTER_TYPE_ERROR(HttpStatus.BAD_REQUEST, "The filter type is incorrect."),
 
   // 관리자 상품 요청 승인 거절관련 exception
@@ -44,8 +41,12 @@ public enum ErrorCode {
   // 수정이 필요한 예외 처리.
   INVALID_OPERATION(HttpStatus.BAD_REQUEST, "예외처리 수정이 필요합니다."),
   INVALID_INPUT(HttpStatus.BAD_REQUEST, "예외처리 수정이 필요합니다."),
-  UN_AUTHORIZED(HttpStatus.BAD_REQUEST, "예외처리 수정이 필요합니다.");
+  UN_AUTHORIZED(HttpStatus.BAD_REQUEST, "예외처리 수정이 필요합니다."),
 
+  // 쿠폰 예외
+  COUPON_NOT_FOUND(HttpStatus.BAD_REQUEST, "사용하려는 쿠폰이 존재하지 않습니다."),
+  COUPON_IS_EXPIRED(HttpStatus.BAD_REQUEST, "만료된 쿠폰입니다."),
+  USED_COUPON(HttpStatus.BAD_REQUEST, "이미 사용된 쿠폰입니다.");
 
   private final HttpStatus status;
   private final String message;
