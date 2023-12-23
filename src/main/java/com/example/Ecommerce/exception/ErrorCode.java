@@ -13,11 +13,12 @@ public enum ErrorCode {
   PHONE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Phone Number already exists."),
   USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "User not found."),
 
+
   // 로그인
   REFRESH_TOKEN_NULL(HttpStatus.BAD_REQUEST, "Refresh token has not been entered."),
   REFRESH_TOKEN_NOT_EXIST(HttpStatus.BAD_REQUEST, "Refresh token does not exist."),
   REFRESH_TOKEN_HAS_EXPIRED(HttpStatus.BAD_REQUEST, "Refresh token has expired."),
-  INVAILD_JWT_SIGNATURE(HttpStatus.FORBIDDEN, "유효하지 않는 JWT 서명입니다."),
+  INVALID_JWT_SIGNATURE(HttpStatus.FORBIDDEN, "유효하지 않는 JWT 서명입니다."),
   EXPIRED_JWT_TOKEN(HttpStatus.FORBIDDEN, "만료된 JWT 토큰입니다."),
   UNSUPPORTED_JWT_TOKEN(HttpStatus.FORBIDDEN, "지원되지 않는 JWT 토큰입니다."),
   JWT_CLAIMS_IS_EMPTY(HttpStatus.FORBIDDEN, "잘못된 JWT 토큰입니다."),
@@ -32,7 +33,6 @@ public enum ErrorCode {
   DELIVERY_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Address not found"),
 
   // 리뷰 관련
-  ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 상품주문정보가 없습니다."),
   NOT_PURCHASE_CONFIRMED(HttpStatus.BAD_REQUEST, "구매 확정 상태가 아닙니다."),
   REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
   REPLY_EXISTS(HttpStatus.BAD_REQUEST, "이미 답변이 등록된 리뷰입니다."),
@@ -46,7 +46,16 @@ public enum ErrorCode {
   // 쿠폰 예외
   COUPON_NOT_FOUND(HttpStatus.BAD_REQUEST, "사용하려는 쿠폰이 존재하지 않습니다."),
   COUPON_IS_EXPIRED(HttpStatus.BAD_REQUEST, "만료된 쿠폰입니다."),
-  USED_COUPON(HttpStatus.BAD_REQUEST, "이미 사용된 쿠폰입니다.");
+  USED_COUPON(HttpStatus.BAD_REQUEST, "이미 사용된 쿠폰입니다."),
+
+
+  // 주문 관련
+  ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 상품주문정보가 없습니다."),
+  ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"주문이 존재하지 않습니다."),
+  INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상으로 변경 가능합니다.");
+
+
+
 
   private final HttpStatus status;
   private final String message;

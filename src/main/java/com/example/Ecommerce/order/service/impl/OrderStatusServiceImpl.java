@@ -1,7 +1,8 @@
 package com.example.Ecommerce.order.service.impl;
 
+import com.example.Ecommerce.exception.CustomException;
+import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.exception.InvalidOrderStatusException;
-import com.example.Ecommerce.exception.OrderNotFoundException;
 import com.example.Ecommerce.exception.UnauthorizedUserException;
 import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
@@ -41,7 +42,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 
     // 주문상품 찾기
     OrderProduct orderProduct = orderProductRepository.findById(request.getOrderProductId())
-        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문이 존재하지 않습니다."));
+        .orElseThrow(() -> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 
     // 권한 확인 - 수정하려는 주문정보의 구매자 정보와 로그인한 회원이 같은지 확인
     if (!orderProduct.getOrder().getUser().getUserId().equals(customerId)) {
@@ -69,7 +70,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
   public Response updateStatusBySeller(Long sellerId, Request request) {
     // 주문상품 찾기
     OrderProduct orderProduct = orderProductRepository.findById(request.getOrderProductId())
-        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문이 존재하지 않습니다."));
+        .orElseThrow(() -> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 
     // 권한 확인 - 수정하려는 주문정보의 구매자 정보와 로그인한 회원이 같은지 확인
     if (orderProduct.getProduct().getSellerId() != sellerId) {
@@ -90,7 +91,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     List<Order> orderList = orderRepository.findAllByUser(userRepository.findById(customerId));
     // 해당 회원의 주문이 존재하지 않으면 exception 발생
     if (orderList.isEmpty()) {
-      throw new OrderNotFoundException("주문이 존재하지 않습니다.");
+      throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
     }
     // 주문 id 리스트
     List<Long> orderIds = orderList.stream()
@@ -102,7 +103,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
         orderProductRepository.findAllByOrderIdInAndStatus(orderIds, status, pageable);
 
     if (filteredOrderProducts.isEmpty()) {
-      throw new OrderNotFoundException("요청하신 주문 상태의 주문이 존재하지 않습니다.");
+      throw new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
     }
     // 결과를 OrderProductDto list 로 반환하여 반환
     return filteredOrderProducts.map(OrderProductDto::of);
@@ -112,7 +113,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
   public Page<OrderStatusHistoryDto> getOrderStatusHistory(Long customerId, Long orderProductId, Pageable pageable) {
 
     OrderProduct orderProduct = orderProductRepository.findById(orderProductId)
-        .orElseThrow(()-> new OrderNotFoundException(""));
+        .orElseThrow(()-> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 
     Page<OrderStatusHistory> orderStatusHistories =
         orderStatusHistoryRepository.findAllByOrderProduct_Id(orderProductId, pageable);
