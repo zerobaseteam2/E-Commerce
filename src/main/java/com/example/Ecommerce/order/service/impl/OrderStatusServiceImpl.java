@@ -8,6 +8,7 @@ import com.example.Ecommerce.order.domain.OrderProduct;
 import com.example.Ecommerce.order.domain.OrderStatus;
 import com.example.Ecommerce.order.domain.OrderStatusHistory;
 import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.OrderStatusHistoryDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Request;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Response;
@@ -46,15 +47,21 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     if (!orderProduct.getOrder().getUser().getUserId().equals(customerId)) {
       throw new UnauthorizedUserException("해당 주문에 접근할 권한이 없습니다.");
     }
+    // 이전 상태
+    OrderStatus previousStatus = orderProduct.getStatus();
     // 주문 상태 변경
     processByCustomer(request, orderProduct);
     // 주문 상태 변경 history
-    OrderStatusHistory history = OrderStatusHistory.createHistory(
-        orderProduct, orderProduct.getStatus(), request.getOrderStatus()
-    );
-    orderStatusHistoryRepository.save(history);
+    saveOrderStatusHistory(orderProduct, previousStatus);
     return UpdateStatusDto.Response.of(orderProduct);
 
+  }
+
+  private void saveOrderStatusHistory(OrderProduct orderProduct, OrderStatus previousStatus) {
+    OrderStatusHistory history = OrderStatusHistory.createHistory(
+        orderProduct, previousStatus, orderProduct.getStatus()
+    );
+    orderStatusHistoryRepository.save(history);
   }
 
   @Override
@@ -68,13 +75,12 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     if (orderProduct.getProduct().getSellerId() != sellerId) {
       throw new UnauthorizedUserException("해당 주문에 접근할 권한이 없습니다.");
     }
+    // 이전 상태
+    OrderStatus previousStatus = orderProduct.getStatus();
     // 주문 상태 변경
     processBySeller(request, orderProduct);
     // 주문 상태 변경 history
-    OrderStatusHistory history = OrderStatusHistory.createHistory(
-        orderProduct, orderProduct.getStatus(), request.getOrderStatus()
-    );
-    orderStatusHistoryRepository.save(history);
+    saveOrderStatusHistory(orderProduct, previousStatus);
     return UpdateStatusDto.Response.of(orderProduct);
   }
 
@@ -100,6 +106,18 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     }
     // 결과를 OrderProductDto list 로 반환하여 반환
     return filteredOrderProducts.map(OrderProductDto::of);
+  }
+
+  @Override
+  public Page<OrderStatusHistoryDto> getOrderStatusHistory(Long customerId, Long orderProductId, Pageable pageable) {
+
+    OrderProduct orderProduct = orderProductRepository.findById(orderProductId)
+        .orElseThrow(()-> new OrderNotFoundException(""));
+
+    Page<OrderStatusHistory> orderStatusHistories =
+        orderStatusHistoryRepository.findAllByOrderProduct_Id(orderProductId, pageable);
+    // 결과를 orderStatusHistoryDto list 로 반환하여 반환
+    return orderStatusHistories.map(OrderStatusHistoryDto::of);
   }
 
 

@@ -3,6 +3,8 @@ package com.example.Ecommerce.order.controller;
 import com.example.Ecommerce.order.domain.OrderStatus;
 import com.example.Ecommerce.order.dto.OrderListDto;
 import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.OrderStatusHistoryDto;
+import com.example.Ecommerce.order.dto.StatusHistoryListDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto;
 import com.example.Ecommerce.order.service.OrderStatusService;
 import com.example.Ecommerce.security.UserDetailsImpl;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -69,5 +72,21 @@ public class OrderStatusController {
     return ResponseEntity.ok(OrderListDto.of(result));
   }
 
+  // 주문 상품 상태 변경 정보(history) 조회 API
+  @GetMapping("/history/list/{orderProductId}")
+  public ResponseEntity<?> getOrderStatusHistory(
+      @PathVariable Long orderProductId,
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "10") int size,
+      @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+    // 로그인한 회원 정보
+    Long customerId = userDetails.getUser().getId();
+    // paging 처리
+    Pageable pageable = PageRequest.of(page, size);
+
+    Page<OrderStatusHistoryDto> result = orderStatusService.getOrderStatusHistory(customerId, orderProductId, pageable);
+    return ResponseEntity.ok(StatusHistoryListDto.of(result));
+  }
 
 }
