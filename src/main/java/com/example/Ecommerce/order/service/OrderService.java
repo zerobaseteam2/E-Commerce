@@ -11,9 +11,14 @@ import org.springframework.data.domain.Pageable;
 public interface OrderService {
 
   OrderDetailDto processOrder(String userId, NewOrderDto newOrderDto);
-  UpdateShippingDto.Response updateShippingInfo(Long id, UpdateShippingDto.Request request, String customerId);
+
+  UpdateShippingDto.Response updateShippingInfo(Long id, UpdateShippingDto.Request request,
+      String customerId);
+
   OrderDetailDto updateQuantity(UpdateQuantityDto updateQuantityDto, String customerId);
+
   OrderDetailDto getOrderDetails(String userId, Long id);
+
   Page<OrderProductDto> getAllOrders(Long customerId, Pageable pageable);
 
 }

@@ -1,5 +1,12 @@
 package com.example.Ecommerce.review.service.impl;
 
+import static com.example.Ecommerce.exception.ErrorCode.NOT_PURCHASE_CONFIRMED;
+import static com.example.Ecommerce.exception.ErrorCode.NOT_SELLER_OF_THE_PRODUCT;
+import static com.example.Ecommerce.exception.ErrorCode.ORDER_PRODUCT_NOT_FOUND;
+import static com.example.Ecommerce.exception.ErrorCode.PRODUCT_NOT_FOUND;
+import static com.example.Ecommerce.exception.ErrorCode.REPLY_EXISTS;
+import static com.example.Ecommerce.exception.ErrorCode.REVIEW_NOT_FOUND;
+
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.order.domain.OrderProduct;
@@ -21,104 +28,104 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import static com.example.Ecommerce.exception.ErrorCode.*;
-
 
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 
-    private final ReviewRepository reviewRepository;
-    private OrderProductRepository orderProductRepository;
-    private ProductRepository productRepository;
+  private final ReviewRepository reviewRepository;
+  private OrderProductRepository orderProductRepository;
+  private ProductRepository productRepository;
 
-    @Override
-    @Transactional
-    public ReviewCreateDto.Response createReview(ReviewCreateDto.Request request, User user) {
-        // productId 확인
-        Product product = productRepository.findById(request.getProductId()).orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
-        
-        // orderProductId 확인
-        OrderProduct orderProduct = orderProductRepository.findById(request.getOrderProductId())
-                .orElseThrow(() -> new CustomException(ORDER_PRODUCT_NOT_FOUND));
-        
-        // 주문 상태 확인
-        if (orderProduct.getStatus() != OrderStatus.PURCHASE_CONFIRMED) {
-            throw new CustomException(NOT_PURCHASE_CONFIRMED);
-        }
-        
-        
-        Review review = reviewRepository.save(
-                ReviewCreateDto.Request.toEntity(request, user, product, orderProduct)
-        );
+  @Override
+  @Transactional
+  public ReviewCreateDto.Response createReview(ReviewCreateDto.Request request, User user) {
+    // productId 확인
+    Product product = productRepository.findById(request.getProductId())
+        .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
 
-        return ReviewCreateDto.Response.toDto(review);
+    // orderProductId 확인
+    OrderProduct orderProduct = orderProductRepository.findById(request.getOrderProductId())
+        .orElseThrow(() -> new CustomException(ORDER_PRODUCT_NOT_FOUND));
+
+    // 주문 상태 확인
+    if (orderProduct.getStatus() != OrderStatus.PURCHASE_CONFIRMED) {
+      throw new CustomException(NOT_PURCHASE_CONFIRMED);
     }
 
-    @Override
-    @Transactional
-    public ReviewUpdateDto.Response updateReview(Long reviewId, ReviewUpdateDto.Request request) {
-        
-        // 리뷰가 존재하는 지 확인
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
+    Review review = reviewRepository.save(
+        ReviewCreateDto.Request.toEntity(request, user, product, orderProduct)
+    );
 
-        // Update the review's fields
-        review.update(request);
+    return ReviewCreateDto.Response.toDto(review);
+  }
 
-        // Convert to DTO and return
-        return ReviewUpdateDto.Response.toDto(review);
+  @Override
+  @Transactional
+  public ReviewUpdateDto.Response updateReview(Long reviewId, ReviewUpdateDto.Request request) {
+
+    // 리뷰가 존재하는 지 확인
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
+
+    // Update the review's fields
+    review.update(request);
+
+    // Convert to DTO and return
+    return ReviewUpdateDto.Response.toDto(review);
+  }
+
+
+  @Override
+  @Transactional
+  public void deleteReview(Long reviewId) {
+    if (reviewRepository.existsById(reviewId)) {
+      reviewRepository.deleteById(reviewId);
+    } else {
+      throw new CustomException(REVIEW_NOT_FOUND);
+    }
+  }
+
+
+  @Override
+  @Transactional
+  public ReplyDto.Response addReplyToReview(Long reviewId, ReplyDto.Request request, User user) {
+    // 리뷰가 존재하는 지 확인
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
+
+    // 답변 등록 여부 확인
+    if (review.getReplyState()) {
+      throw new CustomException(REPLY_EXISTS);
     }
 
-
-    @Override
-    @Transactional
-    public void deleteReview(Long reviewId) {
-        if (reviewRepository.existsById(reviewId)) {
-            reviewRepository.deleteById(reviewId);
-        } else {
-            throw new CustomException(REVIEW_NOT_FOUND);
-        }
+    // 요청을 한 판매자가 해당 상품의 판매자가 맞는지 확인
+    Product nowProduct = productRepository.findById(review.getProduct().getId())
+        .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
+    if (!nowProduct.getSellerId().equals(user.getId())) {
+      throw new CustomException(NOT_SELLER_OF_THE_PRODUCT);
     }
 
+    review.addReply(request.getContent());
 
-    @Override
-    @Transactional
-    public ReplyDto.Response addReplyToReview(Long reviewId, ReplyDto.Request request, User user) {
-        // 리뷰가 존재하는 지 확인
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
-        
-        // 답변 등록 여부 확인
-        if (review.getReplyState()) {
-            throw new CustomException(REPLY_EXISTS);
-        }
-        
-        // 요청을 한 판매자가 해당 상품의 판매자가 맞는지 확인
-        Product nowProduct = productRepository.findById(review.getProduct().getId()).orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
-        if (!nowProduct.getSellerId().equals(user.getId())) {
-            throw new CustomException(NOT_SELLER_OF_THE_PRODUCT);
-        }
-
-        review.addReply(request.getContent());
-        
-        return ReplyDto.Response.toDto(review);
-    }
+    return ReplyDto.Response.toDto(review);
+  }
 
 
-    @Override
-    @Transactional
-    public Page<ReviewListDto.Response> getReviewsByProductId(Long productId, Pageable pageable) {
-        Product product = productRepository.findById(productId).orElseThrow(()->new CustomException(ErrorCode.NOT_FOUND));
-        Page<Review> reviewPage = reviewRepository.findByProduct(product, pageable);
-        return reviewPage.map(ReviewListDto.Response::toDto);
-    }
+  @Override
+  @Transactional
+  public Page<ReviewListDto.Response> getReviewsByProductId(Long productId, Pageable pageable) {
+    Product product = productRepository.findById(productId)
+        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    Page<Review> reviewPage = reviewRepository.findByProduct(product, pageable);
+    return reviewPage.map(ReviewListDto.Response::toDto);
+  }
 
-    @Override
-    @Transactional
-    public Page<ReviewListDto.Response> getReviewsByUserId(Long userId, Pageable pageable) {
-        return reviewRepository.findByUserId(userId, pageable).map(ReviewListDto.Response::toDto);
-    }
+  @Override
+  @Transactional
+  public Page<ReviewListDto.Response> getReviewsByUserId(Long userId, Pageable pageable) {
+    return reviewRepository.findByUserId(userId, pageable).map(ReviewListDto.Response::toDto);
+  }
 }
 
 

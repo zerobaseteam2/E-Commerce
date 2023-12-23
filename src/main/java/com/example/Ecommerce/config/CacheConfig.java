@@ -22,33 +22,33 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @RequiredArgsConstructor
 @EnableCaching
 public class CacheConfig {
+
   @Value("${spring.data.redis.host}")
   private String host;
-  
+
   @Value("${spring.data.redis.port}")
   private int port;
-  
+
   @Bean
   public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
     RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
-            .disableCachingNullValues()
-            .entryTtl(Duration.ofSeconds(CacheKey.DEFAULT_EXPIRE_SEC))
-            .computePrefixWith(CacheKeyPrefix.simple())
-            .serializeKeysWith(
-                    RedisSerializationContext.SerializationPair
-                            .fromSerializer(new StringRedisSerializer()))
-            .serializeValuesWith(RedisSerializationContext
-                    .SerializationPair
-                    .fromSerializer(new GenericJackson2JsonRedisSerializer()));
-    
-    
+        .disableCachingNullValues()
+        .entryTtl(Duration.ofSeconds(CacheKey.DEFAULT_EXPIRE_SEC))
+        .computePrefixWith(CacheKeyPrefix.simple())
+        .serializeKeysWith(
+            RedisSerializationContext.SerializationPair
+                .fromSerializer(new StringRedisSerializer()))
+        .serializeValuesWith(RedisSerializationContext
+            .SerializationPair
+            .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+
     return RedisCacheManager.RedisCacheManagerBuilder
-            .fromConnectionFactory(redisConnectionFactory)
-            .cacheDefaults(configuration)
-            .build();
-    
+        .fromConnectionFactory(redisConnectionFactory)
+        .cacheDefaults(configuration)
+        .build();
+
   }
-  
+
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
     RedisStandaloneConfiguration conf = new RedisStandaloneConfiguration();
@@ -57,9 +57,10 @@ public class CacheConfig {
 
     return new LettuceConnectionFactory(conf);
   }
-  
+
   @Getter
   public class CacheKey {
+
     public static final String USER = "user";
     public static final int DEFAULT_EXPIRE_SEC = 60;
   }

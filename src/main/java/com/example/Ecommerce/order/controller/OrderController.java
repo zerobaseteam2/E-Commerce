@@ -49,7 +49,7 @@ public class OrderController {
   public ResponseEntity<UpdateShippingDto.Response> updateShippingInfo(
       @PathVariable Long id,
       @RequestBody UpdateShippingDto.Request request,
-      @AuthenticationPrincipal UserDetailsImpl userDetails){
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
@@ -62,12 +62,12 @@ public class OrderController {
   @PutMapping("/quantity-info")
   public ResponseEntity<OrderDetailDto> updateQuantity(
       @RequestBody @Valid UpdateQuantityDto updateQuantityDto,
-      @AuthenticationPrincipal UserDetailsImpl userDetails){
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
 
-    OrderDetailDto orderDetailDto = orderService.updateQuantity(updateQuantityDto, customerId );
+    OrderDetailDto orderDetailDto = orderService.updateQuantity(updateQuantityDto, customerId);
     return ResponseEntity.ok(orderDetailDto);
   }
 
@@ -75,7 +75,7 @@ public class OrderController {
   @GetMapping("/{id}/details")
   public ResponseEntity<OrderDetailDto> getOrderDetails(
       @PathVariable Long id,
-      @AuthenticationPrincipal UserDetailsImpl userDetails){
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
@@ -89,7 +89,7 @@ public class OrderController {
   public ResponseEntity<OrderListDto> getAllOrders(
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "size", defaultValue = "10") int size,
-      @AuthenticationPrincipal UserDetailsImpl userDetails){
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
     Long customerId = userDetails.getUser().getId();

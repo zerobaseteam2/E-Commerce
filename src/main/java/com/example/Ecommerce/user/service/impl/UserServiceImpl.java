@@ -1,6 +1,5 @@
 package com.example.Ecommerce.user.service.impl;
 
-import static com.example.Ecommerce.security.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIRATION_TIME;
 import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 import com.example.Ecommerce.common.MailComponent;
@@ -22,9 +21,10 @@ import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
 import com.example.Ecommerce.user.repository.LogoutAccessTokenRedisRepository;
-import com.example.Ecommerce.user.repository.RefreshTokenRedisRepository;
+import com.example.Ecommerce.user.repository.RefreshTokenRepository;
 import com.example.Ecommerce.user.repository.UserRepository;
 import com.example.Ecommerce.user.service.UserService;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
-  private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
   private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
   private final DeliveryAddressRepository deliveryAddressRepository;
   private final JwtTokenUtil jwtTokenUtil;
@@ -102,26 +102,38 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserLoginDto.Response reissue(String refreshToken, String username) {
+  public UserLoginDto.Response reissue(String refreshToken) {
+    // Bearer 삭제
     refreshToken = resolveToken(refreshToken);
+
+    // 토큰이 없을 경우 예외처리
     if (refreshToken == null) {
       throw new CustomException(ErrorCode.REFRESH_TOKEN_NULL);
     }
 
-    RefreshToken redisRefreshToken = refreshTokenRedisRepository.findById(username)
-        .orElseThrow(NoSuchElementException::new);
+    // 입력된 refreshToken이 db에 있는지 확인
+    RefreshToken dbRefreshToken = refreshTokenRepository.findByRefreshToken(refreshToken)
+        .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_EXIST));
 
-    if (refreshToken.equals(redisRefreshToken.getRefreshToken())) {
-      return reissueAccessToken(refreshToken, username);
+    // refreshToken 만료 체크
+    LocalDateTime expirationDate = LocalDateTime.now().minusDays(7); // 현재 시점 만료 기준일
+
+    // 만료기준일보다 이전 혹은 같으면 만료된 토큰 예외처리
+    if (dbRefreshToken.getCreatedDate().isBefore(expirationDate) || dbRefreshToken.getCreatedDate()
+        .isEqual(expirationDate)) {
+      refreshTokenRepository.deleteByRefreshToken(refreshToken);
+      throw new CustomException(ErrorCode.REFRESH_TOKEN_HAS_EXPIRED);
     }
-    throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
+
+    // 액세스 토큰 재발급해서 return
+    return reissueAccessToken(refreshToken, dbRefreshToken.getId());
   }
 
   @CacheEvict(value = CacheConfig.CacheKey.USER, key = "#username")
   public void logout(String accessToken, String username) {
     accessToken = resolveToken(accessToken);
     long remainMilliSeconds = jwtTokenUtil.getRemainMilliSeconds(accessToken);
-    refreshTokenRedisRepository.deleteById(username);
+    refreshTokenRepository.deleteById(username);
     logoutAccessTokenRedisRepository.save(
         LogoutAccessToken.of(accessToken, username, remainMilliSeconds));
   }
@@ -133,16 +145,17 @@ public class UserServiceImpl implements UserService {
   }
 
   private RefreshToken saveRefreshToken(String username) {
-    return refreshTokenRedisRepository.save(RefreshToken.createRefreshToken(username,
-        jwtTokenUtil.generateRefreshToken(username), REFRESH_TOKEN_EXPIRATION_TIME.getValue()));
+    return refreshTokenRepository.save(RefreshToken.createRefreshToken(username,
+        jwtTokenUtil.generateRefreshToken(username)));
   }
 
   private UserLoginDto.Response reissueAccessToken(String refreshToken, String username) {
-    User user = userRepository.findByUserId(username)
-        .orElseThrow(() -> new NoSuchElementException("토큰 재발급 오류 : 회원이 없습니다."));
 
-    return new UserLoginDto.Response(jwtTokenUtil.generateAccessToken(username, user.getRole()),
-        refreshToken); // 그게 아닌 경우 refresh 토큰은 재발급하지 않음
+    User user = userRepository.findByUserId(username)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    return UserLoginDto.Response.of(jwtTokenUtil.generateAccessToken(username, user.getRole()),
+        refreshToken);
   }
 
   private String resolveToken(String token) {
