@@ -1,7 +1,11 @@
 package com.example.Ecommerce.community.dto.post;
 
+import com.example.Ecommerce.community.domain.Comment;
 import com.example.Ecommerce.community.domain.Post;
-import java.time.LocalDate;
+import com.example.Ecommerce.community.dto.comment.CommentDetailDto;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,12 +25,19 @@ public class PostDetailDto {
   private String content;
   private Long viewCount;
   private Long likeCount;
-  private LocalDate createdAt; //생성날짜
-  private LocalDate updatedAt; //수정날짜
+  private Date createdAt; //생성날짜
+  private Date updatedAt; //수정날짜
+  private List<CommentDetailDto> commentList;
 
 
   // Post entity -> PostDetailDto 변경하여 반환
   public static PostDetailDto of(Post post) {
+
+    List<CommentDetailDto> commentDetailDtoList = post.getCommentList()
+        .stream()
+        .map(CommentDetailDto::of)
+        .collect(Collectors.toList());
+
     return PostDetailDto.builder()
         .postId(post.getId())
         .userId(post.getUser().getUserId())
@@ -36,6 +47,7 @@ public class PostDetailDto {
         .likeCount(post.getLikeCount())
         .createdAt(post.getCreatedAt())
         .updatedAt(post.getUpdatedAt())
+        .commentList(commentDetailDtoList)
         .build();
   }
 }
