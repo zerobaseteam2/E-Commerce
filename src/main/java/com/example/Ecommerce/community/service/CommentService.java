@@ -7,5 +7,5 @@ import com.example.Ecommerce.community.dto.comment.NewCommentDto;
 public interface CommentService {
   CommentDetailDto createComment(String userId, Long postId, NewCommentDto newCommentDto);
   CommentDetailDto updateComment(String userId, Long commentId, UpdateCommentDto updateCommentDto);
-
+  void deleteComment(String userId, Long commentId);
 }

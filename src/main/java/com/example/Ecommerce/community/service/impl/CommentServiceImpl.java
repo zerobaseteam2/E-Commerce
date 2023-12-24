@@ -5,7 +5,6 @@ import com.example.Ecommerce.community.domain.Post;
 import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.community.dto.comment.CommentDetailDto;
 import com.example.Ecommerce.community.dto.comment.NewCommentDto;
-import com.example.Ecommerce.community.dto.post.PostDetailDto;
 import com.example.Ecommerce.community.respository.CommentRepository;
 import com.example.Ecommerce.community.respository.PostRepository;
 import com.example.Ecommerce.community.service.CommentService;
@@ -62,5 +61,18 @@ public class CommentServiceImpl implements CommentService {
     // 수정
     comment.update(updateCommentDto);
     return CommentDetailDto.of(comment);
+  }
+
+  @Override
+  public void deleteComment(String userId, Long commentId) {
+    // 삭제하려는 댓글 가져오기
+    Comment comment = commentRepository.findById(commentId)
+        .orElseThrow(()-> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+    // 권한 확인 - 삭제하려는 게시글 정보의 회원정보와 로그인한 회원이 같은지 확인
+    if (!comment.getUser().getUserId().equals(userId)) {
+      throw new UnauthorizedUserException("삭제하려는 게시글에 접근할 권한이 없습니다.");
+    }
+    // 삭제
+    commentRepository.delete(comment);
   }
 }

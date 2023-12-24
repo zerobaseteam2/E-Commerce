@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,14 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/community")
+@RequestMapping("/api/community/comment")
 public class CommentController {
 
   private final CommentService commentService;
 
 
   // 댓글 작성 API
-  @PostMapping("/comment/{postId}")
+  @PostMapping("/{postId}")
   public ResponseEntity<CommentDetailDto> createComment(
       @PathVariable Long postId,
       @RequestBody @Valid NewCommentDto newCommentDto,
@@ -50,6 +51,19 @@ public class CommentController {
 
     CommentDetailDto commentDetailDto = commentService.updateComment(userId, commentId, updateCommentDto);
     return ResponseEntity.ok(commentDetailDto);
+  }
+
+  // 댓글 삭제 API
+  @DeleteMapping("/{commentId}")
+  public ResponseEntity<?> deleteComment(
+      @PathVariable Long commentId,
+      @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+    // 로그인한 회원 정보
+    String userId = userDetails.getUser().getUserId();
+
+    commentService.deleteComment(userId, commentId);
+    return ResponseEntity.ok("댓글 삭제 성공");
   }
 
 
