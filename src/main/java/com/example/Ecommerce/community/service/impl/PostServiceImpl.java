@@ -55,5 +55,18 @@ public class PostServiceImpl implements PostService {
     return PostDetailDto.of(post);
   }
 
+  @Override
+  public void deletePost(String customerId, Long postId) {
+    // 삭제하려는 게시글 가져오기
+    Post post = postRepository.findById(postId)
+        .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+    // 권한 확인 - 삭제하려는 게시글 정보의 회원정보와 로그인한 회원이 같은지 확인
+    if (!post.getUser().getUserId().equals(customerId)) {
+      throw new UnauthorizedUserException("삭제하려는 게시글에 접근할 권한이 없습니다.");
+    }
+    // 삭제
+    postRepository.delete(post);
+  }
+
 
 }

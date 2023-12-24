@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,7 +32,6 @@ public class PostController {
 
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
-
     PostDetailDto postDetailDto = postService.createPost(customerId, newPostDto);
     return ResponseEntity.ok(postDetailDto);
   }
@@ -42,11 +42,23 @@ public class PostController {
       @PathVariable Long postId,
       @RequestBody @Valid UpdatePostDto updatePostDto,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
-
     PostDetailDto postDetailDto = postService.updatePost(customerId, postId, updatePostDto);
     return ResponseEntity.ok(postDetailDto);
+  }
+
+  // 게시글 삭제 API
+  @DeleteMapping("/{postId}")
+  public ResponseEntity<?> deletePost(
+      @PathVariable Long postId,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+    // 로그인한 회원 정보
+    String customerId = userDetails.getUser().getUserId();
+    postService.deletePost(customerId, postId);
+    return ResponseEntity.ok("게시글 삭제 성공");
   }
 
 }

@@ -7,4 +7,5 @@ import com.example.Ecommerce.community.dto.UpdatePostDto;
 public interface PostService {
   PostDetailDto createPost(String customerId, NewPostDto newPostDto);
   PostDetailDto updatePost(String customerId, Long postId, UpdatePostDto updatePostDto);
+  void deletePost(String customerId, Long postId);
 }
