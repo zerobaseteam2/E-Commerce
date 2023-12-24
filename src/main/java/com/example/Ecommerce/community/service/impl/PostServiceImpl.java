@@ -14,6 +14,8 @@ import com.example.Ecommerce.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -76,6 +78,12 @@ public class PostServiceImpl implements PostService {
     // 조회수 변경
     postRepository.increaseViewCount(postId);
     return PostDetailDto.of(post);
+  }
+
+  @Override
+  public Page<PostDetailDto> getAllPosts(Pageable pageable) {
+    Page<Post> postsPage = postRepository.findAll(pageable);
+    return postsPage.map(PostDetailDto::of);
   }
 
 

@@ -2,11 +2,16 @@ package com.example.Ecommerce.community.controller;
 
 import com.example.Ecommerce.community.dto.NewPostDto;
 import com.example.Ecommerce.community.dto.PostDetailDto;
+import com.example.Ecommerce.community.dto.PostPageResultDto;
 import com.example.Ecommerce.community.dto.UpdatePostDto;
 import com.example.Ecommerce.community.service.PostService;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -63,10 +69,26 @@ public class PostController {
   }
 
   // 게시글 조회 API
-  @GetMapping("post/{postId}")
+  @GetMapping("/post/{postId}")
   public ResponseEntity<PostDetailDto> getPost(@PathVariable Long postId) {
     PostDetailDto postDetailDto = postService.getPostById(postId);
     return ResponseEntity.ok(postDetailDto);
+  }
+
+  // 모든 게시글 목록 조회 API
+  @GetMapping("/posts/list")
+  public ResponseEntity<?> getAllPosts(
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "10") int size,
+      @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
+      @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder) {
+
+    Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
+    Pageable pageable = PageRequest.of(page, size, sort);
+    Page<PostDetailDto> result = postService.getAllPosts(pageable);
+
+    return ResponseEntity.ok(PostPageResultDto.of(result));
+
   }
 
 }

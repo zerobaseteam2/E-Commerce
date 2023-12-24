@@ -6,6 +6,8 @@ import com.example.Ecommerce.user.domain.User;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +18,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   @Modifying
   @Query("update Post p set p.viewCount = p.viewCount + 1 where p.id = :postId")
   void increaseViewCount(@Param("postId") Long postId);
+  Page<Post> findAll(Pageable pageable);
 }
