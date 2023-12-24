@@ -33,14 +33,14 @@ public class PostController {
 
   // 게시글 등록 API
   @PostMapping("/post")
-  public ResponseEntity<PostDetailDto> post(
-      @RequestBody @Valid NewPostDto newPostDto,
+  public ResponseEntity<NewPostDto.Response> post(
+      @RequestBody @Valid NewPostDto.Request request,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
-    String customerId = userDetails.getUser().getUserId();
-    PostDetailDto postDetailDto = postService.createPost(customerId, newPostDto);
-    return ResponseEntity.ok(postDetailDto);
+    String userId = userDetails.getUser().getUserId();
+    NewPostDto.Response response = postService.createPost(userId, request);
+    return ResponseEntity.ok(response);
   }
 
   // 게시글 수정 API
@@ -51,8 +51,8 @@ public class PostController {
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
-    String customerId = userDetails.getUser().getUserId();
-    PostDetailDto postDetailDto = postService.updatePost(customerId, postId, updatePostDto);
+    String userId = userDetails.getUser().getUserId();
+    PostDetailDto postDetailDto = postService.updatePost(userId, postId, updatePostDto);
     return ResponseEntity.ok(postDetailDto);
   }
 
@@ -63,8 +63,8 @@ public class PostController {
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
-    String customerId = userDetails.getUser().getUserId();
-    postService.deletePost(customerId, postId);
+    String userId = userDetails.getUser().getUserId();
+    postService.deletePost(userId, postId);
     return ResponseEntity.ok("게시글 삭제 성공");
   }
 

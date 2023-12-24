@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,10 +48,10 @@ public class Post {
 
   @Column(nullable = false)
   @CreatedDate
-  private LocalDate createdAt; //생성날짜
+  private Date createdAt; //생성날짜
 
   @LastModifiedDate
-  private LocalDate updatedAt; //수정날짜
+  private Date updatedAt; //수정날짜
 
   @ManyToOne
   @JoinColumn(name = "user_id")
@@ -61,10 +61,10 @@ public class Post {
   private List<Comment> commentList;
 
 
-  public static Post create(NewPostDto newPostDto, User user) {
+  public static Post create(NewPostDto.Request request, User user) {
     return Post.builder()
-        .title(newPostDto.getTitle())
-        .content(newPostDto.getContent())
+        .title(request.getTitle())
+        .content(request.getContent())
         .user(user)
         .viewCount(0L) //초기값 0
         .likeCount(0L) //초기값 0
