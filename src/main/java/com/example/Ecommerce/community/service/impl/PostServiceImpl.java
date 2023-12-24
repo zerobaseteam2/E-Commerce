@@ -86,5 +86,14 @@ public class PostServiceImpl implements PostService {
     return postsPage.map(PostDetailDto::of);
   }
 
+  @Override
+  public void likePost(Long postId) {
+
+    // 좋아요하려는 게시글 가져오기
+    Post post = postRepository.findById(postId)
+        .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+    // 좋아요 증가
+    postRepository.increaseLikeCount(postId);
+  }
 
 }

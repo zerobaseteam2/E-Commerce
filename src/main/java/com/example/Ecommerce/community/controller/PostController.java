@@ -91,4 +91,12 @@ public class PostController {
 
   }
 
+  // 게시글 좋아요 API
+  @PutMapping("/post/{postId}/like")
+  public ResponseEntity<?> likePost(
+      @PathVariable Long postId) {
+    postService.likePost(postId);
+    return ResponseEntity.ok("게시글 좋아요 성공");
+  }
+
 }

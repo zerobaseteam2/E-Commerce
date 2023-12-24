@@ -12,4 +12,5 @@ public interface PostService {
   void deletePost(String customerId, Long postId);
   PostDetailDto getPostById(Long postId);
   Page<PostDetailDto> getAllPosts(Pageable pageable);
+  void likePost(Long postId);
 }
