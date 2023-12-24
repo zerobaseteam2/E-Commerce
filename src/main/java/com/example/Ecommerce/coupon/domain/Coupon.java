@@ -1,5 +1,7 @@
 package com.example.Ecommerce.coupon.domain;
 
+import com.example.Ecommerce.exception.CustomException;
+import com.example.Ecommerce.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -39,9 +41,6 @@ public class Coupon {
   @Column(nullable = false)
   private String couponName;
 
-  @Column
-  private String usableCategory; // 상품 카테고리 확인 후 수정 필요
-
   @Column(nullable = false)
   private double discountRate;
 
@@ -53,13 +52,23 @@ public class Coupon {
   private LocalDate expirationDate;
 
   @Column(nullable = false)
-  private boolean expires;
+  private boolean isExpired;
 
-  public void useCoupon(Long orderNo) {
+
+  public void useCoupon(Coupon coupon, Long orderNo) {
+    // 만료된 쿠폰인지 확인
+    if (coupon.isExpired) {
+      throw new CustomException(ErrorCode.COUPON_IS_EXPIRED);
+    }
+    // 사용된 쿠폰인지 확인
+    if (coupon.orderNo != null) {
+      throw new CustomException(ErrorCode.USED_COUPON);
+    }
+    // 쿠폰 사용
     this.orderNo = orderNo;
   }
 
   public void couponExpires() {
-    this.expires = true;
+    this.isExpired = true;
   }
 }

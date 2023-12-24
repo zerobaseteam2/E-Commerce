@@ -1,17 +1,21 @@
 package com.example.Ecommerce.order.service.impl;
 
+import com.example.Ecommerce.exception.CustomException;
+import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.exception.InvalidOrderStatusException;
-import com.example.Ecommerce.exception.OrderNotFoundException;
 import com.example.Ecommerce.exception.UnauthorizedUserException;
 import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
 import com.example.Ecommerce.order.domain.OrderStatus;
+import com.example.Ecommerce.order.domain.OrderStatusHistory;
 import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.OrderStatusHistoryDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Request;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Response;
 import com.example.Ecommerce.order.repository.OrderProductRepository;
 import com.example.Ecommerce.order.repository.OrderRepository;
+import com.example.Ecommerce.order.repository.OrderStatusHistoryRepository;
 import com.example.Ecommerce.order.service.OrderStatusService;
 import com.example.Ecommerce.user.repository.UserRepository;
 import java.util.List;
@@ -30,22 +34,35 @@ public class OrderStatusServiceImpl implements OrderStatusService {
   private final OrderRepository orderRepository;
   private final UserRepository userRepository;
 
+  private final OrderStatusHistoryRepository orderStatusHistoryRepository;
+
   @Override
   @Transactional
   public UpdateStatusDto.Response updateStatusByCustomer(String customerId, Request request) {
 
     // 주문상품 찾기
     OrderProduct orderProduct = orderProductRepository.findById(request.getOrderProductId())
-        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문이 존재하지 않습니다."));
+        .orElseThrow(() -> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 
     // 권한 확인 - 수정하려는 주문정보의 구매자 정보와 로그인한 회원이 같은지 확인
     if (!orderProduct.getOrder().getUser().getUserId().equals(customerId)) {
       throw new UnauthorizedUserException("해당 주문에 접근할 권한이 없습니다.");
     }
+    // 이전 상태
+    OrderStatus previousStatus = orderProduct.getStatus();
     // 주문 상태 변경
     processByCustomer(request, orderProduct);
+    // 주문 상태 변경 history
+    saveOrderStatusHistory(orderProduct, previousStatus);
     return UpdateStatusDto.Response.of(orderProduct);
 
+  }
+
+  private void saveOrderStatusHistory(OrderProduct orderProduct, OrderStatus previousStatus) {
+    OrderStatusHistory history = OrderStatusHistory.createHistory(
+        orderProduct, previousStatus, orderProduct.getStatus()
+    );
+    orderStatusHistoryRepository.save(history);
   }
 
   @Override
@@ -53,23 +70,28 @@ public class OrderStatusServiceImpl implements OrderStatusService {
   public Response updateStatusBySeller(Long sellerId, Request request) {
     // 주문상품 찾기
     OrderProduct orderProduct = orderProductRepository.findById(request.getOrderProductId())
-        .orElseThrow(() -> new OrderNotFoundException("수정하려는 주문이 존재하지 않습니다."));
+        .orElseThrow(() -> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 
     // 권한 확인 - 수정하려는 주문정보의 구매자 정보와 로그인한 회원이 같은지 확인
     if (orderProduct.getProduct().getSellerId() != sellerId) {
       throw new UnauthorizedUserException("해당 주문에 접근할 권한이 없습니다.");
     }
+    // 이전 상태
+    OrderStatus previousStatus = orderProduct.getStatus();
     // 주문 상태 변경
     processBySeller(request, orderProduct);
+    // 주문 상태 변경 history
+    saveOrderStatusHistory(orderProduct, previousStatus);
     return UpdateStatusDto.Response.of(orderProduct);
   }
 
-  public Page<OrderProductDto> getOrdersByStatus(Long customerId, OrderStatus status, Pageable pageable) {
+  public Page<OrderProductDto> getOrdersByStatus(Long customerId, OrderStatus status,
+      Pageable pageable) {
 
     List<Order> orderList = orderRepository.findAllByUser(userRepository.findById(customerId));
     // 해당 회원의 주문이 존재하지 않으면 exception 발생
     if (orderList.isEmpty()) {
-      throw new OrderNotFoundException("주문이 존재하지 않습니다.");
+      throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
     }
     // 주문 id 리스트
     List<Long> orderIds = orderList.stream()
@@ -80,11 +102,23 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     Page<OrderProduct> filteredOrderProducts =
         orderProductRepository.findAllByOrderIdInAndStatus(orderIds, status, pageable);
 
-    if(filteredOrderProducts.isEmpty()){
-      throw new OrderNotFoundException("요청하신 주문 상태의 주문이 존재하지 않습니다.");
+    if (filteredOrderProducts.isEmpty()) {
+      throw new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
     }
     // 결과를 OrderProductDto list 로 반환하여 반환
     return filteredOrderProducts.map(OrderProductDto::of);
+  }
+
+  @Override
+  public Page<OrderStatusHistoryDto> getOrderStatusHistory(Long customerId, Long orderProductId, Pageable pageable) {
+
+    OrderProduct orderProduct = orderProductRepository.findById(orderProductId)
+        .orElseThrow(()-> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
+
+    Page<OrderStatusHistory> orderStatusHistories =
+        orderStatusHistoryRepository.findAllByOrderProduct_Id(orderProductId, pageable);
+    // 결과를 orderStatusHistoryDto list 로 반환하여 반환
+    return orderStatusHistories.map(OrderStatusHistoryDto::of);
   }
 
 

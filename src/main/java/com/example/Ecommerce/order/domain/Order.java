@@ -1,5 +1,6 @@
 package com.example.Ecommerce.order.domain;
 
+import com.example.Ecommerce.coupon.domain.Coupon;
 import com.example.Ecommerce.order.dto.NewOrderDto;
 import com.example.Ecommerce.order.dto.UpdateShippingDto;
 import com.example.Ecommerce.user.domain.User;
@@ -63,7 +64,10 @@ public class Order {
   @Column(nullable = false)
   private int totalPaymentPrice; //총결제금액
 
-  //mapping (쿠폰, 회원, 주문상품)
+  // 쿠폰사용시
+  @Column
+  private Long couponId;
+
   // 회원(구매자)과의 관계
   @ManyToOne
   @JoinColumn(name = "customer_id")
@@ -112,15 +116,37 @@ public class Order {
     this.orderProductList.add(orderProduct);
   }
 
-  // 쿠폰
 
 
-  // 총결제금액 계산
-  public void calculateTotalPaymentPrice() {
-    int totalPaymentPrice = orderProductList.stream()
+  // 총금액 계산
+  public void calculateTotalPrice() {
+    this.totalPaymentPrice = orderProductList.stream()
         .mapToInt(orderProduct -> orderProduct.getQuantity() * orderProduct.getProduct().getPrice())
         .sum();
-    this.totalPaymentPrice = totalPaymentPrice;
+  }
+
+  // 총할인금액 계산 - 쿠폰사용시 적용
+  public void calculateTotalDiscountPrice(Coupon coupon){
+    // 쿠폰 적용
+    this.couponId = coupon.getId();
+    // 할인금액 계산
+    double discountedDouble = this.totalPaymentPrice * coupon.getDiscountRate();
+    // 할인금액 적용
+    this.totalDiscountPrice = (int) Math.round(discountedDouble);
+    // 할인금액을 제외한 총결제금액 다시 계산후 적용
+    this.totalPaymentPrice = this.totalPaymentPrice - this.totalDiscountPrice;
+  }
+
+  // 수량이 바뀌었을때 다시 할인금액과 총금액 계산
+  public void recalculateTotalDiscountPrice(Coupon coupon){
+    // 총금액 다시 계산
+    calculateTotalPrice();
+    // 할인금액 계산
+    double discountedDouble = this.totalPaymentPrice * coupon.getDiscountRate();
+    // 할인금액 적용
+    this.totalDiscountPrice = (int) Math.round(discountedDouble);
+    // 할인금액을 제외한 총결제금액 다시 계산후 적용
+    this.totalPaymentPrice = this.totalPaymentPrice - this.totalDiscountPrice;
   }
 
 }

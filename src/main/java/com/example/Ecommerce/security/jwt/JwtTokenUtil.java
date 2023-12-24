@@ -79,7 +79,7 @@ public class JwtTokenUtil {
       return true;
     } catch (SecurityException | MalformedJwtException e) {
       log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-      throw new CustomException(ErrorCode.INVAILD_JWT_SIGNATURE);
+      throw new CustomException(ErrorCode.INVALID_JWT_SIGNATURE);
     } catch (ExpiredJwtException e) {
       log.error("Expired JWT token, 만료된 JWT token 입니다.");
       throw new CustomException(ErrorCode.EXPIRED_JWT_TOKEN);
