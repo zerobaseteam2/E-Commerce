@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
 
     // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!order.getUser().getUserId().equals(customerId)) {
-      throw new CustomException(ErrorCode.UN_AUTHORIZED);
+      throw new UnauthorizedUserException("수정하려는 주문에 접근할 권한이 없습니다.");
     }
 
     // 상태 확인
@@ -125,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
 
     // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!orderProduct.getOrder().getUser().getUserId().equals(customerId)) {
-      throw new UnauthorizedUserException("해당 주문에 접근할 권한이 없습니다.");
+      throw new UnauthorizedUserException("수정하려는 주문에 접근할 권한이 없습니다.");
     }
     // 주문상품 상태 확인
     if (orderProduct.getStatus() != OrderStatus.ORDER_COMPLETE) {

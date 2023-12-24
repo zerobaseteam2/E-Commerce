@@ -1,6 +1,7 @@
 package com.example.Ecommerce.community.domain;
 
 import com.example.Ecommerce.community.dto.NewPostDto;
+import com.example.Ecommerce.community.dto.UpdatePostDto;
 import com.example.Ecommerce.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -61,5 +62,14 @@ public class Post {
         .viewCount(0L) //초기값 0
         .likeCount(0L) //초기값 0
         .build();
+  }
+
+  public void update(UpdatePostDto updatePostDto) {
+    if (updatePostDto.getTitle() != null) {
+      this.title = updatePostDto.getTitle();
+    }
+    if (updatePostDto.getContent() != null){
+      this.content = updatePostDto.getContent();
+    }
   }
 }
