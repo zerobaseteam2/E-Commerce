@@ -12,11 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,7 +42,6 @@ public class ProductTag extends BaseEntity {
 
   public static ProductTag of(Long sellerId, AddProductTagForm form) {
     return ProductTag.builder()
-        .id(form.getProductId())
         .sellerId(sellerId)
         .tagName(form.getTagName())
         .build();
