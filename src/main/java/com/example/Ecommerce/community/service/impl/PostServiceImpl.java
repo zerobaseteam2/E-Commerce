@@ -68,5 +68,15 @@ public class PostServiceImpl implements PostService {
     postRepository.delete(post);
   }
 
+  @Override
+  public PostDetailDto getPostById(Long postId) {
+    // 조회하려는 게시글 가져오기
+    Post post = postRepository.findById(postId)
+        .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
+    // 조회수 변경
+    postRepository.increaseViewCount(postId);
+    return PostDetailDto.of(post);
+  }
+
 
 }
