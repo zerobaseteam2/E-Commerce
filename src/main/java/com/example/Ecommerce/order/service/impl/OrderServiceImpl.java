@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
     Optional<User> user = userRepository.findByUserId(customerId);
 
     // 새로운 주문 생성
-    Order order = Order.createOrder(newOrderDto, user.get());
+    Order order = Order.create(newOrderDto, user.get());
     orderRepository.save(order);
 
     // 상품 및 수량 정보로 주문상품 생성

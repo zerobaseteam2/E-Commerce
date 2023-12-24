@@ -78,7 +78,7 @@ public class Order {
   private List<OrderProduct> orderProductList;
 
   // newOrderDto 로 주문 생성
-  public static Order createOrder(NewOrderDto newOrderDto, User user) {
+  public static Order create(NewOrderDto newOrderDto, User user) {
     Order order = Order.builder()
         .recipientName(newOrderDto.getRecipientName())
         .recipientPhone(newOrderDto.getRecipientPhone())
