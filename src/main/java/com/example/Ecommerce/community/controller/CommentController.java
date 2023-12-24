@@ -1,5 +1,6 @@
 package com.example.Ecommerce.community.controller;
 
+import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.community.dto.comment.CommentDetailDto;
 import com.example.Ecommerce.community.dto.comment.NewCommentDto;
 import com.example.Ecommerce.community.service.CommentService;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +33,25 @@ public class CommentController {
 
     // 로그인한 회원 정보
     String userId = userDetails.getUser().getUserId();
+
     CommentDetailDto commentDetailDto = commentService.createComment(userId, postId, newCommentDto);
     return ResponseEntity.ok(commentDetailDto);
   }
+
+  // 댓글 수정 API
+  @PatchMapping("/{commentId}")
+  public ResponseEntity<CommentDetailDto> updateComment(
+      @PathVariable Long commentId,
+      @RequestBody @Valid UpdateCommentDto updateCommentDto,
+      @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+    // 로그인한 회원 정보
+    String userId = userDetails.getUser().getUserId();
+
+    CommentDetailDto commentDetailDto = commentService.updateComment(userId, commentId, updateCommentDto);
+    return ResponseEntity.ok(commentDetailDto);
+  }
+
+
+
 }

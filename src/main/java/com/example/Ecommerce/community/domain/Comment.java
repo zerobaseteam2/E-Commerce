@@ -1,5 +1,6 @@
 package com.example.Ecommerce.community.domain;
 
+import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.community.dto.comment.NewCommentDto;
 import com.example.Ecommerce.user.domain.User;
 import jakarta.persistence.Column;
@@ -10,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDate;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,5 +56,9 @@ public class Comment {
         .user(user)
         .post(post)
         .build();
+  }
+
+  public void update(UpdateCommentDto updateCommentDto) {
+    this.content = updateCommentDto.getContent();
   }
 }

@@ -66,7 +66,8 @@ public enum ErrorCode {
   INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상으로 변경 가능합니다."),
 
   // 게시글 관련
-  POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "게시글이 존재하지 않습니다.");
+  POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "게시글이 존재하지 않습니다."),
+  COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "댓글이 존재하지 않습니다." );
 
 
   private final HttpStatus status;
