@@ -1,0 +1,37 @@
+package com.example.Ecommerce.community.controller;
+
+import com.example.Ecommerce.community.dto.comment.CommentDetailDto;
+import com.example.Ecommerce.community.dto.comment.NewCommentDto;
+import com.example.Ecommerce.community.service.CommentService;
+import com.example.Ecommerce.security.UserDetailsImpl;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/community")
+public class CommentController {
+
+  private final CommentService commentService;
+
+
+  // 댓글 작성 API
+  @PostMapping("/comment/{postId}")
+  public ResponseEntity<CommentDetailDto> createComment(
+      @PathVariable Long postId,
+      @RequestBody @Valid NewCommentDto newCommentDto,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+    // 로그인한 회원 정보
+    String userId = userDetails.getUser().getUserId();
+    CommentDetailDto commentDetailDto = commentService.createComment(userId, postId, newCommentDto);
+    return ResponseEntity.ok(commentDetailDto);
+  }
+}

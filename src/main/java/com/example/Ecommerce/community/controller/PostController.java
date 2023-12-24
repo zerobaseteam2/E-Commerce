@@ -1,9 +1,9 @@
 package com.example.Ecommerce.community.controller;
 
-import com.example.Ecommerce.community.dto.NewPostDto;
-import com.example.Ecommerce.community.dto.PostDetailDto;
-import com.example.Ecommerce.community.dto.PostPageResultDto;
-import com.example.Ecommerce.community.dto.UpdatePostDto;
+import com.example.Ecommerce.community.dto.post.NewPostDto;
+import com.example.Ecommerce.community.dto.post.PostDetailDto;
+import com.example.Ecommerce.community.dto.post.PostPageResultDto;
+import com.example.Ecommerce.community.dto.post.UpdatePostDto;
 import com.example.Ecommerce.community.service.PostService;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import jakarta.validation.Valid;

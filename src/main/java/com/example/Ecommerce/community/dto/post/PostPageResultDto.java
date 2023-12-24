@@ -1,5 +1,6 @@
-package com.example.Ecommerce.community.dto;
+package com.example.Ecommerce.community.dto.post;
 
+import com.example.Ecommerce.community.dto.PageInfoDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

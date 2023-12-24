@@ -1,4 +1,4 @@
-package com.example.Ecommerce.community.dto;
+package com.example.Ecommerce.community.dto.post;
 
 import com.example.Ecommerce.community.domain.Post;
 import java.time.LocalDate;
@@ -15,8 +15,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostDetailDto {
 
-  private Long id;
-  private String customerId; //작성 회원 아이디
+  private Long postId;
+  private String userId; //작성 회원 아이디
   private String title;
   private String content;
   private Long viewCount;
@@ -28,8 +28,8 @@ public class PostDetailDto {
   // Post entity -> PostDetailDto 변경하여 반환
   public static PostDetailDto of(Post post) {
     return PostDetailDto.builder()
-        .id(post.getId())
-        .customerId(post.getUser().getUserId())
+        .postId(post.getId())
+        .userId(post.getUser().getUserId())
         .title(post.getTitle())
         .content(post.getContent())
         .viewCount(post.getViewCount())

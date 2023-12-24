@@ -1,8 +1,8 @@
 package com.example.Ecommerce.community.service;
 
-import com.example.Ecommerce.community.dto.NewPostDto;
-import com.example.Ecommerce.community.dto.PostDetailDto;
-import com.example.Ecommerce.community.dto.UpdatePostDto;
+import com.example.Ecommerce.community.dto.post.NewPostDto;
+import com.example.Ecommerce.community.dto.post.PostDetailDto;
+import com.example.Ecommerce.community.dto.post.UpdatePostDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
