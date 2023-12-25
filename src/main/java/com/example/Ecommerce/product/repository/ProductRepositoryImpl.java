@@ -7,9 +7,11 @@ import com.example.Ecommerce.product.domain.QProduct;
 import com.example.Ecommerce.product.domain.QProductOption;
 import com.example.Ecommerce.product.domain.QProductTag;
 import com.example.Ecommerce.product.dto.seller.ProductConfirm;
+import com.example.Ecommerce.review.domain.QReview;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class ProductRepositoryImpl implements ProductCustomRepository {
 
   private final JPAQueryFactory query;
@@ -103,6 +106,166 @@ public class ProductRepositoryImpl implements ProductCustomRepository {
         .fetch();
 
     int totalCount = productTags.size();
+    return new PageImpl<>(results, pageable, totalCount);
+  }
+
+  // 태그로 검색 최신순
+  @Override
+  public Page<Product> findProductsByTagOrderByModifiedAtDesc(String tagName, Pageable pageable) {
+
+    List<Product> results = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(productTag.createAt.desc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+
+    List<Product> products = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(productTag.createAt.desc())
+        .fetch();
+
+    int totalCount = products.size();
+    return new PageImpl<>(results, pageable, totalCount);
+  }
+
+  // 태그로 검색 오래된순
+  @Override
+  public Page<Product> findProductsByTagOrderByModifiedAtAsc(String tagName, Pageable pageable) {
+
+    List<Product> results = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(productTag.createAt.asc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+
+    List<Product> products = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(productTag.createAt.asc())
+        .fetch();
+
+    int totalCount = products.size();
+    return new PageImpl<>(results, pageable, totalCount);
+  }
+
+  // 태그로 검색 높은 가격순
+  @Override
+  public Page<Product> findProductsByTagOrderByPriceDesc(String tagName, Pageable pageable) {
+    List<Product> results = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(product.price.desc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+
+    List<Product> products = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(product.price.desc())
+        .fetch();
+
+    int totalCount = products.size();
+    return new PageImpl<>(results, pageable, totalCount);
+  }
+
+  // 태그로 검색 낮은 가격순
+  @Override
+  public Page<Product> findProductsByTagOrderByPriceAsc(String tagName, Pageable pageable) {
+    List<Product> results = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(product.price.asc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+
+    List<Product> products = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(product.price.asc())
+        .fetch();
+
+    int totalCount = products.size();
+    return new PageImpl<>(results, pageable, totalCount);
+  }
+
+  // 태그로 검색 리뷰 개수 높은순, 낮은순
+  @Override
+  public Page<Product> findProductsByTagOrderByReview(String tagName, Pageable pageable) {
+    List<Product> results = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+
+    List<Product> products = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .fetch();
+
+    int totalCount = products.size();
+    return new PageImpl<>(results, pageable, totalCount);
+  }
+
+  // 태그로 검색 높은 별점순
+  @Override
+  public Page<Product> findProductsByTagOrderByStarsDesc(String tagName, Pageable pageable) {
+    List<Product> results = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(product.stars.desc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+
+    List<Product> products = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(product.stars.desc())
+        .fetch();
+
+    int totalCount = products.size();
+    return new PageImpl<>(results, pageable, totalCount);
+  }
+
+  @Override
+  public Page<Product> findProductsByTagOrderByStarsAsc(String tagName, Pageable pageable) {
+    List<Product> results = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(product.stars.asc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+
+    List<Product> products = query.selectFrom(product)
+        .where(product.confirm.eq(ProductConfirm.APPROVED))
+        .join(product.productTags, productTag)
+        .where(productTag.tagName.contains(tagName))
+        .orderBy(product.stars.asc())
+        .fetch();
+
+    int totalCount = products.size();
     return new PageImpl<>(results, pageable, totalCount);
   }
 }

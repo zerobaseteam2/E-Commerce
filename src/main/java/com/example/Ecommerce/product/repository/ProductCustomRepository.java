@@ -17,4 +17,18 @@ public interface ProductCustomRepository {
 
   Page<ProductTag> findTagByProductId(Long sellerId, Long productId, Pageable pageable);
 
+  Page<Product> findProductsByTagOrderByModifiedAtDesc(String tagName, Pageable pageable);
+
+  Page<Product> findProductsByTagOrderByModifiedAtAsc(String tagName, Pageable pageable);
+
+  Page<Product> findProductsByTagOrderByPriceDesc(String tagName, Pageable pageable);
+
+  Page<Product> findProductsByTagOrderByPriceAsc(String tagName, Pageable pageable);
+
+  Page<Product> findProductsByTagOrderByReview(String tagName, Pageable pageable);
+
+  Page<Product> findProductsByTagOrderByStarsDesc(String tagName, Pageable pageable);
+
+  Page<Product> findProductsByTagOrderByStarsAsc(String tagName, Pageable pageable);
+
 }
