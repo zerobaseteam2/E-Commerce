@@ -37,7 +37,7 @@ public enum ErrorCode {
   DELIVERY_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Address not found"),
 
   // 검색 exception
-  SEARCH_NOT_FOUND_TAG(HttpStatus.BAD_REQUEST, "검색하신 태그에 해당하는 상품을 찾을수 없습니다."),
+  SEARCH_NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "검색하신 상품을 찾을수 없습니다."),
 
 
   EXPIRES_COUPON(HttpStatus.BAD_REQUEST, "Coupon has expired."),

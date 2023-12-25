@@ -17,12 +17,48 @@ public class SearchController {
   private final SearchService searchService;
 
   // 검색어로 검색 - 최신순, 오래된 순
+  @GetMapping("/date")
+  public ResponseEntity<SearchPageResponse> searchByDate(
+      @RequestParam(value = "word") String word,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+      @RequestParam(value = "sort", defaultValue = "DESC", required = false) String sort) {
+
+    return ResponseEntity.ok(searchService.searchByDate(word, pageNo, pageSize, sort));
+  }
 
   // 검색어로 검색 - 가격높은순, 가격낮은순
+  @GetMapping("/price")
+  public ResponseEntity<SearchPageResponse> searchByPrice(
+      @RequestParam(value = "word") String word,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+      @RequestParam(value = "sort", defaultValue = "DESC", required = false) String sort) {
+
+    return ResponseEntity.ok(searchService.searchByPrice(word, pageNo, pageSize, sort));
+  }
 
   // 검색어로 검색 - 리뷰개수 많은 순, 리뷰개수 적은순
+  @GetMapping("/review")
+  public ResponseEntity<SearchPageResponse> searchByReview(
+      @RequestParam(value = "word") String word,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+      @RequestParam(value = "sort", defaultValue = "DESC", required = false) String sort) {
+
+    return ResponseEntity.ok(searchService.searchByReview(word, pageNo, pageSize, sort));
+  }
 
   // 검색어로 검색 - 별점 높은 순, 별점 낮은순
+  @GetMapping("/stars")
+  public ResponseEntity<SearchPageResponse> searchByStars(
+      @RequestParam(value = "word") String word,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+      @RequestParam(value = "sort", defaultValue = "DESC", required = false) String sort) {
+
+    return ResponseEntity.ok(searchService.searchByStars(word, pageNo, pageSize, sort));
+  }
 
   // 태그로 검색 - 최신순, 오래된 순
   @GetMapping("/tag/date")

@@ -23,6 +23,117 @@ public class SearchService {
   private final ProductCustomRepository productCustomRepository;
   protected final ReviewCustomRepository reviewCustomRepository;
 
+  // 검색어로 검색 - 최신순, 오래된 순
+  public SearchPageResponse searchByDate(String word, int pageNo, int pageSize, String sort) {
+    // 날짜별 최신순
+    Pageable pageable = PageRequest.of(pageNo, pageSize);
+    if (sort.equals("DESC")) {
+      Page<Product> productPage = productCustomRepository.findProductOrderByModifiedAtDesc(
+          word, pageable);
+      return getSearchPageResponse(pageNo, pageSize, productPage);
+    }
+    // 날짜순 오래된순
+    if (sort.equals("ASC")) {
+      Page<Product> productPage = productCustomRepository.findProductOrderByModifiedAtAsc(
+          word, pageable);
+      return getSearchPageResponse(pageNo, pageSize, productPage);
+    }
+
+    return null;
+  }
+
+  // 검색어로 검색 - 가격높은순, 가격낮은순
+  public SearchPageResponse searchByPrice(String word, int pageNo, int pageSize, String sort) {
+
+    // 가격높은순
+    Pageable pageable = PageRequest.of(pageNo, pageSize);
+    if (sort.equals("DESC")) {
+      Page<Product> productPage = productCustomRepository.findProductOrderByPriceDesc(
+          word, pageable);
+      return getSearchPageResponse(pageNo, pageSize, productPage);
+    }
+    // 가격낮은순
+    if (sort.equals("ASC")) {
+      Page<Product> productPage = productCustomRepository.findProductOrderByPriceAsc(
+          word, pageable);
+      return getSearchPageResponse(pageNo, pageSize, productPage);
+    }
+
+    return null;
+  }
+
+  // 검색어로 검색 - 리뷰개수 많은 순, 리뷰개수 적은순
+  public SearchPageResponse searchByReview(String word, int pageNo, int pageSize, String sort) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+    // 리뷰 개수 높은순
+    if (sort.equals("DESC")) {
+      Page<Product> productPage = productCustomRepository.findProductsOrderByReview(
+          word, pageable);
+
+      if (productPage.isEmpty()) {
+        throw new CustomException(ErrorCode.SEARCH_NOT_FOUND_PRODUCT);
+      }
+      List<Product> products = productPage.getContent();
+      return SearchPageResponse.builder()
+          .searchDtoList(
+              products.stream()
+                  .sorted(Comparator.comparing(this::getReviewCount).reversed())
+                  .map(product -> SearchDto.from(product, getReviewCount(product)))
+                  .collect(Collectors.toList()))
+          .pageNo(pageNo)
+          .pageSize(pageSize)
+          .totalElements(productPage.getTotalElements())
+          .totalPages(productPage.getTotalPages())
+          .last(productPage.isLast())
+          .build();
+    }
+
+    // 리뷰 개수 낮은순
+    if (sort.equals("ASC")) {
+      Page<Product> productPage = productCustomRepository.findProductsOrderByReview(
+          word, pageable);
+
+      if (productPage.isEmpty()) {
+        throw new CustomException(ErrorCode.SEARCH_NOT_FOUND_PRODUCT);
+      }
+      List<Product> products = productPage.getContent();
+      return SearchPageResponse.builder()
+          .searchDtoList(
+              products.stream()
+                  .sorted(Comparator.comparing(this::getReviewCount))
+                  .map(product -> SearchDto.from(product, getReviewCount(product)))
+                  .collect(Collectors.toList()))
+          .pageNo(pageNo)
+          .pageSize(pageSize)
+          .totalElements(productPage.getTotalElements())
+          .totalPages(productPage.getTotalPages())
+          .last(productPage.isLast())
+          .build();
+    }
+    return null;
+  }
+
+  // 검색어로 검색 - 별점 높은 순, 별점 낮은순
+  public SearchPageResponse searchByStars(String word, int pageNo, int pageSize, String sort) {
+
+    // 가격높은순
+    Pageable pageable = PageRequest.of(pageNo, pageSize);
+    if (sort.equals("DESC")) {
+      Page<Product> productPage = productCustomRepository.findProductOrderByStarsDesc(
+          word, pageable);
+      return getSearchPageResponse(pageNo, pageSize, productPage);
+    }
+    // 가격낮은순
+    if (sort.equals("ASC")) {
+      Page<Product> productPage = productCustomRepository.findProductOrderByStarsAsc(
+          word, pageable);
+      return getSearchPageResponse(pageNo, pageSize, productPage);
+    }
+
+    return null;
+  }
+
   // 태그로 검색 - 최신순, 오래된 순
   public SearchPageResponse searchTagByDate(String tagName, int pageNo, int pageSize, String sort) {
     // 날짜별 최신순
@@ -74,7 +185,7 @@ public class SearchService {
           tagName, pageable);
 
       if (productPage.isEmpty()) {
-        throw new CustomException(ErrorCode.SEARCH_NOT_FOUND_TAG);
+        throw new CustomException(ErrorCode.SEARCH_NOT_FOUND_PRODUCT);
       }
       List<Product> products = productPage.getContent();
       return SearchPageResponse.builder()
@@ -97,7 +208,7 @@ public class SearchService {
           tagName, pageable);
 
       if (productPage.isEmpty()) {
-        throw new CustomException(ErrorCode.SEARCH_NOT_FOUND_TAG);
+        throw new CustomException(ErrorCode.SEARCH_NOT_FOUND_PRODUCT);
       }
       List<Product> products = productPage.getContent();
       return SearchPageResponse.builder()
@@ -137,11 +248,21 @@ public class SearchService {
     return null;
   }
 
+  // 카테고리로 검색 - 최신순, 오래된 순
+
+  // 카테고리로 검색 - 가격높은순, 가격낮은순
+
+  // 카테고리로 검색 - 리뷰개수 많은 순, 리뷰개수 적은순
+
+  // 카테고리로 검색 - 별점 높은 순, 별점 낮은순
+
+  // 상품 클릭시 상세정보창 보기
+
   // 공통함수 - 태그 검색(날짜순)
   private SearchPageResponse getSearchPageResponse(int pageNo, int pageSize,
       Page<Product> productPage) {
     if (productPage.isEmpty()) {
-      throw new CustomException(ErrorCode.SEARCH_NOT_FOUND_TAG);
+      throw new CustomException(ErrorCode.SEARCH_NOT_FOUND_PRODUCT);
     }
 
     List<Product> products = productPage.getContent();
