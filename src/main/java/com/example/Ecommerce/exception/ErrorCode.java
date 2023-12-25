@@ -36,6 +36,8 @@ public enum ErrorCode {
   PRODUCT_NOT_CANCEL_REQUEST(HttpStatus.BAD_REQUEST, "물품 등록 취소 혹은 판매 중지 요청한 상품이 아닙니다."),
   DELIVERY_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Address not found"),
 
+  // 검색 exception
+  SEARCH_NOT_FOUND_TAG(HttpStatus.BAD_REQUEST, "검색하신 태그에 해당하는 상품을 찾을수 없습니다."),
 
 
   EXPIRES_COUPON(HttpStatus.BAD_REQUEST, "Coupon has expired."),
