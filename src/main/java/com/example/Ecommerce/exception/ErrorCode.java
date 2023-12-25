@@ -65,7 +65,7 @@ public enum ErrorCode {
   // 주문 관련
   ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 상품주문정보가 없습니다."),
   ORDER_NOT_FOUND(HttpStatus.BAD_REQUEST,"주문이 존재하지 않습니다."),
-  INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상으로 변경 가능합니다."),
+  INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상이어야 합니다."),
 
   // 게시글 관련
   POST_NOT_FOUND(HttpStatus.BAD_REQUEST, "게시글이 존재하지 않습니다."),
