@@ -83,6 +83,7 @@ public class SecurityConfig {
                 .requestMatchers("/v1/product").hasRole("SELLER")
                 .requestMatchers("/v1/product/**").hasRole("SELLER")
                 .requestMatchers("/admin/product/**").hasRole("ADMIN")
+                .requestMatchers("/v1/search/**").permitAll()
 
                 .requestMatchers("api/order/**").hasRole("CUSTOMER")
                 .anyRequest().authenticated())
