@@ -1,5 +1,6 @@
 package com.example.Ecommerce.product.controller;
 
+import com.example.Ecommerce.product.dto.search.ProductDetailDto;
 import com.example.Ecommerce.product.dto.search.SearchPageResponse;
 import com.example.Ecommerce.product.service.SearchService;
 import lombok.RequiredArgsConstructor;
@@ -105,13 +106,56 @@ public class SearchController {
   }
 
   // 카테고리로 검색 - 최신순, 오래된 순
+  @GetMapping("/category/date")
+  public ResponseEntity<SearchPageResponse> searchCategoryByDate(
+      @RequestParam(value = "category") String category,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+      @RequestParam(value = "sort", defaultValue = "DESC", required = false) String sort) {
+
+    return ResponseEntity.ok(searchService.searchCategoryByDate(category, pageNo, pageSize, sort));
+  }
 
   // 카테고리로 검색 - 가격높은순, 가격낮은순
+  @GetMapping("/category/price")
+  public ResponseEntity<SearchPageResponse> searchCategoryByPrice(
+      @RequestParam(value = "category") String category,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+      @RequestParam(value = "sort", defaultValue = "DESC", required = false) String sort) {
+
+    return ResponseEntity.ok(searchService.searchCategoryByPrice(category, pageNo, pageSize, sort));
+  }
 
   // 카테고리로 검색 - 리뷰개수 많은 순, 리뷰개수 적은순
+  @GetMapping("/category/review")
+  public ResponseEntity<SearchPageResponse> searchCategoryByReview(
+      @RequestParam(value = "category") String category,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+      @RequestParam(value = "sort", defaultValue = "DESC", required = false) String sort) {
+
+    return ResponseEntity.ok(
+        searchService.searchCategoryByReview(category, pageNo, pageSize, sort));
+  }
 
   // 카테고리로 검색 - 별점 높은 순, 별점 낮은순
+  @GetMapping("/category/stars")
+  public ResponseEntity<SearchPageResponse> searchCategoryByStars(
+      @RequestParam(value = "category") String category,
+      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+      @RequestParam(value = "sort", defaultValue = "DESC", required = false) String sort) {
+
+    return ResponseEntity.ok(searchService.searchCategoryByStars(category, pageNo, pageSize, sort));
+  }
 
   // 상품 클릭시 상세정보창 보기
+  @GetMapping("/productDetail")
+  public ResponseEntity<ProductDetailDto> getProductDetail(@RequestParam Long productId) {
+
+    return ResponseEntity.ok(ProductDetailDto.from(searchService.getProductDetail(productId),
+        searchService.getReviewCount(searchService.getProductDetail(productId))));
+  }
 
 }
