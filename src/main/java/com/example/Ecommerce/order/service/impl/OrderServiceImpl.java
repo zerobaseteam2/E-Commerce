@@ -54,6 +54,10 @@ public class OrderServiceImpl implements OrderService {
 
     // 상품 및 수량 정보로 주문상품 생성
     newOrderDto.getProductQuantityMap().forEach((productId, quantity) -> {
+      // 주문 수량이 0개인 경우 exception 발생
+      if (quantity <= 0) {
+        throw new CustomException(ErrorCode.INVALID_QUANTITY);
+      }
       // 상품 id 에 따른 상품 불러오기, id가 없어진 경우 exception 발생
       Product product = productRepository.findById(productId)
           .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
@@ -72,9 +76,7 @@ public class OrderServiceImpl implements OrderService {
 
     // 총금액 계산
     order.calculateTotalPrice();
-
-    // 총할인금액 계산
-    // 쿠폰이 있는경우만 사용
+    // 총할인금액 계산 - 쿠폰이 있는경우만 사용
     if (newOrderDto.getCouponId() != null){
       Coupon coupon  = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(), user.get().getId())
           .orElseThrow(()-> new CustomException(ErrorCode.COUPON_NOT_FOUND));
@@ -85,7 +87,6 @@ public class OrderServiceImpl implements OrderService {
     }
     // 주문 저장
     orderRepository.save(order);
-
     //생성한 주문의 상세내역 반환
     return OrderDetailDto.of(order);
   }
