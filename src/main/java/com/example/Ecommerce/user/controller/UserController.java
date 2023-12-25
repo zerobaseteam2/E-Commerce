@@ -158,4 +158,13 @@ public class UserController {
 
     return ResponseEntity.ok().build();
   }
+
+  @DeleteMapping("/unregister")
+  public ResponseEntity<Void> unregisterUser(
+      @RequestHeader("Authorization") String accessToken,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    userService.unregisterUser(accessToken, userDetails);
+
+    return ResponseEntity.ok().build();
+  }
 }
