@@ -1,32 +1,37 @@
 package com.example.Ecommerce.user.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 // DB에 저장하는 것으로 변경
 @Getter
-@RedisHash("refreshToken")
+@NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class RefreshToken {
-  
+
   @Id
   private String id;
-  
+
   private String refreshToken;
-  
-  @TimeToLive
-  private Long expiration; // 설정한 시간만큼 데이터 저장
-  
-  public static RefreshToken createRefreshToken(String username, String refreshToken, Long remainingMilliSeconds) {
+
+  @CreatedDate
+  private LocalDateTime createdDate;
+
+  public static RefreshToken createRefreshToken(String username, String refreshToken) {
     return RefreshToken.builder()
-            .id(username)
-            .refreshToken(refreshToken)
-            .expiration(remainingMilliSeconds / 1000)
-            .build();
+        .id(username)
+        .refreshToken(refreshToken)
+        .build();
   }
 }

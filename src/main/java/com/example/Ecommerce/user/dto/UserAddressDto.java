@@ -1,6 +1,7 @@
 package com.example.Ecommerce.user.dto;
 
 import com.example.Ecommerce.user.domain.DeliveryAddress;
+import com.example.Ecommerce.user.domain.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,25 +33,58 @@ public class UserAddressDto {
     @NotBlank(message = "수신자 번호는 필수 입력값입니다.")
     private String phone;
 
-    public DeliveryAddress toEntity(boolean existsRepresentAddress) {
+    public DeliveryAddress toEntity(User user, boolean existsRepresentAddress) {
       if (existsRepresentAddress) {
         return DeliveryAddress.builder()
+            .user(user)
             .roadAddress(roadAddress)
             .detailAddress(detailAddress)
             .zoneNo(zoneNo)
             .addressName(addressName)
             .phone(phone)
-            .representAddress(false)
+            .isRepresentAddress(false)
             .build();
       }
 
       return DeliveryAddress.builder()
+          .user(user)
           .roadAddress(roadAddress)
           .detailAddress(detailAddress)
           .zoneNo(zoneNo)
           .addressName(addressName)
           .phone(phone)
-          .representAddress(true)
+          .isRepresentAddress(true)
+          .build();
+    }
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Response {
+
+    private Long addressId;
+
+    private String roadAddress;
+
+    private String detailAddress;
+
+    private String zoneNo;
+
+    private String addressName;
+
+    private String phone;
+
+    public static UserAddressDto.Response fromEntity(DeliveryAddress deliveryAddress) {
+      return Response.builder()
+          .addressId(deliveryAddress.getId())
+          .roadAddress(deliveryAddress.getRoadAddress())
+          .detailAddress(deliveryAddress.getDetailAddress())
+          .zoneNo(deliveryAddress.getZoneNo())
+          .addressName(deliveryAddress.getAddressName())
+          .phone(deliveryAddress.getPhone())
           .build();
     }
   }

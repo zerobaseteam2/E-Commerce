@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @TestConfiguration
 @EnableWebSecurity
 public class TestConfig {
+
   @Autowired
   private JwtAuthenticationFilter jwtAuthenticationFilter;
   @MockBean
@@ -26,35 +27,41 @@ public class TestConfig {
   private UserDetailServiceImpl userDetailService;
   @MockBean
   private LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
-  
+
   @Bean
   public BCryptPasswordEncoder bCryptPasswordEncoder() {
     return new BCryptPasswordEncoder();
   }
-  
+
   @Bean
   public JwtAuthenticationFilter jwtAuthorizationFilter() {
-    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService, logoutAccessTokenRedisRepository);
+    return new JwtAuthenticationFilter(jwtTokenUtil, userDetailService,
+        logoutAccessTokenRedisRepository);
   }
-  
+
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-            .httpBasic((httpBasicConfig) ->
-                    httpBasicConfig.disable())
-            .csrf((csrfConfig) ->
-                    csrfConfig.disable())
-            .formLogin((formLoginConfig) ->
-                    formLoginConfig.disable())
-            .authorizeHttpRequests((auth) ->
-                    auth.requestMatchers("/api/user/register").permitAll()
-                            .requestMatchers("/api/user/login").permitAll()
-                            .anyRequest().authenticated())
-            .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
-            .sessionManagement((sessionConfig) ->
-                    sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    
+        .httpBasic((httpBasicConfig) ->
+            httpBasicConfig.disable())
+        .csrf((csrfConfig) ->
+            csrfConfig.disable())
+        .formLogin((formLoginConfig) ->
+            formLoginConfig.disable())
+        .authorizeHttpRequests((auth) ->
+            auth.requestMatchers("/api/user/register").permitAll()
+                .requestMatchers("/api/user/login").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/api-docs/**").permitAll()
+                .requestMatchers("/api/user/verify/{id}").permitAll()
+                .requestMatchers("/api/user/address").hasRole("CUSTOMER")
+                .requestMatchers("v1/product").hasRole("SELLER")
+                .anyRequest().authenticated())
+        .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
+        .sessionManagement((sessionConfig) ->
+            sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
   }
 }

@@ -1,8 +1,8 @@
 package com.example.Ecommerce.product.domain;
 
 import com.example.Ecommerce.product.domain.form.AddProductForm;
-import com.example.Ecommerce.product.dto.ProductConfirm;
-import com.example.Ecommerce.product.dto.ProductState;
+import com.example.Ecommerce.product.dto.seller.ProductConfirm;
+import com.example.Ecommerce.product.dto.seller.ProductState;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -85,6 +85,12 @@ public class Product extends BaseEntity {
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "product_id")
   private List<ProductTag> productTags = new ArrayList<>();
+
+  //찜 상품 내역
+//  @OneToMany(cascade = CascadeType.ALL)
+//  @JoinColumn(name = "product_id")
+//  private List<InterestHistory> interestHistories = new ArrayList<>();
+
 
   public static Product of(Long sellerId, AddProductForm form) {
 

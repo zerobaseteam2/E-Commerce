@@ -1,4 +1,4 @@
-package com.example.Ecommerce.product.dto;
+package com.example.Ecommerce.product.dto.seller;
 
 public enum ProductState {
 

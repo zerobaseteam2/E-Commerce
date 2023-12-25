@@ -1,10 +1,16 @@
 package com.example.Ecommerce.user.controller;
 
+import static com.example.Ecommerce.security.jwt.JwtTokenUtil.AUTHORIZATION_HEADER;
+import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 import static com.example.Ecommerce.user.domain.UserRole.CUSTOMER;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -13,10 +19,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.Ecommerce.config.TestConfig;
 import com.example.Ecommerce.user.dto.UserAddressDto;
+import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Date;
+import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +33,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @Import(TestConfig.class)
 @WebMvcTest(UserController.class)
@@ -39,6 +47,7 @@ class UserControllerTest {
 
   @MockBean
   private UserService userService;
+
 
   @Test
   @DisplayName("회원 가입 성공 테스트")
@@ -55,7 +64,7 @@ class UserControllerTest {
         .name("테스트")
         .email("Test@naver.com")
         .phone("01012345678")
-        .birth(new Date())
+        .birth(LocalDate.of(2023, 12, 12))
         .role(CUSTOMER)
         .build();
     //when
@@ -69,6 +78,35 @@ class UserControllerTest {
         .andDo(print());
 
     verify(userService).registerUser(any());
+  }
+
+  @Test
+  @DisplayName("로그인 성공 테스트")
+  void loginUserSuccess() throws Exception {
+    //given
+
+    UserLoginDto.Request request = UserLoginDto.Request.builder()
+        .userId("Test")
+        .password("Test1234!")
+        .build();
+
+    given(userService.login(any(UserLoginDto.Request.class)))
+        .willReturn(UserLoginDto.Response.of(
+            BEARER_PREFIX + "accessToken",
+            BEARER_PREFIX + "refreshToken"));
+
+    //when
+
+    //then
+    MvcResult result = mockMvc.perform(post("/api/user/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andReturn();
+    String token = result.getResponse().getHeader(AUTHORIZATION_HEADER);
+
+    assertNotNull(token);
+    assertTrue(token.startsWith("Bearer "));
   }
 
   @Test
@@ -117,5 +155,53 @@ class UserControllerTest {
         .andDo(print());
 
     verify(userService).modifyUserAddress(any(), any(), anyLong());
+  }
+
+  @Test
+  @DisplayName("배송지 삭제 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_CUSTOMER"})
+  void deleteUserAddressSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(
+            delete("/api/user/address/1")
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).deleteUserAddress(any(), anyLong());
+  }
+
+  @Test
+  @DisplayName("배송지 조회 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_CUSTOMER"})
+  void getUserAddressSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(
+            get("/api/user/address")
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).getUserAddressList(any(), any());
+  }
+
+  @Test
+  @DisplayName("대표 배송지 설정 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_CUSTOMER"})
+  void setUserRepresentAddressSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(
+            put("/api/user/address/represent/1")
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).setUserRepresentAddress(any(), any());
   }
 }

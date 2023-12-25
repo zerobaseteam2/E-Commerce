@@ -5,6 +5,7 @@ import com.example.Ecommerce.user.domain.UserRole;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class UserRegisterDto {
@@ -30,14 +31,15 @@ public class UserRegisterDto {
     @Email(message = "이메일 형식이 아닙니다.")
     private String email;
     
-    @Size(max = 11)
+    @Size(max = 11, message = "ex) 01012345678")
     @NotBlank(message = "전화번호는 필수 입력값입니다.")
     private String phone;
-    
+
+    @NotNull(message = "생일은 필수 입력값입니다.")
     @Past(message = "생일은 현재보다 이전이어야 합니다.")
-    private Date birth;
-    
-    //    @NotBlank(message = "권한은 필수 입력값입니다.")
+    private LocalDate birth;
+
+    @NotNull
     private UserRole role;
     
     public User toEntity(String encryptedPassword) {
