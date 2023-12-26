@@ -41,4 +41,6 @@ public interface UserService {
   void sendToEmailResetPasswordForm(FindUserPasswordDto.Request request);
 
   void resetPassword(ResetPasswordDto.Request request, String encryptedUserId);
+
+  void unregisterUser(String accessToken, UserDetailsImpl userDetails);
 }
