@@ -27,7 +27,6 @@ import com.example.Ecommerce.product.repository.ProductRepository;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
