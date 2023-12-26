@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
           .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
 
       // 재고 확인
-      if (productOption.getCount() >= quantity) {
+      if (quantity > 0 && productOption.getCount() >= quantity) {
         productOption.reduceInventory(quantity); //재고있으면 재고수량 업데이트
       } else {
         throw new CustomException(ErrorCode.NO_INVENTORY); //재고없으면 exception (주문 불가능)
@@ -115,11 +115,11 @@ public class OrderServiceImpl implements OrderService {
     return OrderDetailDto.of(order);
   }
 
-  private void processDiscountAndTotalPaymentPrice(NewOrderDto newOrderDto, Optional<User> user, Order order) {
+  private void processDiscountAndTotalPaymentPrice(NewOrderDto newOrderDto, Optional<User> user,
+      Order order) {
     // 쿠폰이 존재한다면 쿠폰 사용
     if (newOrderDto.getCouponId() != null) {
-      Coupon coupon = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(),
-              user.get().getId())
+      Coupon coupon = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(),user.get().getId())
           .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
       coupon.useCoupon(coupon, order.getId()); // 쿠폰 사용
       order.applyCouponDiscount(coupon); // 쿠폰으로 할인금액과 총결제금액 계산
@@ -176,7 +176,8 @@ public class OrderServiceImpl implements OrderService {
       throw new CustomException(ErrorCode.INVALID_QUANTITY);
     }
     // 재고 확인
-    ProductOption productOption = productOptionRepository.findById(orderProductOption.getProductOptionId())
+    ProductOption productOption = productOptionRepository.findById(
+            orderProductOption.getProductOptionId())
         .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
     if (productOption.getCount() + currentQuantity >= updateQuantity) {
       productOption.updateInventoryForQuantity(currentQuantity, updateQuantity); //재고있으면 재고수량 업데이트
