@@ -84,7 +84,6 @@ public class OrderServiceImpl implements OrderService {
       OrderProduct orderProduct = OrderProduct.create(order, product);
       // 상품 옵션
       Integer quantity = newOrderProductDto.getQuantity();
-      OrderProductOption orderProductOption;
       // 상품옵션 찾기, 없으면 exception
       ProductOption productOption = productOptionRepository.findById(
               newOrderProductDto.getOptionId())
@@ -97,7 +96,8 @@ public class OrderServiceImpl implements OrderService {
         throw new CustomException(ErrorCode.NO_INVENTORY); //재고없으면 exception (주문 불가능)
       }
       // 주문상품 option 생성
-      orderProductOption = OrderProductOption.create(productOption, quantity, orderProduct);
+      OrderProductOption orderProductOption = OrderProductOption.create(productOption, quantity,
+          orderProduct);
       orderProduct.addOrderProductOption(orderProductOption);
 
       orderProductRepository.save(orderProduct);
@@ -119,7 +119,8 @@ public class OrderServiceImpl implements OrderService {
       Order order) {
     // 쿠폰이 존재한다면 쿠폰 사용
     if (newOrderDto.getCouponId() != null) {
-      Coupon coupon = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(),user.get().getId())
+      Coupon coupon = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(),
+              user.get().getId())
           .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
       coupon.useCoupon(coupon, order.getId()); // 쿠폰 사용
       order.applyCouponDiscount(coupon); // 쿠폰으로 할인금액과 총결제금액 계산
