@@ -1,16 +1,13 @@
 package com.example.Ecommerce.review.controller;
 
-import com.example.Ecommerce.order.repository.OrderProductRepository;
-import com.example.Ecommerce.order.repository.OrderRepository;
+
 import com.example.Ecommerce.review.dto.ReplyDto;
 import com.example.Ecommerce.review.dto.ReviewCreateDto;
 import com.example.Ecommerce.review.dto.ReviewListDto;
 import com.example.Ecommerce.review.dto.ReviewUpdateDto;
-import com.example.Ecommerce.review.repository.ReviewRepository;
 import com.example.Ecommerce.review.service.ReviewService;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.user.domain.User;
-import com.example.Ecommerce.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,11 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ReviewController {
 
-  private final UserRepository userRepository;
-  private final OrderRepository orderRepository;
   private final ReviewService reviewService;
-  private final OrderProductRepository orderProductRepository;
-  private final ReviewRepository reviewRepository;
 
 
   //리뷰 등록 요청

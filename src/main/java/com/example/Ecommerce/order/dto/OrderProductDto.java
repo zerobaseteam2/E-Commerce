@@ -18,6 +18,7 @@ public class OrderProductDto {
 
   private Long id; //주문상품 id
   private Long orderId; //주문 id
+  private Long productId; //상품 id
   private String productName; //상품명
   private int productPrice; //상품금액
   private int quantity; //상품수량
@@ -28,6 +29,7 @@ public class OrderProductDto {
     return OrderProductDto.builder()
         .id(orderProduct.getId())
         .orderId(orderProduct.getOrder().getId())
+        .productId(orderProduct.getProduct().getId())
         .productName(orderProduct.getProduct().getName())
         .productPrice(orderProduct.getProduct().getPrice())
         .quantity(orderProduct.getQuantity())

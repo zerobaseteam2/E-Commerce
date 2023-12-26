@@ -34,5 +34,6 @@ public class NewOrderDto {
   @NotNull
   private Map<Long, Integer> productQuantityMap; // product id 와 상품수량 정보
 
+  private Long couponId; // 사용할 쿠폰 id
 
 }

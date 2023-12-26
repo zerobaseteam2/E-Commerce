@@ -4,6 +4,7 @@ import static com.example.Ecommerce.security.jwt.JwtTokenUtil.BEARER_PREFIX;
 
 import com.example.Ecommerce.common.MailComponent;
 import com.example.Ecommerce.config.CacheConfig;
+import com.example.Ecommerce.config.CacheConfig.CacheKey;
 import com.example.Ecommerce.coupon.domain.CouponType;
 import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
 import com.example.Ecommerce.coupon.service.CouponService;
@@ -15,8 +16,12 @@ import com.example.Ecommerce.user.domain.DeliveryAddress;
 import com.example.Ecommerce.user.domain.LogoutAccessToken;
 import com.example.Ecommerce.user.domain.RefreshToken;
 import com.example.Ecommerce.user.domain.User;
+import com.example.Ecommerce.user.dto.FindUserIdDto;
+import com.example.Ecommerce.user.dto.FindUserPasswordDto;
+import com.example.Ecommerce.user.dto.ResetPasswordDto;
 import com.example.Ecommerce.user.dto.UserAddressDto;
 import com.example.Ecommerce.user.dto.UserAddressDto.Response;
+import com.example.Ecommerce.user.dto.UserInfoDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.repository.DeliveryAddressRepository;
@@ -29,6 +34,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -224,5 +231,69 @@ public class UserServiceImpl implements UserService {
         deliveryAddressRepository.findByUserAndId(user, deliveryAddressId)
             .orElseThrow(() -> new CustomException(ErrorCode.DELIVERY_ADDRESS_NOT_FOUND));
     afterRepresentAddress.modifyRepresent();
+  }
+
+  @Override
+  @CacheEvict(value = CacheKey.USER, key = "#userDetails.user.userId")
+  public void modifyUserInfo(UserDetailsImpl userDetails, UserInfoDto.Request request) {
+    User user = userDetails.getUser();
+
+    String encryptedPassword = passwordEncoder.encode(request.getPassword());
+    request.setPassword(encryptedPassword);
+
+    user.modifyUserInfo(request);
+    userRepository.save(user);
+  }
+
+  @Override
+  public void findUserId(FindUserIdDto.Request request) {
+    User user = userRepository.findByEmailAndName(request.getEmail(), request.getName())
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    mailComponent.sendUserId(user.getUserId(), request.getEmail(), request.getName());
+  }
+
+  @Override
+  public void sendToEmailResetPasswordForm(FindUserPasswordDto.Request request) {
+    User user = userRepository.findByEmailAndUserId(request.getEmail(), request.getUserId())
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+    try {
+      mailComponent.sendResetPasswordForm(user.getUserId(), request.getEmail(), user.getName());
+    } catch (Exception e) {
+      log.info(e.getMessage());
+      throw new RuntimeException("Sending email failed.");
+    }
+  }
+
+  @Override
+  @Transactional
+  public void resetPassword(ResetPasswordDto.Request request, String encryptedUserId) {
+    String userId;
+
+    try {
+      userId = mailComponent.decryptUserId(encryptedUserId);
+    } catch (Exception e) {
+      log.info(e.getMessage());
+      throw new RuntimeException("Decrypt request failed.");
+    }
+
+    if (userId == null) {
+      throw new RuntimeException("Decrypt request failed.");
+    }
+
+    String encryptedPassword = passwordEncoder.encode(request.getNewPassword());
+
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    user.modifyUserPassword(encryptedPassword);
+  }
+
+  @Override
+  public void unregisterUser(String accessToken, UserDetailsImpl userDetails) {
+    User user = userDetails.getUser();
+    logout(accessToken, user.getUserId());
+
+    userRepository.delete(user);
   }
 }

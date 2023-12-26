@@ -24,7 +24,7 @@ public class CouponController {
   private final CouponService couponService;
 
   @PostMapping("/issuance")
-  public ResponseEntity<CouponIssuanceDto.Response> inssuanceCoupon(
+  public ResponseEntity<CouponIssuanceDto.Response> issuanceCoupon(
       @RequestBody @Valid CouponIssuanceDto.Request request) {
     CouponIssuanceDto.Response response = couponService.issuanceCoupon(request);
 

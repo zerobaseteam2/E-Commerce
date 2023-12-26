@@ -93,7 +93,6 @@ public class OrderController {
 
     // 로그인한 회원 정보
     Long customerId = userDetails.getUser().getId();
-
     // paging 처리
     Pageable pageable = PageRequest.of(page, size);
 

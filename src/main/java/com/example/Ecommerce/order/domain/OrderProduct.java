@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,10 +43,18 @@ public class OrderProduct {
   @Enumerated(value = EnumType.STRING)
   private OrderStatus status; //주문상태
 
+  @OneToMany(mappedBy = "orderProduct")
+  private List<OrderStatusHistory> statusHistoryList;
+
+
   // 주문 상품 수량 수정
   public void updateQuantity(int quantity) {
     this.quantity = quantity;
   }
 
+  // 주문 상태 변경
+  public void updateStatus(OrderStatus newStatus) {
+    this.status = newStatus;
+  }
 }
 

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WaitingListResponse {
+public class ListResponse {
 
   private List<ProductDto> productList;
   private int pageNo;

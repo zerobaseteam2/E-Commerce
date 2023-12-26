@@ -12,7 +12,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
   Optional<Coupon> findById(Long couponId);
 
-  List<Coupon> findAllByExpiresFalseAndOrderNoNullAndExpirationDateBefore(LocalDate today);
+  List<Coupon> findAllByIsExpiredFalseAndOrderNoNullAndExpirationDateBefore(LocalDate today);
 
   // 전체 쿠폰 조회
   Page<Coupon> findAllByCustomerId(Pageable pageable, Long customerId);
@@ -21,9 +21,11 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
   Page<Coupon> findAllByCustomerIdAndOrderNoNotNull(Pageable pageable, Long customerId);
 
   // 사용 가능 쿠폰 조회
-  Page<Coupon> findAllByCustomerIdAndOrderNoNullAndExpiresFalse(Pageable pageable,
+  Page<Coupon> findAllByCustomerIdAndOrderNoNullAndIsExpiredFalse(Pageable pageable,
       Long customerId);
 
   // 만료된 쿠폰 조회
-  Page<Coupon> findAllByCustomerIdAndExpiresTrue(Pageable pageable, Long customerId);
+  Page<Coupon> findAllByCustomerIdAndIsExpiredTrue(Pageable pageable, Long customerId);
+
+  Optional<Coupon> findByIdAndCustomerId(Long couponId, Long id);
 }

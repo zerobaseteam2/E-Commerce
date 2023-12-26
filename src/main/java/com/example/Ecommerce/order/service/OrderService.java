@@ -20,5 +20,4 @@ public interface OrderService {
   OrderDetailDto getOrderDetails(String userId, Long id);
 
   Page<OrderProductDto> getAllOrders(Long customerId, Pageable pageable);
-
 }
