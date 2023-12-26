@@ -3,6 +3,7 @@ package com.example.Ecommerce.inquiry.dto;
 import com.example.Ecommerce.inquiry.domain.Inquiry;
 import com.example.Ecommerce.user.domain.UserRole;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class InquiryListDto {
   private UserRole userRole;
   private String title;
   private boolean state;
-  private LocalDate createdAt;
+  private LocalDateTime createdAt;
 
   public static InquiryListDto toDto(Inquiry inquiry) {
     return InquiryListDto.builder()

@@ -2,8 +2,10 @@ package com.example.Ecommerce.inquiry.dto;
 
 import com.example.Ecommerce.inquiry.domain.Inquiry;
 import com.example.Ecommerce.inquiry.domain.InquiryReply;
+import com.example.Ecommerce.inquiry.dto.RegisterInquiryDto.Response;
 import com.example.Ecommerce.user.domain.UserRole;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,17 +29,19 @@ public class UpdaterInquiryDto {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Response {
+    private Long inquiryId;
     private String userId;
     private UserRole userRole;
     private String title;
     private String content;
     private boolean state;
     private InquiryReply inquiryReply;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public static UpdaterInquiryDto.Response toDto(Inquiry inquiry) {
-      return UpdaterInquiryDto.Response.builder()
+    public static Response toDto(Inquiry inquiry) {
+      return Response.builder()
+          .inquiryId(inquiry.getId())
           .userId(inquiry.getUser().getUserId())
           .userRole(inquiry.getUser().getRole())
           .title(inquiry.getTitle())
@@ -45,7 +49,7 @@ public class UpdaterInquiryDto {
           .state(inquiry.isReplyState())
           .inquiryReply(inquiry.getInquiryReply())
           .createdAt(inquiry.getCreatedAt())
-          .updatedAt(LocalDate.now())
+          .updatedAt(inquiry.getUpdatedAt())
           .build();
     }
   }

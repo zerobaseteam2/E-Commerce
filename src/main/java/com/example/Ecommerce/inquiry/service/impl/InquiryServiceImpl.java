@@ -24,6 +24,7 @@ import com.example.Ecommerce.user.domain.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InquiryServiceImpl implements InquiryService {
   private final InquiryRepository inquiryRepository;
   private final InquiryReplyRepository inquiryReplyRepository;
@@ -55,7 +57,7 @@ public class InquiryServiceImpl implements InquiryService {
         .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
     // 권한 확인
-    if (!nowInquiry.getUser().equals(user) && !user.getRole().equals(UserRole.ADMIN)) {
+    if (!nowInquiry.getUser().getUserId().equals(user.getUserId()) && !user.getRole().equals(UserRole.ADMIN)) {
       throw new CustomException(NO_PERMISSION_TO_VIEW);
     }
 
@@ -71,7 +73,7 @@ public class InquiryServiceImpl implements InquiryService {
         .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
     // 권한 확인
-    if (!nowInquiry.getUser().equals(user) && !user.getRole().equals(UserRole.ADMIN)) {
+    if (!nowInquiry.getUser().getUserId().equals(user.getUserId()) && !user.getRole().equals(UserRole.ADMIN)) {
       throw new CustomException(NO_PERMISSION_TO_VIEW);
     }
 
@@ -90,7 +92,7 @@ public class InquiryServiceImpl implements InquiryService {
         .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
     // 권한 확인
-    if (!nowInquiry.getUser().equals(user) && !user.getRole().equals(UserRole.ADMIN)) {
+    if (!nowInquiry.getUser().getUserId().equals(user.getUserId()) && !user.getRole().equals(UserRole.ADMIN)) {
       throw new CustomException(NO_PERMISSION_TO_VIEW);
     }
 
@@ -156,6 +158,8 @@ public class InquiryServiceImpl implements InquiryService {
 
     Inquiry nowInquiry = inquiryRepository.findByInquiryReply(nowReply)
         .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
+
+    nowInquiry.addReply(nowReply);
 
     return ViewInquiryDto.toDto(nowInquiry);
   }

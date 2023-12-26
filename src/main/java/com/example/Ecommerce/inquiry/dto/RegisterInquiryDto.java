@@ -5,6 +5,7 @@ import com.example.Ecommerce.inquiry.domain.InquiryReply;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.domain.UserRole;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,17 +38,19 @@ public class RegisterInquiryDto {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Response {
+    private Long inquiryId;
     private String userId;
     private UserRole userRole;
     private String title;
     private String content;
     private boolean state;
     private InquiryReply inquiryReply;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static Response toDto(Inquiry inquiry) {
       return Response.builder()
+          .inquiryId(inquiry.getId())
           .userId(inquiry.getUser().getUserId())
           .userRole(inquiry.getUser().getRole())
           .title(inquiry.getTitle())

@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,11 +51,11 @@ public class Inquiry {
 
   @CreatedDate
   @Column(nullable = false)
-  private LocalDate createdAt;
+  private LocalDateTime createdAt;
 
   @Column
   @LastModifiedDate
-  private LocalDate updatedAt;
+  private LocalDateTime updatedAt;
 
   public void update(UpdaterInquiryDto.Request request) {
     this.title = request.getTitle();
