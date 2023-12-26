@@ -1,5 +1,6 @@
 package com.example.Ecommerce.order.domain;
 
+import com.example.Ecommerce.product.domain.ProductOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,26 +28,23 @@ public class OrderProductOption {
   private Long productOptionId;
 
   @Column(nullable = false)
+  private String productOptionName;
+  @Column(nullable = false)
   private Integer quantity;
 
   @ManyToOne
   @JoinColumn(name = "order_product_id")
   private OrderProduct orderProduct;
 
-  public static OrderProductOption createWithOptionId(Long productOptionId, Integer quantity, OrderProduct orderProduct) {
+  public static OrderProductOption create(ProductOption productOption, Integer quantity, OrderProduct orderProduct) {
     return OrderProductOption.builder()
-        .productOptionId(productOptionId)
-        .quantity(quantity)
-        .orderProduct(orderProduct)
+        .productOptionId(productOption.getId()) //상품옵션아이디
+        .productOptionName(productOption.getOptionName()) //상품옵션명
+        .orderProduct(orderProduct) //주문 상품
+        .quantity(quantity) //주문 수량
         .build();
   }
 
-  public static OrderProductOption create(Integer quantity, OrderProduct orderProduct) {
-    return OrderProductOption.builder()
-        .quantity(quantity)
-        .orderProduct(orderProduct)
-        .build();
-  }
 
 
   // 주문 상품 수량 수정

@@ -27,6 +27,7 @@ import com.example.Ecommerce.product.repository.ProductRepository;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
     Order order = Order.create(newOrderDto, user.get());
     orderRepository.save(order);
 
-    // 상품 및 수량 정보로 주문상품 생성
+    // 주문상품(주문옵션포함) 생성
     newOrderDto.getNewOrderProductDtoList().forEach(newOrderProductDto -> {
       // 입력된 주문 수량이 0개인 경우 exception 발생
       if (newOrderProductDto.getQuantity() <= 0) {
@@ -81,54 +82,52 @@ public class OrderServiceImpl implements OrderService {
       }
 
       // 주문상품 생성 및 저장
-      OrderProduct orderProduct = OrderProduct.builder()
-          .order(order)
-          .product(product)
-          .status(OrderStatus.ORDER_COMPLETE)
-          .build();
-
+      OrderProduct orderProduct = OrderProduct.create(order, product);
       // 상품 옵션
-      Long productOptionId = newOrderProductDto.getOptionId();
       Integer quantity = newOrderProductDto.getQuantity();
       OrderProductOption orderProductOption;
+      // 상품옵션 찾기, 없으면 exception
+      ProductOption productOption = productOptionRepository.findById(
+              newOrderProductDto.getOptionId())
+          .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
 
-      if (productOptionId != null) {
-        // 상품 option id가 존재하면
-        ProductOption productOption = productOptionRepository.findById(
-                productOptionId)
-            .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
-        // 재고 수정
-        productOption.reduceInventory(quantity);
-        // 주문상품 option 생성
-        orderProductOption = OrderProductOption.createWithOptionId(productOptionId, quantity,
-            orderProduct);
+      // 재고 확인
+      if (productOption.getCount() >= quantity) {
+        productOption.reduceInventory(quantity); //재고있으면 재고수량 업데이트
       } else {
-        // 상품 option id가 존재하지 않으면 제외하고 주문상품 option 생성
-        orderProductOption = OrderProductOption.create(quantity, orderProduct);
+        throw new CustomException(ErrorCode.NO_INVENTORY); //재고없으면 exception (주문 불가능)
       }
-      orderProductOptionRepository.save(orderProductOption);
+      // 주문상품 option 생성
+      orderProductOption = OrderProductOption.create(productOption, quantity, orderProduct);
+      orderProduct.addOrderProductOption(orderProductOption);
+
       orderProductRepository.save(orderProduct);
+      orderProductOptionRepository.save(orderProductOption);
       order.addOrderProduct(orderProduct); // 주문의 주문상품 리스트에 생성한 주문상품 저장
     });
 
     // 최초금액 계산
     order.calculateInitialTotalPrice();
-    // 총할인금액 계산
-    if (newOrderDto.getCouponId() != null) {
-      Coupon coupon = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(),
-              user.get().getId())
-          .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
-      coupon.useCoupon(coupon, order.getId()); // 쿠폰 사용
-      order.applyCouponDiscount(coupon); // 할인금액과 총결제금액 계산
-    } else {
-      order.calculateTotalPaymentPrice(); // 쿠폰 미사용시 총결제금액 계산
-    }
+    // 총할인금액 및 총결제금액 계산
+    processDiscountAndTotalPaymentPrice(newOrderDto, user, order);
     // 주문 저장
     orderRepository.save(order);
     //생성한 주문의 상세내역 반환
     return OrderDetailDto.of(order);
   }
 
+  private void processDiscountAndTotalPaymentPrice(NewOrderDto newOrderDto, Optional<User> user, Order order) {
+    // 쿠폰이 존재한다면 쿠폰 사용
+    if (newOrderDto.getCouponId() != null) {
+      Coupon coupon = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(),
+              user.get().getId())
+          .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+      coupon.useCoupon(coupon, order.getId()); // 쿠폰 사용
+      order.applyCouponDiscount(coupon); // 쿠폰으로 할인금액과 총결제금액 계산
+    } else {
+      order.calculateTotalPaymentPrice(); // 쿠폰 미사용시 총결제금액 계산
+    }
+  }
 
   @Override
   @Transactional
@@ -172,11 +171,21 @@ public class OrderServiceImpl implements OrderService {
       throw new InvalidOrderStatusException("주문 수량 정보를 변경할수 없습니다. 주문 상태를 확인해 주세요.");
     }
     // 상품 수량 수정
-    int quantity = updateQuantityDto.getQuantity();
-    if (quantity == 0) {
+    int updateQuantity = updateQuantityDto.getQuantity(); //수정하려는 주문 수량
+    int currentQuantity = orderProductOption.getQuantity(); //최초 주문 수량
+    if (updateQuantity == 0) {
       throw new CustomException(ErrorCode.INVALID_QUANTITY);
     }
-    orderProductOption.updateQuantity(quantity);
+    // 재고 확인
+    ProductOption productOption = productOptionRepository.findById(orderProductOption.getProductOptionId())
+        .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+    if (productOption.getCount() + currentQuantity >= updateQuantity) {
+      productOption.updateInventoryForQuantity(currentQuantity, updateQuantity); //재고있으면 재고수량 업데이트
+    } else {
+      throw new CustomException(ErrorCode.NO_INVENTORY); //재고없으면 exception (주문 불가능)
+    }
+    // 주문 상품 옵션의 수량 수정
+    orderProductOption.updateQuantity(updateQuantity);
 
     // 계산 다시하기
     refreshTotalPriceAfterQuantityUpdate(orderProductOption.getOrderProduct().getOrder());
@@ -190,11 +199,11 @@ public class OrderServiceImpl implements OrderService {
       Coupon coupon = couponRepository.findById(order.getCouponId())
           .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
       // 수정된 상품 수량으로 다시 계산
-      order.recalculateTotalPrice(coupon);
+      order.recalculateTotalPriceWithDiscount(coupon);
     }
-
-    // 해당 주문에 쿠폰 사용 내역이 없다면
+    // 해당 주문에 쿠폰 사용 내역이없다면
     order.calculateInitialTotalPrice();
+    order.calculateTotalPaymentPrice();
   }
 
   @Override

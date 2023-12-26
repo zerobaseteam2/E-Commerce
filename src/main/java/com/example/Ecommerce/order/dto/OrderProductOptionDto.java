@@ -14,15 +14,17 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderProductOptionDto {
 
-  private Long orderProductOptionId;
-  private String orderProductOptionName;
-  private Integer quantity;
+  private Long orderProductOptionId; //주문상품옵션 id
+  private Long productOptionId; //상품옵션 id
+  private String productOptionName; //상품옵션 이름
+  private Integer quantity; //주문상품 수량
 
   public static OrderProductOptionDto  of(OrderProductOption orderProductOption) {
     return OrderProductOptionDto.builder()
         .orderProductOptionId(orderProductOption.getId())
+        .productOptionId(orderProductOption.getProductOptionId())
+        .productOptionName(orderProductOption.getProductOptionName())
         .quantity(orderProductOption.getQuantity())
-        .orderProductOptionName(orderProductOption.getOrderProduct().getProduct().getName())
         .build();
   }
 }

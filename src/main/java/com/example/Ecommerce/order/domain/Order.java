@@ -63,6 +63,7 @@ public class Order {
   // 금액 관련
   @Column(nullable = false)
   private Integer initialTotalPrice; //최초계산금액
+  @Column(nullable = false)
   private Integer totalDiscountPrice; //총할인금액
   @Column(nullable = false)
   private Integer totalPaymentPrice; //총결제금액
@@ -78,7 +79,7 @@ public class Order {
 
   // 주문상품과의 관계
   @OneToMany(mappedBy = "order")
-  private List<OrderProduct> orderProductList;
+  private List<OrderProduct> orderProductList = new ArrayList<>();
 
   // newOrderDto 로 주문 생성
   public static Order create(NewOrderDto newOrderDto, User user) {
@@ -88,6 +89,9 @@ public class Order {
         .zoneNo(newOrderDto.getZoneNo())
         .roadAddress(newOrderDto.getRoadAddress())
         .detailedAddress(newOrderDto.getDetailedAddress())
+        .initialTotalPrice(0)
+        .totalDiscountPrice(0)
+        .totalPaymentPrice(0)
         .user(user)
         .orderProductList(new ArrayList<>())
         .build();
@@ -123,13 +127,17 @@ public class Order {
   public void calculateInitialTotalPrice() {
     this.initialTotalPrice = orderProductList.stream()
         .flatMap(orderProduct -> orderProduct.getOrderProductOptionList().stream())
-        .mapToInt(orderProductOption ->
-            orderProductOption.getQuantity() * orderProductOption.getOrderProduct().getProduct().getPrice())
+        .mapToInt(orderProductOption -> {
+          Integer quantity = orderProductOption.getQuantity();
+          Integer price = orderProductOption.getOrderProduct().getProduct().getPrice();
+
+          return quantity * price;
+        })
         .sum();
   }
 
   // 총할인금액 계산 - 최초 주문시 쿠폰이 있으면 적용
-  public void applyCouponDiscount(Coupon coupon){
+  public void applyCouponDiscount(Coupon coupon) {
     // 쿠폰 적용
     this.couponId = coupon.getId();
     // 할인금액 계산
@@ -141,13 +149,13 @@ public class Order {
   }
 
   // 총결제금액 계산
-  public void calculateTotalPaymentPrice(){
-      this.totalPaymentPrice = this.initialTotalPrice - this.totalDiscountPrice;
+  public void calculateTotalPaymentPrice() {
+    this.totalPaymentPrice = this.initialTotalPrice - this.totalDiscountPrice;
   }
 
 
   // 수량이 바뀌었을때 다시 총할인금액과 총결제금액 계산
-  public void recalculateTotalPrice(Coupon coupon){
+  public void recalculateTotalPriceWithDiscount(Coupon coupon) {
     // 총금액 다시 계산
     calculateInitialTotalPrice();
     // 할인금액 계산

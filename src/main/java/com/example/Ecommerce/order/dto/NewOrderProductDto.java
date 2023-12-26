@@ -17,6 +17,7 @@ public class NewOrderProductDto {
 
   @NotNull
   private Long productId; //상품 id
+  @NotNull
   private Long optionId; //옵션 id
   @NotNull
   private Integer quantity; //주문 수량
