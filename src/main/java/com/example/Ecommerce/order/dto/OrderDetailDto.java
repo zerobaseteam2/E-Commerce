@@ -27,11 +27,11 @@ public class OrderDetailDto {
   private String roadAddress;
   private String detailedAddress;
   private Long couponId;
-  private int initialTotalPrice;
-  private int totalDiscountPrice;
-  private int totalPaymentPrice;
+  private Integer initialTotalPrice;
+  private Integer totalDiscountPrice;
+  private Integer totalPaymentPrice;
 
-  private List<OrderProductDto> orderProductList;
+  private List<OrderProductDetailDto> orderProductList;
 
 
   // Order entity -> OrderDetailDto 변경하여 반환
@@ -55,9 +55,9 @@ public class OrderDetailDto {
 
 
   // OrderProduct list -> OrderProductDto list 변경
-  private static List<OrderProductDto> getOrderProductDtos(List<OrderProduct> orderProductList) {
+  private static List<OrderProductDetailDto> getOrderProductDtos(List<OrderProduct> orderProductList) {
     return orderProductList.stream()
-        .map(OrderProductDto::of)
+        .map(OrderProductDetailDto::of)
         .collect(Collectors.toList());
   }
 }

@@ -1,5 +1,6 @@
-package com.example.Ecommerce.order.dto;
+package com.example.Ecommerce.order.dto.list;
 
+import com.example.Ecommerce.order.dto.OrderStatusHistoryDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

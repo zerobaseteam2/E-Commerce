@@ -52,4 +52,7 @@ public class ProductOption extends BaseEntity {
         .optionName(form.getOptionName())
         .build();
   }
+  public void reduceInventory(Integer quantity) {
+
+  }
 }

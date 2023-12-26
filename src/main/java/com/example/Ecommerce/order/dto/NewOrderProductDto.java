@@ -1,6 +1,7 @@
 package com.example.Ecommerce.order.dto;
 
 import jakarta.validation.constraints.NotNull;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,12 +13,11 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateQuantityDto {
+public class NewOrderProductDto {
 
   @NotNull
-  private Long orderProductOptionId; //주문상품옵션 id
+  private Long productId; //상품 id
+  private Long optionId; //옵션 id
   @NotNull
-  private Integer quantity; //수량
+  private Integer quantity; //주문 수량
 }
-
-

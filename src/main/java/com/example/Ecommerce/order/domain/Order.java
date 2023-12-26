@@ -61,10 +61,11 @@ public class Order {
   private String detailedAddress; //상세주소
 
   // 금액 관련
-  private int initialTotalPrice; //최초계산금액
-  private int totalDiscountPrice; //총할인금액
   @Column(nullable = false)
-  private int totalPaymentPrice; //총결제금액
+  private Integer initialTotalPrice; //최초계산금액
+  private Integer totalDiscountPrice; //총할인금액
+  @Column(nullable = false)
+  private Integer totalPaymentPrice; //총결제금액
 
   // 쿠폰사용시
   @Column
@@ -121,7 +122,9 @@ public class Order {
   // 최초 총금액 계산
   public void calculateInitialTotalPrice() {
     this.initialTotalPrice = orderProductList.stream()
-        .mapToInt(orderProduct -> orderProduct.getQuantity() * orderProduct.getProduct().getPrice())
+        .flatMap(orderProduct -> orderProduct.getOrderProductOptionList().stream())
+        .mapToInt(orderProductOption ->
+            orderProductOption.getQuantity() * orderProductOption.getOrderProduct().getProduct().getPrice())
         .sum();
   }
 
@@ -144,7 +147,7 @@ public class Order {
 
 
   // 수량이 바뀌었을때 다시 총할인금액과 총결제금액 계산
-  public void recalculateTotalDiscountPrice(Coupon coupon){
+  public void recalculateTotalPrice(Coupon coupon){
     // 총금액 다시 계산
     calculateInitialTotalPrice();
     // 할인금액 계산

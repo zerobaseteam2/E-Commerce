@@ -2,7 +2,7 @@ package com.example.Ecommerce.order.service;
 
 import com.example.Ecommerce.order.dto.NewOrderDto;
 import com.example.Ecommerce.order.dto.OrderDetailDto;
-import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.OrderProductDetailDto;
 import com.example.Ecommerce.order.dto.UpdateQuantityDto;
 import com.example.Ecommerce.order.dto.UpdateShippingDto;
 import org.springframework.data.domain.Page;
@@ -19,5 +19,5 @@ public interface OrderService {
 
   OrderDetailDto getOrderDetails(String userId, Long id);
 
-  Page<OrderProductDto> getAllOrders(Long customerId, Pageable pageable);
+  Page<OrderProductDetailDto> getAllOrders(Long customerId, Pageable pageable);
 }

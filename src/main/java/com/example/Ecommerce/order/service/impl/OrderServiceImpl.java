@@ -8,17 +8,21 @@ import com.example.Ecommerce.exception.InvalidOrderStatusException;
 import com.example.Ecommerce.exception.UnauthorizedUserException;
 import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
+import com.example.Ecommerce.order.domain.OrderProductOption;
 import com.example.Ecommerce.order.domain.OrderStatus;
 import com.example.Ecommerce.order.dto.NewOrderDto;
 import com.example.Ecommerce.order.dto.OrderDetailDto;
-import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.OrderProductDetailDto;
 import com.example.Ecommerce.order.dto.UpdateQuantityDto;
 import com.example.Ecommerce.order.dto.UpdateShippingDto;
+import com.example.Ecommerce.order.repository.OrderProductOptionRepository;
 import com.example.Ecommerce.order.repository.OrderProductRepository;
 import com.example.Ecommerce.order.repository.OrderRepository;
 import com.example.Ecommerce.order.service.OrderService;
 import com.example.Ecommerce.product.domain.Product;
+import com.example.Ecommerce.product.domain.ProductOption;
 import com.example.Ecommerce.product.dto.seller.ProductState;
+import com.example.Ecommerce.product.repository.ProductOptionRepository;
 import com.example.Ecommerce.product.repository.ProductRepository;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.repository.UserRepository;
@@ -37,9 +41,11 @@ public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository orderRepository;
   private final OrderProductRepository orderProductRepository;
+  private final OrderProductOptionRepository orderProductOptionRepository;
   private final UserRepository userRepository;
   private final ProductRepository productRepository;
   private final CouponRepository couponRepository;
+  private final ProductOptionRepository productOptionRepository;
 
 
   @Override
@@ -54,55 +60,75 @@ public class OrderServiceImpl implements OrderService {
     orderRepository.save(order);
 
     // 상품 및 수량 정보로 주문상품 생성
-    newOrderDto.getProductQuantityMap().forEach((productId, quantity) -> {
+    newOrderDto.getNewOrderProductDtoList().forEach(newOrderProductDto -> {
       // 입력된 주문 수량이 0개인 경우 exception 발생
-      if (quantity <= 0) {
+      if (newOrderProductDto.getQuantity() <= 0) {
         throw new CustomException(ErrorCode.INVALID_QUANTITY);
       }
       // 상품 id 에 따른 상품 불러오기, id가 없어진 경우 exception 발생
-      Product product = productRepository.findById(productId)
+      Product product = productRepository.findById(newOrderProductDto.getProductId())
           .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+
       // 상품 상태 확인 (품절, 판매중지시 주문 불가)
       ProductState productState = product.getState();
       if (productState != null) {
-        if (ProductState.STOP_SELLING.equals(productState) || ProductState.NO_STOCK.equals(productState)) {
+        if (ProductState.STOP_SELLING.equals(productState) || ProductState.NO_STOCK.equals(
+            productState)) {
           throw new InvalidOrderStatusException("주문이 불가능한 상품입니다. 상품 상태를 확인하세요: " + productState);
         }
       } else {
-        // 상품 상태가 존재하지 않으면
-        throw new InvalidOrderStatusException("주문이 불가능한 상품입니다.");
+        throw new InvalidOrderStatusException("주문이 불가능한 상품입니다."); // 상품 상태가 존재하지 않으면
       }
+
       // 주문상품 생성 및 저장
       OrderProduct orderProduct = OrderProduct.builder()
           .order(order)
           .product(product)
-          .quantity(quantity)
-          .status(OrderStatus.ORDER_COMPLETE) //초기상태 = 주문완료
+          .status(OrderStatus.ORDER_COMPLETE)
           .build();
 
+      // 상품 옵션
+      Long productOptionId = newOrderProductDto.getOptionId();
+      Integer quantity = newOrderProductDto.getQuantity();
+      OrderProductOption orderProductOption;
+
+      if (productOptionId != null) {
+        // 상품 option id가 존재하면
+        ProductOption productOption = productOptionRepository.findById(
+                productOptionId)
+            .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_OPTION_NOT_FOUND));
+        // 재고 수정
+        productOption.reduceInventory(quantity);
+        // 주문상품 option 생성
+        orderProductOption = OrderProductOption.createWithOptionId(productOptionId, quantity,
+            orderProduct);
+      } else {
+        // 상품 option id가 존재하지 않으면 제외하고 주문상품 option 생성
+        orderProductOption = OrderProductOption.create(quantity, orderProduct);
+      }
+      orderProductOptionRepository.save(orderProductOption);
       orderProductRepository.save(orderProduct);
-      // 주문의 주문상품 리스트에 생성한 주문상품 저장
-      order.addOrderProduct(orderProduct);
+      order.addOrderProduct(orderProduct); // 주문의 주문상품 리스트에 생성한 주문상품 저장
     });
 
     // 최초금액 계산
     order.calculateInitialTotalPrice();
     // 총할인금액 계산
-    if (newOrderDto.getCouponId() != null){
-      Coupon coupon  = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(), user.get().getId())
-          .orElseThrow(()-> new CustomException(ErrorCode.COUPON_NOT_FOUND));
-      // 쿠폰 사용
-      coupon.useCoupon(coupon, order.getId());
-      // 할인금액과 총결제금액 계산
-      order.applyCouponDiscount(coupon);
+    if (newOrderDto.getCouponId() != null) {
+      Coupon coupon = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(),
+              user.get().getId())
+          .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
+      coupon.useCoupon(coupon, order.getId()); // 쿠폰 사용
+      order.applyCouponDiscount(coupon); // 할인금액과 총결제금액 계산
     } else {
-      order.calculateTotalPaymentPrice();
+      order.calculateTotalPaymentPrice(); // 쿠폰 미사용시 총결제금액 계산
     }
     // 주문 저장
     orderRepository.save(order);
     //생성한 주문의 상세내역 반환
     return OrderDetailDto.of(order);
   }
+
 
   @Override
   @Transactional
@@ -132,17 +158,17 @@ public class OrderServiceImpl implements OrderService {
   @Transactional
   public OrderDetailDto updateQuantity
       (UpdateQuantityDto updateQuantityDto, String customerId) {
-    // 수정하려는 주문상품 가져오기
-    OrderProduct orderProduct = orderProductRepository.findById(
-            updateQuantityDto.getOrderProductId())
+    // 수정하려는 주문상품 옵션 가져오기
+    OrderProductOption orderProductOption = orderProductOptionRepository.findById(
+            updateQuantityDto.getOrderProductOptionId())
         .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
     // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
-    if (!orderProduct.getOrder().getUser().getUserId().equals(customerId)) {
+    if (!orderProductOption.getOrderProduct().getOrder().getUser().getUserId().equals(customerId)) {
       throw new UnauthorizedUserException("수정하려는 주문에 접근할 권한이 없습니다.");
     }
     // 주문상품 상태 확인
-    if (orderProduct.getStatus() != OrderStatus.ORDER_COMPLETE) {
+    if (orderProductOption.getOrderProduct().getStatus() != OrderStatus.ORDER_COMPLETE) {
       throw new InvalidOrderStatusException("주문 수량 정보를 변경할수 없습니다. 주문 상태를 확인해 주세요.");
     }
     // 상품 수량 수정
@@ -150,21 +176,21 @@ public class OrderServiceImpl implements OrderService {
     if (quantity == 0) {
       throw new CustomException(ErrorCode.INVALID_QUANTITY);
     }
-    orderProduct.updateQuantity(quantity);
+    orderProductOption.updateQuantity(quantity);
 
     // 계산 다시하기
-    recalculateOrderTotalPrice(orderProduct.getOrder());
-    return OrderDetailDto.of(orderProduct.getOrder());
+    refreshTotalPriceAfterQuantityUpdate(orderProductOption.getOrderProduct().getOrder());
+    return OrderDetailDto.of(orderProductOption.getOrderProduct().getOrder());
   }
 
   // 상품수량 수정시 재계산
-  public void recalculateOrderTotalPrice(Order order) {
+  public void refreshTotalPriceAfterQuantityUpdate(Order order) {
     // 해당 주문에 쿠폰 사용 내역이 존재한다면, 쿠폰 정보 가져와서 다시 계산
     if (order.getCouponId() != null) {
       Coupon coupon = couponRepository.findById(order.getCouponId())
           .orElseThrow(() -> new CustomException(ErrorCode.COUPON_NOT_FOUND));
       // 수정된 상품 수량으로 다시 계산
-      order.recalculateTotalDiscountPrice(coupon);
+      order.recalculateTotalPrice(coupon);
     }
 
     // 해당 주문에 쿠폰 사용 내역이 없다면
@@ -187,7 +213,7 @@ public class OrderServiceImpl implements OrderService {
 
 
   @Override
-  public Page<OrderProductDto> getAllOrders(Long customerId, Pageable pageable) {
+  public Page<OrderProductDetailDto> getAllOrders(Long customerId, Pageable pageable) {
 
     // 로그인한 회원의 주문정보
     List<Order> orderList = orderRepository.findAllByUser(userRepository.findById(customerId));
@@ -206,7 +232,7 @@ public class OrderServiceImpl implements OrderService {
         pageable);
 
     // 결과를 OrderDto list 로 반환
-    return orderProducts.map(OrderProductDto::of);
+    return orderProducts.map(OrderProductDetailDto::of);
   }
 
 

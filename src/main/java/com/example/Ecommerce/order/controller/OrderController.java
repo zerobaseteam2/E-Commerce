@@ -2,8 +2,8 @@ package com.example.Ecommerce.order.controller;
 
 import com.example.Ecommerce.order.dto.NewOrderDto;
 import com.example.Ecommerce.order.dto.OrderDetailDto;
-import com.example.Ecommerce.order.dto.OrderListDto;
-import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.list.OrderListDto;
+import com.example.Ecommerce.order.dto.OrderProductDetailDto;
 import com.example.Ecommerce.order.dto.UpdateQuantityDto;
 import com.example.Ecommerce.order.dto.UpdateShippingDto;
 import com.example.Ecommerce.order.service.OrderService;
@@ -96,7 +96,7 @@ public class OrderController {
     // paging 처리
     Pageable pageable = PageRequest.of(page, size);
 
-    Page<OrderProductDto> result = orderService.getAllOrders(customerId, pageable);
+    Page<OrderProductDetailDto> result = orderService.getAllOrders(customerId, pageable);
     return ResponseEntity.ok(OrderListDto.of(result));
   }
 

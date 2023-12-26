@@ -1,10 +1,10 @@
 package com.example.Ecommerce.order.controller;
 
 import com.example.Ecommerce.order.domain.OrderStatus;
-import com.example.Ecommerce.order.dto.OrderListDto;
-import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.list.OrderListDto;
+import com.example.Ecommerce.order.dto.OrderProductDetailDto;
 import com.example.Ecommerce.order.dto.OrderStatusHistoryDto;
-import com.example.Ecommerce.order.dto.StatusHistoryListDto;
+import com.example.Ecommerce.order.dto.list.StatusHistoryListDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto;
 import com.example.Ecommerce.order.service.OrderStatusService;
 import com.example.Ecommerce.security.UserDetailsImpl;
@@ -68,7 +68,7 @@ public class OrderStatusController {
     // paging 처리
     Pageable pageable = PageRequest.of(page, size);
 
-    Page<OrderProductDto> result = orderStatusService.getOrdersByStatus(customerId, status, pageable);
+    Page<OrderProductDetailDto> result = orderStatusService.getOrdersByStatus(customerId, status, pageable);
     return ResponseEntity.ok(OrderListDto.of(result));
   }
 

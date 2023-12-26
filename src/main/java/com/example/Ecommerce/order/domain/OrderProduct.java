@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,10 +35,6 @@ public class OrderProduct {
   @ManyToOne
   @JoinColumn(name = "product_id", nullable = false)
   private Product product;
-
-  @Column(nullable = false)
-  private int quantity; //상품수량
-
   @Column
   @Enumerated(value = EnumType.STRING)
   private OrderStatus status; //주문상태
@@ -47,15 +42,17 @@ public class OrderProduct {
   @OneToMany(mappedBy = "orderProduct")
   private List<OrderStatusHistory> statusHistoryList;
 
+  @OneToMany(mappedBy = "orderProduct")
+  private List<OrderProductOption> OrderProductOptionList;
 
-  // 주문 상품 수량 수정
-  public void updateQuantity(int quantity) {
-    this.quantity = quantity;
-  }
 
   // 주문 상태 변경
   public void updateStatus(OrderStatus newStatus) {
     this.status = newStatus;
+  }
+
+  public void addOrderProductOption(OrderProductOption orderProductOption) {
+    this.OrderProductOptionList.add(orderProductOption);
   }
 }
 
