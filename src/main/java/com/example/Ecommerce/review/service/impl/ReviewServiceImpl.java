@@ -19,6 +19,7 @@ import com.example.Ecommerce.review.dto.ReplyDto;
 import com.example.Ecommerce.review.dto.ReviewCreateDto;
 import com.example.Ecommerce.review.dto.ReviewListDto;
 import com.example.Ecommerce.review.dto.ReviewUpdateDto;
+import com.example.Ecommerce.review.repository.ReviewCustomRepository;
 import com.example.Ecommerce.review.repository.ReviewRepository;
 import com.example.Ecommerce.review.service.ReviewService;
 import com.example.Ecommerce.user.domain.User;
@@ -34,8 +35,9 @@ import org.springframework.stereotype.Service;
 public class ReviewServiceImpl implements ReviewService {
 
   private final ReviewRepository reviewRepository;
-  private OrderProductRepository orderProductRepository;
-  private ProductRepository productRepository;
+  private final OrderProductRepository orderProductRepository;
+  private final ProductRepository productRepository;
+  private final ReviewCustomRepository reviewCustomRepository;
 
   @Override
   @Transactional
@@ -57,6 +59,13 @@ public class ReviewServiceImpl implements ReviewService {
         ReviewCreateDto.Request.toEntity(request, user, product, orderProduct)
     );
 
+    // 리뷰 등록시 상품 별점 업데이트
+    Long totalCount = reviewCustomRepository.findByProductId(product.getId());
+    Double sum = reviewCustomRepository.findByStarsByProductId(product.getId());
+
+    double stars = sum / totalCount;
+    product.setStars(stars);
+
     return ReviewCreateDto.Response.toDto(review);
   }
 
@@ -71,6 +80,16 @@ public class ReviewServiceImpl implements ReviewService {
     // Update the review's fields
     review.update(request);
 
+    // 리뷰 수정시 상품 별점 업데이트
+    Product product = productRepository.findById(review.getProduct().getId())
+        .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
+
+    Long totalCount = reviewCustomRepository.findByProductId(product.getId());
+    Double sum = reviewCustomRepository.findByStarsByProductId(product.getId());
+
+    double stars = sum / totalCount;
+    product.setStars(stars);
+
     // Convert to DTO and return
     return ReviewUpdateDto.Response.toDto(review);
   }
@@ -79,10 +98,22 @@ public class ReviewServiceImpl implements ReviewService {
   @Override
   @Transactional
   public void deleteReview(Long reviewId) {
-    if (reviewRepository.existsById(reviewId)) {
-      reviewRepository.deleteById(reviewId);
+
+    Review review = reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
+
+    Product product = productRepository.findById(review.getProduct().getId())
+        .orElseThrow(() -> new CustomException(PRODUCT_NOT_FOUND));
+    reviewRepository.delete(review);
+
+    // 별점도 수정
+    Long totalCount = reviewCustomRepository.findByProductId(product.getId());
+    Double sum = reviewCustomRepository.findByStarsByProductId(product.getId());
+    if (sum != null) {
+      double stars = sum / totalCount;
+      product.setStars(stars);
     } else {
-      throw new CustomException(REVIEW_NOT_FOUND);
+      product.setStars(0.0);
     }
   }
 

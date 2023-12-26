@@ -3,9 +3,10 @@ package com.example.Ecommerce.product.service;
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.product.domain.Product;
+import com.example.Ecommerce.product.domain.form.CancelProductForm;
 import com.example.Ecommerce.product.domain.form.admin.ProductProcessForm;
+import com.example.Ecommerce.product.dto.admin.ListResponse;
 import com.example.Ecommerce.product.dto.admin.ProductProcessDto;
-import com.example.Ecommerce.product.dto.admin.WaitingListResponse;
 import com.example.Ecommerce.product.dto.seller.ProductConfirm;
 import com.example.Ecommerce.product.dto.seller.ProductDto;
 import com.example.Ecommerce.product.dto.seller.ProductState;
@@ -29,14 +30,13 @@ public class ProductAdminService {
   private final ProductCustomRepository productCustomRepository;
   private final ProductRepository productRepository;
 
-  // 요청 승인 대기중인 상품 내역 가져오기
-  public WaitingListResponse getWaitingList(int pageNo, int pageSize) {
+  // 요청 승인 대기중인 상품, 승인한 상품, 등록 취소 대기중인 상품, 등록 취소한 상품, 거절한 상품 내역 가져오기
+  public ListResponse getList(ProductConfirm confirm, int pageNo, int pageSize) {
     Pageable pageable = PageRequest.of(pageNo, pageSize);
-    Page<Product> productPage = productCustomRepository.findByConfirm(ProductConfirm.WAITING,
-        pageable);
+    Page<Product> productPage = productCustomRepository.findByConfirm(confirm,pageable);
     List<Product> products = productPage.getContent();
 
-    return WaitingListResponse.builder()
+    return ListResponse.builder()
         .productList(
             products.stream().map(ProductDto::exceptOptionTags).collect(Collectors.toList()))
         .pageNo(pageNo)
@@ -92,8 +92,22 @@ public class ProductAdminService {
         .build();
   }
 
-  // 승인된 내역 상품 보기
+  // 판매 중지 및 등록 취소 요청 승인
+  @Transactional
+  public String cancelApprove(CancelProductForm form) {
+    Long productId = form.getProductId();
+    Product product = productRepository.findById(productId).orElseThrow(() -> new CustomException(
+        ErrorCode.PRODUCT_NOT_FOUND));
 
-  // 승인 거절한 상품 보기
+    if (product.getConfirm().equals(ProductConfirm.REQUEST_CANCEL_REGISTER)) {
+      product.setConfirm(ProductConfirm.APPROVED_CANCEL_REGISTER);
+      return "등록 취소 요청 승인하셨습니다.";
+    }
+    if (product.getConfirm().equals(ProductConfirm.REQUEST_CANCEL_SELLING)) {
+      product.setConfirm(ProductConfirm.APPROVED_CANCEL_SELLING);
+      return "판매 중지 요청 승인하셨습니다.";
+    }
+    throw new CustomException(ErrorCode.PRODUCT_NOT_CANCEL_REQUEST);
+  }
 
 }

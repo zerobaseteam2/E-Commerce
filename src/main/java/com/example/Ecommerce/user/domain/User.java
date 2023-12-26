@@ -1,5 +1,6 @@
 package com.example.Ecommerce.user.domain;
 
+import com.example.Ecommerce.user.dto.UserInfoDto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -70,8 +71,18 @@ public class User {
   @LastModifiedDate
   private Date updatedAt;
 
-
   public void verifyUserEmail() {
-    emailVerify = true;
+    this.emailVerify = true;
+  }
+
+  public void modifyUserInfo(UserInfoDto.Request request) {
+    this.password = request.getPassword();
+    this.name = request.getName();
+    this.phone = request.getPhone();
+    this.birth = request.getBirth();
+  }
+
+  public void modifyUserPassword(String encryptedPassword) {
+    this.password = encryptedPassword;
   }
 }

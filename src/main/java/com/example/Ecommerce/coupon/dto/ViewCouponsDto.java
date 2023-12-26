@@ -27,15 +27,14 @@ public class ViewCouponsDto {
 
     public Response toDto(Coupon coupon) {
       return Response.builder()
-              .couponId(coupon.getId())
-              .customerId(coupon.getCustomerId())
-              .orderDetailNo(coupon.getOrderNo())
-              .couponName(coupon.getCouponName())
-              .usableCategory(coupon.getUsableCategory())
-              .discountRate(coupon.getDiscountRate())
-              .issuanceDate(coupon.getIssuanceDate())
-              .expirationDate(coupon.getExpirationDate())
-              .build();
+          .couponId(coupon.getId())
+          .customerId(coupon.getCustomerId())
+          .orderDetailNo(coupon.getOrderNo())
+          .couponName(coupon.getCouponName())
+          .discountRate(coupon.getDiscountRate())
+          .issuanceDate(coupon.getIssuanceDate())
+          .expirationDate(coupon.getExpirationDate())
+          .build();
     }
   }
 }

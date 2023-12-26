@@ -1,7 +1,12 @@
 package com.example.Ecommerce.common;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +27,19 @@ public class MailComponent {
   private final SpringTemplateEngine templateEngine;
   @Value("${spring.mail.username}")
   private String fromEmail;
+
+  private SecretKey secretKey;
+  private Cipher cipher;
+
+  @PostConstruct
+  public void init() {
+    try {
+      cipher = Cipher.getInstance("AES");
+      secretKey = KeyGenerator.getInstance("AES").generateKey();
+    } catch (Exception e) {
+      log.info(e.getMessage());
+    }
+  }
 
   public void sendVerifyLink(Long id, String toEmail, String toName) {
     String title = "[ZB E-Commerce] 회원가입을 위해 메일을 인증해 주세요.";
@@ -63,13 +81,13 @@ public class MailComponent {
     return address;
   }
 
-  public void sendUsername(String toEmail, String toName) {
+  public void sendUserId(String userId, String toEmail, String toName) {
     String title = "[ZB E-Commerce] 요청하신 아이디를 확인해주세요.";
 
     Context context = new Context();
-    context.setVariable("name", toName);
+    context.setVariable("userId", userId);
 
-    String contents = templateEngine.process("findUsername", context);
+    String contents = templateEngine.process("findUserId", context);
 
     MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
       MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -90,13 +108,22 @@ public class MailComponent {
     }
   }
 
-  public void sendTemporaryPassword(String toEmail, String toName, String temporaryPassword) {
-    String title = "[ZB E-Commerce] 요청하신 비밀번호를 확인해주세요.";
+  public void sendResetPasswordForm(String userId, String toEmail, String toName)
+      throws Exception {
+    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+    byte[] encryptedBytes = cipher.doFinal(userId.getBytes());
+    String encryptedUserId = Base64.getEncoder().encodeToString(encryptedBytes);
+    encryptedUserId = encryptedUserId.replace("/", "");
+
+    String title = "[ZB E-Commerce] 비밀번호를 재설정해주세요.";
+    String resetPasswordForm_url =
+        "http://localhost:8080/api/user/reset/password/" + encryptedUserId;
 
     Context context = new Context();
-    context.setVariable("temporaryPassword", temporaryPassword);
+    context.setVariable("name", toName);
+    context.setVariable("resetPasswordForm_url", resetPasswordForm_url);
 
-    String contents = templateEngine.process("findPassword", context);
+    String contents = templateEngine.process("findUserPassword", context);
 
     MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
       MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
@@ -115,5 +142,13 @@ public class MailComponent {
     } catch (Exception e) {
       log.info(e.getMessage());
     }
+  }
+
+  public String decryptUserId(String encryptedUserId) throws Exception {
+    byte[] encryptedBytes = Base64.getDecoder().decode(encryptedUserId.getBytes());
+    cipher.init(Cipher.DECRYPT_MODE, secretKey);
+    byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+    return new String(decryptedBytes);
   }
 }
