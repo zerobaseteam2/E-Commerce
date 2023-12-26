@@ -16,7 +16,7 @@ import lombok.Setter;
 public class OrderProductDto {
 
 
-  private Long id; //주문상품 id
+  private Long orderProductId; //주문상품 id
   private Long orderId; //주문 id
   private Long productId; //상품 id
   private String productName; //상품명
@@ -27,7 +27,7 @@ public class OrderProductDto {
   // OrderProduct entity -> OrderProduct dto 변경하여 반환
   public static OrderProductDto of(OrderProduct orderProduct) {
     return OrderProductDto.builder()
-        .id(orderProduct.getId())
+        .orderProductId(orderProduct.getId())
         .orderId(orderProduct.getOrder().getId())
         .productId(orderProduct.getProduct().getId())
         .productName(orderProduct.getProduct().getName())

@@ -14,8 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,10 +46,10 @@ public class Order {
 
   @Column(nullable = false)
   @CreatedDate
-  private LocalDate orderAt; //주문날짜
+  private Date orderAt; //주문날짜
 
   @LastModifiedDate
-  private LocalDate updatedAt; //주문 수정날짜
+  private Date updatedAt; //주문 수정날짜
 
   @Column(nullable = false)
   private Long zoneNo; //우편번호
@@ -60,6 +60,8 @@ public class Order {
   @Column(nullable = false)
   private String detailedAddress; //상세주소
 
+  // 금액 관련
+  private int initialTotalPrice; //최초계산금액
   private int totalDiscountPrice; //총할인금액
   @Column(nullable = false)
   private int totalPaymentPrice; //총결제금액
@@ -116,37 +118,41 @@ public class Order {
     this.orderProductList.add(orderProduct);
   }
 
-
-
-  // 총금액 계산
-  public void calculateTotalPrice() {
-    this.totalPaymentPrice = orderProductList.stream()
+  // 최초 총금액 계산
+  public void calculateInitialTotalPrice() {
+    this.initialTotalPrice = orderProductList.stream()
         .mapToInt(orderProduct -> orderProduct.getQuantity() * orderProduct.getProduct().getPrice())
         .sum();
   }
 
-  // 총할인금액 계산 - 쿠폰사용시 적용
-  public void calculateTotalDiscountPrice(Coupon coupon){
+  // 총할인금액 계산 - 최초 주문시 쿠폰이 있으면 적용
+  public void applyCouponDiscount(Coupon coupon){
     // 쿠폰 적용
     this.couponId = coupon.getId();
     // 할인금액 계산
-    double discountedDouble = this.totalPaymentPrice * coupon.getDiscountRate();
+    double discountedDouble = this.initialTotalPrice * coupon.getDiscountRate();
     // 할인금액 적용
     this.totalDiscountPrice = (int) Math.round(discountedDouble);
     // 할인금액을 제외한 총결제금액 다시 계산후 적용
-    this.totalPaymentPrice = this.totalPaymentPrice - this.totalDiscountPrice;
+    calculateTotalPaymentPrice();
   }
 
-  // 수량이 바뀌었을때 다시 할인금액과 총금액 계산
+  // 총결제금액 계산
+  public void calculateTotalPaymentPrice(){
+      this.totalPaymentPrice = this.initialTotalPrice - this.totalDiscountPrice;
+  }
+
+
+  // 수량이 바뀌었을때 다시 총할인금액과 총결제금액 계산
   public void recalculateTotalDiscountPrice(Coupon coupon){
     // 총금액 다시 계산
-    calculateTotalPrice();
+    calculateInitialTotalPrice();
     // 할인금액 계산
-    double discountedDouble = this.totalPaymentPrice * coupon.getDiscountRate();
+    double discountedDouble = this.initialTotalPrice * coupon.getDiscountRate();
     // 할인금액 적용
     this.totalDiscountPrice = (int) Math.round(discountedDouble);
     // 할인금액을 제외한 총결제금액 다시 계산후 적용
-    this.totalPaymentPrice = this.totalPaymentPrice - this.totalDiscountPrice;
+    calculateTotalPaymentPrice();
   }
 
 }

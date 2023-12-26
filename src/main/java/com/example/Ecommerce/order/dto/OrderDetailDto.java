@@ -2,7 +2,7 @@ package com.example.Ecommerce.order.dto;
 
 import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -18,15 +18,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OrderDetailDto {
 
-  private Long id;
+  private Long orderId;
   private String recipientName;
   private String recipientPhone;
-  private LocalDate orderAt;
-  private LocalDate updatedAt;
+  private Date orderAt;
+  private Date updatedAt;
   private Long zoneNo;
   private String roadAddress;
   private String detailedAddress;
   private Long couponId;
+  private int initialTotalPrice;
   private int totalDiscountPrice;
   private int totalPaymentPrice;
 
@@ -36,7 +37,7 @@ public class OrderDetailDto {
   // Order entity -> OrderDetailDto 변경하여 반환
   public static OrderDetailDto of(Order order) {
     return OrderDetailDto.builder()
-        .id(order.getId())
+        .orderId(order.getId())
         .recipientName(order.getRecipientName())
         .recipientPhone(order.getRecipientPhone())
         .orderAt(order.getOrderAt())
@@ -45,6 +46,7 @@ public class OrderDetailDto {
         .roadAddress(order.getRoadAddress())
         .detailedAddress(order.getDetailedAddress())
         .couponId(order.getCouponId())
+        .initialTotalPrice(order.getInitialTotalPrice())
         .totalDiscountPrice(order.getTotalDiscountPrice())
         .totalPaymentPrice(order.getTotalPaymentPrice())
         .orderProductList(getOrderProductDtos(order.getOrderProductList()))

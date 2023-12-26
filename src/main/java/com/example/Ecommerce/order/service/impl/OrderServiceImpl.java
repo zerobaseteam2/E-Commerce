@@ -18,6 +18,7 @@ import com.example.Ecommerce.order.repository.OrderProductRepository;
 import com.example.Ecommerce.order.repository.OrderRepository;
 import com.example.Ecommerce.order.service.OrderService;
 import com.example.Ecommerce.product.domain.Product;
+import com.example.Ecommerce.product.dto.seller.ProductState;
 import com.example.Ecommerce.product.repository.ProductRepository;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.repository.UserRepository;
@@ -54,13 +55,23 @@ public class OrderServiceImpl implements OrderService {
 
     // 상품 및 수량 정보로 주문상품 생성
     newOrderDto.getProductQuantityMap().forEach((productId, quantity) -> {
-      // 주문 수량이 0개인 경우 exception 발생
+      // 입력된 주문 수량이 0개인 경우 exception 발생
       if (quantity <= 0) {
         throw new CustomException(ErrorCode.INVALID_QUANTITY);
       }
       // 상품 id 에 따른 상품 불러오기, id가 없어진 경우 exception 발생
       Product product = productRepository.findById(productId)
           .orElseThrow(() -> new CustomException(ErrorCode.PRODUCT_NOT_FOUND));
+      // 상품 상태 확인 (품절, 판매중지시 주문 불가)
+      ProductState productState = product.getState();
+      if (productState != null) {
+        if (ProductState.STOP_SELLING.equals(productState) || ProductState.NO_STOCK.equals(productState)) {
+          throw new InvalidOrderStatusException("주문이 불가능한 상품입니다. 상품 상태를 확인하세요: " + productState);
+        }
+      } else {
+        // 상품 상태가 존재하지 않으면
+        throw new InvalidOrderStatusException("주문이 불가능한 상품입니다.");
+      }
       // 주문상품 생성 및 저장
       OrderProduct orderProduct = OrderProduct.builder()
           .order(order)
@@ -74,16 +85,18 @@ public class OrderServiceImpl implements OrderService {
       order.addOrderProduct(orderProduct);
     });
 
-    // 총금액 계산
-    order.calculateTotalPrice();
-    // 총할인금액 계산 - 쿠폰이 있는경우만 사용
+    // 최초금액 계산
+    order.calculateInitialTotalPrice();
+    // 총할인금액 계산
     if (newOrderDto.getCouponId() != null){
       Coupon coupon  = couponRepository.findByIdAndCustomerId(newOrderDto.getCouponId(), user.get().getId())
           .orElseThrow(()-> new CustomException(ErrorCode.COUPON_NOT_FOUND));
       // 쿠폰 사용
       coupon.useCoupon(coupon, order.getId());
-      // 할인금액과 총금액 계산
-      order.calculateTotalDiscountPrice(coupon);
+      // 할인금액과 총결제금액 계산
+      order.applyCouponDiscount(coupon);
+    } else {
+      order.calculateTotalPaymentPrice();
     }
     // 주문 저장
     orderRepository.save(order);
@@ -155,7 +168,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // 해당 주문에 쿠폰 사용 내역이 없다면
-    order.calculateTotalPrice();
+    order.calculateInitialTotalPrice();
   }
 
   @Override
