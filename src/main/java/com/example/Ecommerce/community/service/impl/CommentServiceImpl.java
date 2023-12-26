@@ -2,9 +2,9 @@ package com.example.Ecommerce.community.service.impl;
 
 import com.example.Ecommerce.community.domain.Comment;
 import com.example.Ecommerce.community.domain.Post;
-import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.community.dto.comment.CommentDetailDto;
 import com.example.Ecommerce.community.dto.comment.NewCommentDto;
+import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.community.respository.CommentRepository;
 import com.example.Ecommerce.community.respository.PostRepository;
 import com.example.Ecommerce.community.service.CommentService;

@@ -1,6 +1,5 @@
 package com.example.Ecommerce.community.dto.post;
 
-import com.example.Ecommerce.community.domain.Comment;
 import com.example.Ecommerce.community.domain.Post;
 import com.example.Ecommerce.community.dto.comment.CommentDetailDto;
 import java.util.Date;
