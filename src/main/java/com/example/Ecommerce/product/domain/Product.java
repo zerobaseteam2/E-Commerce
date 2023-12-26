@@ -6,6 +6,7 @@ import com.example.Ecommerce.product.dto.seller.ProductState;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,18 +23,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.envers.AuditOverride;
-import org.hibernate.envers.Audited;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
-@Audited
-@AuditOverride(forClass = BaseEntity.class)
-public class Product extends BaseEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class Product {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -79,12 +81,22 @@ public class Product extends BaseEntity {
   // 상품 옵션 리스트
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "product_id")
+  @Builder.Default
   private List<ProductOption> productOptionList = new ArrayList<>();
 
   // 상품 태그 리스트
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "product_id")
+  @Builder.Default
   private List<ProductTag> productTags = new ArrayList<>();
+
+
+  @CreatedDate
+  @Column(nullable = false)
+  private LocalDateTime createAt;
+
+  @LastModifiedDate
+  private LocalDateTime modifiedAt;
 
   //찜 상품 내역
 //  @OneToMany(cascade = CascadeType.ALL)

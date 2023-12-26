@@ -8,7 +8,7 @@ import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
 import com.example.Ecommerce.order.domain.OrderStatus;
 import com.example.Ecommerce.order.domain.OrderStatusHistory;
-import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.OrderProductDetailDto;
 import com.example.Ecommerce.order.dto.OrderStatusHistoryDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Request;
@@ -85,7 +85,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     return UpdateStatusDto.Response.of(orderProduct);
   }
 
-  public Page<OrderProductDto> getOrdersByStatus(Long customerId, OrderStatus status,
+  public Page<OrderProductDetailDto> getOrdersByStatus(Long customerId, OrderStatus status,
       Pageable pageable) {
 
     List<Order> orderList = orderRepository.findAllByUser(userRepository.findById(customerId));
@@ -106,7 +106,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
       throw new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
     }
     // 결과를 OrderProductDto list 로 반환하여 반환
-    return filteredOrderProducts.map(OrderProductDto::of);
+    return filteredOrderProducts.map(OrderProductDetailDto::of);
   }
 
   @Override
