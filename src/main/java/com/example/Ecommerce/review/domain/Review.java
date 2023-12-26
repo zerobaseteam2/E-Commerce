@@ -1,14 +1,13 @@
 package com.example.Ecommerce.review.domain;
 
-import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 import com.example.Ecommerce.order.domain.OrderProduct;
-import com.example.Ecommerce.product.domain.BaseEntity;
 import com.example.Ecommerce.product.domain.Product;
 import com.example.Ecommerce.review.dto.ReviewUpdateDto;
 import com.example.Ecommerce.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,14 +15,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.envers.AuditOverride;
-import org.hibernate.envers.Audited;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
@@ -31,11 +32,10 @@ import org.hibernate.envers.Audited;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Audited
-@AuditOverride(forClass = BaseEntity.class)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "review")
 @DynamicUpdate
-public class Review extends BaseEntity {
+public class Review {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +43,6 @@ public class Review extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false)
-  @Audited(targetAuditMode = NOT_AUDITED)
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -52,7 +51,6 @@ public class Review extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "orderProduct_id", nullable = false)
-  @Audited(targetAuditMode = NOT_AUDITED)
   private OrderProduct orderProduct;
 
   @Column(nullable = false)
@@ -72,6 +70,13 @@ public class Review extends BaseEntity {
 
   @Column(name = "reply")
   private String reply;
+
+  @CreatedDate
+  @Column(nullable = false)
+  private LocalDateTime createAt;
+
+  @LastModifiedDate
+  private LocalDateTime modifiedAt;
 
   public void update(ReviewUpdateDto.Request request) {
     this.title = request.getTitle();
