@@ -1,10 +1,8 @@
 package com.example.Ecommerce.community.service;
 
 import com.example.Ecommerce.community.dto.post.NewPostDto;
-import com.example.Ecommerce.community.dto.post.NewPostDto.Request;
 import com.example.Ecommerce.community.dto.post.PostDetailDto;
 import com.example.Ecommerce.community.dto.post.UpdatePostDto;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

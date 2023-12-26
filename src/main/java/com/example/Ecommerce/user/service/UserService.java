@@ -1,7 +1,7 @@
 package com.example.Ecommerce.user.service;
 
-import com.example.Ecommerce.user.dto.FindUserIdDto;
 import com.example.Ecommerce.security.UserDetailsImpl;
+import com.example.Ecommerce.user.dto.FindUserIdDto;
 import com.example.Ecommerce.user.dto.FindUserPasswordDto;
 import com.example.Ecommerce.user.dto.ResetPasswordDto;
 import com.example.Ecommerce.user.dto.UserAddressDto;
@@ -41,4 +41,6 @@ public interface UserService {
   void sendToEmailResetPasswordForm(FindUserPasswordDto.Request request);
 
   void resetPassword(ResetPasswordDto.Request request, String encryptedUserId);
+
+  void unregisterUser(String accessToken, UserDetailsImpl userDetails);
 }

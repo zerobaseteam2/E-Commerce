@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -235,8 +234,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  @Transactional
-  @CachePut(value = CacheKey.USER, key = "#userDetails.user.userId")
+  @CacheEvict(value = CacheKey.USER, key = "#userDetails.user.userId")
   public void modifyUserInfo(UserDetailsImpl userDetails, UserInfoDto.Request request) {
     User user = userDetails.getUser();
 
@@ -244,6 +242,7 @@ public class UserServiceImpl implements UserService {
     request.setPassword(encryptedPassword);
 
     user.modifyUserInfo(request);
+    userRepository.save(user);
   }
 
   @Override
@@ -288,5 +287,13 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     user.modifyUserPassword(encryptedPassword);
+  }
+
+  @Override
+  public void unregisterUser(String accessToken, UserDetailsImpl userDetails) {
+    User user = userDetails.getUser();
+    logout(accessToken, user.getUserId());
+
+    userRepository.delete(user);
   }
 }

@@ -2,8 +2,8 @@ package com.example.Ecommerce.user.controller;
 
 import static com.example.Ecommerce.security.jwt.JwtTokenUtil.AUTHORIZATION_HEADER;
 
-import com.example.Ecommerce.user.dto.FindUserIdDto;
 import com.example.Ecommerce.security.UserDetailsImpl;
+import com.example.Ecommerce.user.dto.FindUserIdDto;
 import com.example.Ecommerce.user.dto.FindUserPasswordDto;
 import com.example.Ecommerce.user.dto.ResetPasswordDto;
 import com.example.Ecommerce.user.dto.UserAddressDto;
@@ -155,6 +155,15 @@ public class UserController {
       @RequestBody @Valid ResetPasswordDto.Request request,
       @PathVariable String encryptedUserId) {
     userService.resetPassword(request, encryptedUserId);
+
+    return ResponseEntity.ok().build();
+  }
+
+  @DeleteMapping("/unregister")
+  public ResponseEntity<Void> unregisterUser(
+      @RequestHeader("Authorization") String accessToken,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    userService.unregisterUser(accessToken, userDetails);
 
     return ResponseEntity.ok().build();
   }

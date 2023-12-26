@@ -1,8 +1,5 @@
 package com.example.Ecommerce.community.dto.comment;
 
-import com.example.Ecommerce.community.domain.Comment;
-import com.example.Ecommerce.community.domain.Post;
-import com.example.Ecommerce.community.dto.post.PostDetailDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

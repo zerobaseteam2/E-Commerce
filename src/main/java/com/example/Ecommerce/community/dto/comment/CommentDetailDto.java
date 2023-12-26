@@ -1,8 +1,6 @@
 package com.example.Ecommerce.community.dto.comment;
 
 import com.example.Ecommerce.community.domain.Comment;
-import com.example.Ecommerce.community.domain.Post;
-import java.time.LocalDate;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

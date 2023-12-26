@@ -1,7 +1,7 @@
 package com.example.Ecommerce.community.domain;
 
-import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.community.dto.comment.NewCommentDto;
+import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

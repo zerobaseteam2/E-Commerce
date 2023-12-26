@@ -1,8 +1,8 @@
 package com.example.Ecommerce.community.controller;
 
-import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.community.dto.comment.CommentDetailDto;
 import com.example.Ecommerce.community.dto.comment.NewCommentDto;
+import com.example.Ecommerce.community.dto.comment.UpdateCommentDto;
 import com.example.Ecommerce.community.service.CommentService;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import jakarta.validation.Valid;
