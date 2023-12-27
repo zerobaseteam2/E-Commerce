@@ -91,6 +91,21 @@ public class CouponServiceImpl implements CouponService {
     return new PageResponse().toDto(pageNo, couponPage, responseDto);
   }
 
+  @Override
+  public PageResponse viewCouponsForAdmin(SearchFilterType filterType, int pageNo, Long customerId) {
+    // 정렬 기준에 따라 pageable 객체 초기화
+    Pageable pageable = createPageable(pageNo);
+
+    // 찾아온 데이터 Page 객체
+    Page<Coupon> couponPage = filtering(filterType, pageable, customerId);
+
+    // page 객체에서 쿠폰 리스트를 추출하여 responseDto에 저장
+    List<ViewCouponsDto.Response> responseDto = createListResponseDto(couponPage);
+
+    // page 객체를 통해 return
+    return new PageResponse().toDto(pageNo, couponPage, responseDto);
+  }
+
   private Pageable createPageable(int pageNo) {
     return PageRequest.of(pageNo, 10, Sort.by("issuanceDate").descending());
   }

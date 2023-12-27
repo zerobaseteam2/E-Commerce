@@ -3,6 +3,7 @@ package com.example.Ecommerce.coupon.controller;
 import com.example.Ecommerce.coupon.dto.CouponIssuanceDto;
 import com.example.Ecommerce.coupon.dto.PageResponse;
 import com.example.Ecommerce.coupon.dto.SearchFilterType;
+import com.example.Ecommerce.coupon.dto.ViewCouponsAdminDto;
 import com.example.Ecommerce.coupon.service.CouponService;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -17,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/coupon")
+@RequestMapping("/coupon")
 @RequiredArgsConstructor
 public class CouponController {
 
   private final CouponService couponService;
 
-  @PostMapping("/issuance")
+  @PostMapping("/admin/issuance")
   public ResponseEntity<CouponIssuanceDto.Response> issuanceCoupon(
       @RequestBody @Valid CouponIssuanceDto.Request request) {
     CouponIssuanceDto.Response response = couponService.issuanceCoupon(request);
@@ -31,19 +32,15 @@ public class CouponController {
     return ResponseEntity.ok(response);
   }
 
-  //test용
-  @PostMapping("/issuance/birth")
-  public ResponseEntity<String> inssuanceBirthDayCoupon() {
-    couponService.issuanceBirthDayCoupon();
+  @GetMapping("/admin/list")
+  public ResponseEntity<PageResponse> viewCouponsForAdmin(
+          @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+          @RequestParam(value = "filter", defaultValue = "ALL", required = false) SearchFilterType filter,
+          @RequestBody @Valid ViewCouponsAdminDto request
+          ) {
+    PageResponse pageResponse = couponService.viewCouponsForAdmin(filter, pageNo, request.getCustomerId());
 
-    return ResponseEntity.ok("Success");
-  }
-
-  //테스트용
-  @PostMapping("/expires")
-  public ResponseEntity<String> expiresCoupon() {
-    couponService.checkExpiredCoupon();
-    return ResponseEntity.ok("Success");
+    return ResponseEntity.ok(pageResponse);
   }
 
   @GetMapping("/list")
@@ -56,4 +53,5 @@ public class CouponController {
 
     return ResponseEntity.ok(pageResponse);
   }
+
 }

@@ -66,24 +66,24 @@ public class SecurityConfig {
         .formLogin((formLoginConfig) ->
             formLoginConfig.disable())
         .authorizeHttpRequests((auth) ->
-            auth.requestMatchers("/api/user/register").permitAll()
-                .requestMatchers("/api/user/login").permitAll()
-                .requestMatchers("/api/user/reissue").permitAll()
-                .requestMatchers("/api/user/verify/{id}").permitAll()
-                .requestMatchers("/api/user/address").hasRole("CUSTOMER")
-                .requestMatchers("/api/user/find/userId").permitAll()
-                .requestMatchers("/api/user/reset/**").permitAll()
+            auth.requestMatchers("/user/register").permitAll()
+                .requestMatchers("/user/login").permitAll()
+                .requestMatchers("/user/reissue").permitAll()
+                .requestMatchers("/user/verify/{id}").permitAll()
+                .requestMatchers("/user/address").hasRole("CUSTOMER")
+                .requestMatchers("/user/find/userId").permitAll()
+                .requestMatchers("/user/reset/**").permitAll()
 
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/api-docs/**").permitAll()
 
-                .requestMatchers("/api/coupon/issuance/**").hasRole("ADMIN")
-                .requestMatchers("/api/coupon/expires").hasRole("ADMIN")
+                .requestMatchers("/coupon/admin/**").hasRole("ADMIN")
+                .requestMatchers("/coupon/list").hasRole("CUSTOMER")
 
-                .requestMatchers("/v1/product").hasRole("SELLER")
-                .requestMatchers("/v1/product/**").hasRole("SELLER")
+                .requestMatchers("/product").hasRole("SELLER")
+                .requestMatchers("/product/**").hasRole("SELLER")
                 .requestMatchers("/admin/product/**").hasRole("ADMIN")
-                .requestMatchers("/v1/search/**").permitAll()
+                .requestMatchers("/search/**").permitAll()
 
                 .requestMatchers("/customer/order/**").hasRole("CUSTOMER")
                 .requestMatchers("/seller/order/**").hasRole("SELLER")
