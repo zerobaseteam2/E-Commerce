@@ -2,11 +2,11 @@ package com.example.Ecommerce.order.controller;
 
 import com.example.Ecommerce.order.dto.NewOrderDto;
 import com.example.Ecommerce.order.dto.OrderDetailDto;
-import com.example.Ecommerce.order.dto.list.OrderListDto;
 import com.example.Ecommerce.order.dto.OrderProductDetailDto;
 import com.example.Ecommerce.order.dto.UpdateQuantityDto;
 import com.example.Ecommerce.order.dto.UpdateShippingDto;
-import com.example.Ecommerce.order.service.OrderService;
+import com.example.Ecommerce.order.dto.list.OrderListDto;
+import com.example.Ecommerce.order.service.OrderCustomerService;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/order")
-public class OrderController {
+@RequestMapping("/customer/order")
+public class OrderCustomerController {
 
-  private final OrderService orderService;
+  private final OrderCustomerService orderCustomerService;
 
   // 주문 등록 API
   @PostMapping()
@@ -40,21 +40,21 @@ public class OrderController {
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
 
-    OrderDetailDto orderDetailDto = orderService.processOrder(customerId, newOrderDto);
+    OrderDetailDto orderDetailDto = orderCustomerService.processOrder(customerId, newOrderDto);
     return ResponseEntity.ok(orderDetailDto);
   }
 
   // 주문 배송지 정보 수정 API
-  @PutMapping("/{id}/shipping-info")
+  @PutMapping("/{orderId}/shipping-info")
   public ResponseEntity<UpdateShippingDto.Response> updateShippingInfo(
-      @PathVariable Long id,
+      @PathVariable Long orderId,
       @RequestBody UpdateShippingDto.Request request,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
 
-    UpdateShippingDto.Response response = orderService.updateShippingInfo(id, request, customerId);
+    UpdateShippingDto.Response response = orderCustomerService.updateShippingInfo(orderId, request, customerId);
     return ResponseEntity.ok(response);
   }
 
@@ -67,22 +67,23 @@ public class OrderController {
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
 
-    OrderDetailDto orderDetailDto = orderService.updateQuantity(updateQuantityDto, customerId);
+    OrderDetailDto orderDetailDto = orderCustomerService.updateQuantity(updateQuantityDto, customerId);
     return ResponseEntity.ok(orderDetailDto);
   }
 
   // 주문 상세 내역 조회 API
-  @GetMapping("/{id}/details")
+  @GetMapping("/{orderId}/details")
   public ResponseEntity<OrderDetailDto> getOrderDetails(
-      @PathVariable Long id,
+      @PathVariable Long orderId,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
 
-    OrderDetailDto orderDetailDto = orderService.getOrderDetails(customerId, id);
+    OrderDetailDto orderDetailDto = orderCustomerService.getOrderDetails(customerId, orderId);
     return ResponseEntity.ok(orderDetailDto);
   }
+
 
   // 주문 목록 조회 API
   @GetMapping("/list")
@@ -96,9 +97,7 @@ public class OrderController {
     // paging 처리
     Pageable pageable = PageRequest.of(page, size);
 
-    Page<OrderProductDetailDto> result = orderService.getAllOrders(customerId, pageable);
+    Page<OrderProductDetailDto> result = orderCustomerService.getAllOrders(customerId, pageable);
     return ResponseEntity.ok(OrderListDto.of(result));
   }
-
-
 }

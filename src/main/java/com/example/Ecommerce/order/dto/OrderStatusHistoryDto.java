@@ -26,6 +26,7 @@ public class OrderStatusHistoryDto {
         .id(orderStatusHistory.getId())
         .previousStatus(orderStatusHistory.getPreviousStatus())
         .currentStatus(orderStatusHistory.getCurrentStatus())
+        .updatedAt(orderStatusHistory.getUpdatedAt())
         .build();
   }
 

@@ -24,7 +24,7 @@ public class OrderProductOption {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column
+  @Column(nullable = false)
   private Long productOptionId;
 
   @Column(nullable = false)

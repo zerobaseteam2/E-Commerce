@@ -85,7 +85,8 @@ public class SecurityConfig {
                 .requestMatchers("/admin/product/**").hasRole("ADMIN")
                 .requestMatchers("/v1/search/**").permitAll()
 
-                .requestMatchers("api/order/**").hasRole("CUSTOMER")
+                .requestMatchers("/customer/order/**").hasRole("CUSTOMER")
+                .requestMatchers("/seller/order/**").hasRole("SELLER")
                 .anyRequest().authenticated())
         .logout((httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.disable()))
         .sessionManagement((sessionConfig) ->
