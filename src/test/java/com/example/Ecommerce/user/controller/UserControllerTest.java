@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -18,7 +19,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.Ecommerce.config.TestConfig;
+import com.example.Ecommerce.user.dto.FindUserIdDto;
+import com.example.Ecommerce.user.dto.FindUserPasswordDto;
+import com.example.Ecommerce.user.dto.ResetPasswordDto;
 import com.example.Ecommerce.user.dto.UserAddressDto;
+import com.example.Ecommerce.user.dto.UserInfoDto;
 import com.example.Ecommerce.user.dto.UserLoginDto;
 import com.example.Ecommerce.user.dto.UserRegisterDto;
 import com.example.Ecommerce.user.service.UserService;
@@ -203,5 +208,103 @@ class UserControllerTest {
         .andDo(print());
 
     verify(userService).setUserRepresentAddress(any(), any());
+  }
+
+  @Test
+  @DisplayName("회원 정보 수정 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_CUSTOMER"})
+  void modifyUserInfoSuccess() throws Exception {
+    //given
+    UserInfoDto.Request request = UserInfoDto.Request.builder()
+        .password("Test1234!@")
+        .name("테스트2")
+        .phone("01087654321")
+        .birth(LocalDate.of(2023, 12, 15))
+        .build();
+    //when
+    //then
+    mockMvc.perform(
+            put("/api/user/info")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).modifyUserInfo(any(), any());
+  }
+
+  @Test
+  @DisplayName("회원 아이디 찾기 성공 테스트")
+  void findUserIdSuccess() throws Exception {
+    //given
+    FindUserIdDto.Request request = FindUserIdDto.Request.builder()
+        .email("Test@naver.com")
+        .name("테스트")
+        .build();
+    //when
+    //then
+    mockMvc.perform(
+            get("/api/user/find/userId")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).findUserId(any());
+  }
+
+  @Test
+  @DisplayName("회원 비밀번호 찾기 메일 발송 성공 테스트")
+  void sendToEmailResetPasswordFormSuccess() throws Exception {
+    //given
+    FindUserPasswordDto.Request request = FindUserPasswordDto.Request.builder()
+        .email("Test@naver.com")
+        .userId("Test")
+        .build();
+    //when
+    //then
+    mockMvc.perform(
+            get("/api/user/reset/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).sendToEmailResetPasswordForm(any());
+  }
+
+  @Test
+  @DisplayName("회원 비밀번호 초기화 성공 테스트")
+  void resetPasswordSuccess() throws Exception {
+    //given
+    ResetPasswordDto.Request request = ResetPasswordDto.Request.builder()
+        .newPassword("Test1234!@")
+        .build();
+    //when
+    //then
+    mockMvc.perform(
+            put("/api/user/reset/password/Test")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).resetPassword(any(), anyString());
+  }
+
+  @Test
+  @DisplayName("회원 탈퇴 성공 테스트")
+  @WithMockUser(authorities = {"ROLE_CUSTOMER"})
+  void unregisterUserSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(
+            delete("/api/user/unregister")
+                .header("Authorization", "accessToken"))
+        .andExpect(status().isOk())
+        .andDo(print());
+
+    verify(userService).unregisterUser(anyString(), any());
   }
 }

@@ -7,17 +7,17 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
-  NOT_FOUND(HttpStatus.NOT_FOUND, "Not found."),
-  USERID_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "UserID already exists."),
-  EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Email already exists."),
-  PHONE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Phone Number already exists."),
-  USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "User not found."),
+  NOT_FOUND(HttpStatus.NOT_FOUND, "찾을 수 없습니다."),
+  USERID_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다."),
+  EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
+  PHONE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 전화번호입니다."),
+  USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "회원을 찾을 수 없습니다."),
 
 
   // 로그인
-  REFRESH_TOKEN_NULL(HttpStatus.BAD_REQUEST, "Refresh token has not been entered."),
-  REFRESH_TOKEN_NOT_EXIST(HttpStatus.BAD_REQUEST, "Refresh token does not exist."),
-  REFRESH_TOKEN_HAS_EXPIRED(HttpStatus.BAD_REQUEST, "Refresh token has expired."),
+  REFRESH_TOKEN_NULL(HttpStatus.BAD_REQUEST, "재발급 토큰이 존재하지 않습니다"),
+  REFRESH_TOKEN_NOT_EXIST(HttpStatus.BAD_REQUEST, "재발급 토큰을 찾을 수 없습니다."),
+  REFRESH_TOKEN_HAS_EXPIRED(HttpStatus.BAD_REQUEST, "재발급 유효기간이 지난 토큰입니다."),
   INVALID_JWT_SIGNATURE(HttpStatus.FORBIDDEN, "유효하지 않는 JWT 서명입니다."),
   EXPIRED_JWT_TOKEN(HttpStatus.FORBIDDEN, "만료된 JWT 토큰입니다."),
   UNSUPPORTED_JWT_TOKEN(HttpStatus.FORBIDDEN, "지원되지 않는 JWT 토큰입니다."),
@@ -34,14 +34,14 @@ public enum ErrorCode {
   PRODUCT_NOT_WAITING(HttpStatus.BAD_REQUEST, "승인 대기중인 상품이 아닙니다."),
   PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 상품을 찾을수 없습니다."),
   PRODUCT_NOT_CANCEL_REQUEST(HttpStatus.BAD_REQUEST, "물품 등록 취소 혹은 판매 중지 요청한 상품이 아닙니다."),
-  DELIVERY_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "Address not found"),
+  DELIVERY_ADDRESS_NOT_FOUND(HttpStatus.BAD_REQUEST, "배송지를 찾을 수 없습니다."),
 
   // 검색 exception
   SEARCH_NOT_FOUND_PRODUCT(HttpStatus.BAD_REQUEST, "검색하신 상품을 찾을수 없습니다."),
 
 
-  EXPIRES_COUPON(HttpStatus.BAD_REQUEST, "Coupon has expired."),
-  FILTER_TYPE_ERROR(HttpStatus.BAD_REQUEST, "The filter type is incorrect."),
+  EXPIRES_COUPON(HttpStatus.BAD_REQUEST, "유효기간이 지난 쿠폰입니다."),
+  FILTER_TYPE_ERROR(HttpStatus.BAD_REQUEST, "필터 타입이 올바르지 않습니다"),
 
 
   // 리뷰 관련
