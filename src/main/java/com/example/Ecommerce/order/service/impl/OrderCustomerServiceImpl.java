@@ -18,7 +18,7 @@ import com.example.Ecommerce.order.dto.UpdateShippingDto;
 import com.example.Ecommerce.order.repository.OrderProductOptionRepository;
 import com.example.Ecommerce.order.repository.OrderProductRepository;
 import com.example.Ecommerce.order.repository.OrderRepository;
-import com.example.Ecommerce.order.service.OrderService;
+import com.example.Ecommerce.order.service.OrderCustomerService;
 import com.example.Ecommerce.product.domain.Product;
 import com.example.Ecommerce.product.domain.ProductOption;
 import com.example.Ecommerce.product.dto.seller.ProductState;
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements OrderService {
+public class OrderCustomerServiceImpl implements OrderCustomerService {
 
   private final OrderRepository orderRepository;
   private final OrderProductRepository orderProductRepository;
@@ -207,13 +207,13 @@ public class OrderServiceImpl implements OrderService {
     order.calculateTotalPaymentPrice();
   }
 
+
   @Override
   public OrderDetailDto getOrderDetails(String customerId, Long id) {
 
     // 조회하려는 주문 가져오기
     Order order = orderRepository.findById(id)
         .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
-
     // 권한 확인 - 조회하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!order.getUser().getUserId().equals(customerId)) {
       throw new UnauthorizedUserException("해당 주문 상세 내역에 접근할 권한이 없습니다.");

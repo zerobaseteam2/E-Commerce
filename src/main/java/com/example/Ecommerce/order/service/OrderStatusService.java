@@ -11,6 +11,6 @@ import org.springframework.data.domain.Pageable;
 public interface OrderStatusService {
   UpdateStatusDto.Response updateStatusByCustomer(String customerId, Request request);
   UpdateStatusDto.Response updateStatusBySeller(Long sellerId, Request request);
-  Page<OrderProductDetailDto> getOrdersByStatus(Long customerId, OrderStatus status, Pageable pageable);
+  Page<OrderProductDetailDto> getOrdersByStatus(Long sellerId, OrderStatus status, Pageable pageable);
   Page<OrderStatusHistoryDto> getOrderStatusHistory(Long customerId, Long id, Pageable pageable);
 }
