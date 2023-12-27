@@ -3,6 +3,8 @@ package com.example.Ecommerce.inquiry.dto.admin;
 import com.example.Ecommerce.inquiry.domain.Inquiry;
 import com.example.Ecommerce.inquiry.domain.InquiryReply;
 import com.example.Ecommerce.user.domain.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +18,11 @@ public class RegisterInquiryReplyDto {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Request {
+    @NotNull
     private Long inquiryId;
+    @NotBlank
     private String title;
+    @NotBlank
     private String content;
 
     public static InquiryReply toEntity(RegisterInquiryReplyDto.Request request, Inquiry inquiry, User user) {

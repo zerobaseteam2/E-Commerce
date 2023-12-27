@@ -51,8 +51,8 @@ public class InquiryServiceImpl implements InquiryService {
         .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
     // 권한 확인
-    if (!nowInquiry.getUser().getUserId().equals(user.getUserId()) && !user.getRole().equals(UserRole.ADMIN)) {
-      throw new CustomException(NO_PERMISSION_TO_VIEW);
+    if (!nowInquiry.getUser().getUserId().equals(user.getUserId())) {
+      throw new CustomException(YOU_HAVE_NO_PERMISSION);
     }
 
     // 문의 답변이 달린 경우 내용 수정 불가
@@ -72,8 +72,8 @@ public class InquiryServiceImpl implements InquiryService {
         .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
     // 권한 확인
-    if (!nowInquiry.getUser().getUserId().equals(user.getUserId()) && !user.getRole().equals(UserRole.ADMIN)) {
-      throw new CustomException(NO_PERMISSION_TO_VIEW);
+    if (!nowInquiry.getUser().getUserId().equals(user.getUserId())) {
+      throw new CustomException(YOU_HAVE_NO_PERMISSION);
     }
 
     inquiryRepository.deleteById(inquiryId);
@@ -92,7 +92,7 @@ public class InquiryServiceImpl implements InquiryService {
 
     // 권한 확인
     if (!nowInquiry.getUser().getUserId().equals(user.getUserId()) && !user.getRole().equals(UserRole.ADMIN)) {
-      throw new CustomException(NO_PERMISSION_TO_VIEW);
+      throw new CustomException(YOU_HAVE_NO_PERMISSION);
     }
 
     if (nowInquiry.isReplyState()) {
@@ -164,10 +164,6 @@ public class InquiryServiceImpl implements InquiryService {
     InquiryReply nowReply = inquiryReplyRepository.findById(request.getInquiryReplyId())
         .orElseThrow(() -> new CustomException(INQUIRY_REPLY_NOT_FOUND));
 
-    if (!nowReply.getAdmin().getId().equals(user.getId())) {
-      throw new CustomException(NO_PERMISSION_TO_UPDATE);
-    }
-
     nowReply.updateReply(request);
 
     Long inquiryId = nowReply.getInquiry().getId();
@@ -181,10 +177,6 @@ public class InquiryServiceImpl implements InquiryService {
   // 관리자용 문의 목록 조회
   @Override
   public InquiryPageDto viewInquiryListForAdmin(int pageNo, User user, String filter) {
-    // 관리자 권한 확인
-    if (!user.getRole().equals(UserRole.ADMIN)) {
-      throw new CustomException(NO_PERMISSION_TO_VIEW);
-    }
 
     // 정렬 기준에 따라 pageable 객체 초기화
     Pageable pageable = createPageable(pageNo);

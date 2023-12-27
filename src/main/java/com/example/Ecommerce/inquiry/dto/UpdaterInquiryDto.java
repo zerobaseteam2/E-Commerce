@@ -6,6 +6,8 @@ import com.example.Ecommerce.inquiry.dto.RegisterInquiryDto.Response;
 import com.example.Ecommerce.user.domain.UserRole;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +21,9 @@ public class UpdaterInquiryDto {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Request {
+    @NotBlank
     private String title;
+    @NotBlank
     private String content;
   }
 
