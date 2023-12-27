@@ -12,10 +12,7 @@ import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.security.UserDetailsImpl;
 import com.example.Ecommerce.security.jwt.JwtTokenUtil;
-import com.example.Ecommerce.user.domain.DeliveryAddress;
-import com.example.Ecommerce.user.domain.LogoutAccessToken;
-import com.example.Ecommerce.user.domain.RefreshToken;
-import com.example.Ecommerce.user.domain.User;
+import com.example.Ecommerce.user.domain.*;
 import com.example.Ecommerce.user.dto.FindUserIdDto;
 import com.example.Ecommerce.user.dto.FindUserPasswordDto;
 import com.example.Ecommerce.user.dto.ResetPasswordDto;
@@ -64,9 +61,12 @@ public class UserServiceImpl implements UserService {
     String encryptedPassword = passwordEncoder.encode(request.getPassword());
     User user = userRepository.save(request.toEntity(encryptedPassword));
 
-    CouponIssuanceDto.Request couponRequest = new CouponIssuanceDto.Request(user.getId(),
-        CouponType.MEMBERSHIP_SIGNUP_COUPON, null);
-    couponService.issuanceCoupon(couponRequest);
+    // CUSTOMER인 경우 회원가입 쿠폰 발급
+    if (user.getRole().equals(UserRole.CUSTOMER)) {
+      CouponIssuanceDto.Request couponRequest = new CouponIssuanceDto.Request(user.getId(),
+              CouponType.MEMBERSHIP_SIGNUP_COUPON, null);
+      couponService.issuanceCoupon(couponRequest);
+    }
 
     mailComponent.sendVerifyLink(user.getId(), user.getEmail(), user.getName());
 
