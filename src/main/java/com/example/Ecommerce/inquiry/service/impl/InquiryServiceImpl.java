@@ -1,37 +1,31 @@
 package com.example.Ecommerce.inquiry.service.impl;
 
-import static com.example.Ecommerce.exception.ErrorCode.INQUIRY_REPLY_NOT_FOUND;
-import static com.example.Ecommerce.exception.ErrorCode.NO_PERMISSION_TO_UPDATE;
-import static com.example.Ecommerce.exception.ErrorCode.NO_PERMISSION_TO_VIEW;
-
 import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.inquiry.domain.Inquiry;
 import com.example.Ecommerce.inquiry.domain.InquiryReply;
-import com.example.Ecommerce.inquiry.dto.InquiryListDto;
-import com.example.Ecommerce.inquiry.dto.InquiryPageDto;
-import com.example.Ecommerce.inquiry.dto.RegisterInquiryDto;
+import com.example.Ecommerce.inquiry.dto.*;
 import com.example.Ecommerce.inquiry.dto.RegisterInquiryDto.Request;
-import com.example.Ecommerce.inquiry.dto.UpdaterInquiryDto;
-import com.example.Ecommerce.inquiry.dto.ViewInquiryDto;
 import com.example.Ecommerce.inquiry.dto.admin.RegisterInquiryReplyDto;
 import com.example.Ecommerce.inquiry.dto.admin.UpdateInquiryReplyDto;
+import com.example.Ecommerce.inquiry.dto.admin.ViewInquiryReplyDto;
 import com.example.Ecommerce.inquiry.repository.InquiryReplyRepository;
 import com.example.Ecommerce.inquiry.repository.InquiryRepository;
 import com.example.Ecommerce.inquiry.service.InquiryService;
 import com.example.Ecommerce.user.domain.User;
 import com.example.Ecommerce.user.domain.UserRole;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.Ecommerce.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +53,11 @@ public class InquiryServiceImpl implements InquiryService {
     // 권한 확인
     if (!nowInquiry.getUser().getUserId().equals(user.getUserId()) && !user.getRole().equals(UserRole.ADMIN)) {
       throw new CustomException(NO_PERMISSION_TO_VIEW);
+    }
+
+    // 문의 답변이 달린 경우 내용 수정 불가
+    if (nowInquiry.isReplyState()) {
+      throw new CustomException(CONTENT_CAN_NOT_BE_MODIFIED);
     }
 
     nowInquiry.update(request);
@@ -96,6 +95,13 @@ public class InquiryServiceImpl implements InquiryService {
       throw new CustomException(NO_PERMISSION_TO_VIEW);
     }
 
+    if (nowInquiry.isReplyState()) {
+      InquiryReply inquiryReply = inquiryReplyRepository.findByInquiry_Id(nowInquiry.getId())
+              .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
+      ViewInquiryReplyDto replyDto = ViewInquiryReplyDto.toDto(inquiryReply);
+      return ViewInquiryDto.toDto(nowInquiry, replyDto);
+    }
+
     return ViewInquiryDto.toDto(nowInquiry);
   }
 
@@ -116,7 +122,7 @@ public class InquiryServiceImpl implements InquiryService {
   }
 
   private Pageable createPageable(int pageNo) {
-    return PageRequest.of(pageNo, 10, Sort.by("issuanceDate").descending());
+    return PageRequest.of(pageNo, 10);
   }
 
   private List<InquiryListDto> createListResponseDto(Page<Inquiry> inquiryPage) {
@@ -132,15 +138,23 @@ public class InquiryServiceImpl implements InquiryService {
 
   // 관리자 답변 작성
   @Override
+  @Transactional
   public ViewInquiryDto registerInquiryReply(RegisterInquiryReplyDto.Request request, User user) {
     Inquiry nowInquiry = inquiryRepository.findById(request.getInquiryId())
         .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
+
+    // 이미 답변이 존재할 경우 예외처리
+    if (nowInquiry.isReplyState()) {
+      throw new CustomException(EXIST_REPLY);
+    }
+
     InquiryReply inquiryReply = inquiryReplyRepository.save(
         RegisterInquiryReplyDto.Request.toEntity(request, nowInquiry, user));
 
-    nowInquiry.addReply(inquiryReply);
+    nowInquiry.addReply();
 
-    return ViewInquiryDto.toDto(nowInquiry);
+    ViewInquiryReplyDto replyDto = ViewInquiryReplyDto.toDto(inquiryReply);
+    return ViewInquiryDto.toDto(nowInquiry, replyDto);
   }
 
   // 관리자 답변 수정
@@ -150,18 +164,18 @@ public class InquiryServiceImpl implements InquiryService {
     InquiryReply nowReply = inquiryReplyRepository.findById(request.getInquiryReplyId())
         .orElseThrow(() -> new CustomException(INQUIRY_REPLY_NOT_FOUND));
 
-    if (!nowReply.getAdmin().equals(user)) {
+    if (!nowReply.getAdmin().getId().equals(user.getId())) {
       throw new CustomException(NO_PERMISSION_TO_UPDATE);
     }
 
     nowReply.updateReply(request);
 
-    Inquiry nowInquiry = inquiryRepository.findByInquiryReply(nowReply)
+    Long inquiryId = nowReply.getInquiry().getId();
+    Inquiry nowInquiry = inquiryRepository.findById(inquiryId)
         .orElseThrow(() -> new CustomException(ErrorCode.INQUIRY_NOT_FOUND));
 
-    nowInquiry.addReply(nowReply);
-
-    return ViewInquiryDto.toDto(nowInquiry);
+    ViewInquiryReplyDto replyDto = ViewInquiryReplyDto.toDto(nowReply);
+    return ViewInquiryDto.toDto(nowInquiry, replyDto);
   }
 
   // 관리자용 문의 목록 조회

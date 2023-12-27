@@ -15,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InquiryListDto {
+  private Long inquiryId;
   private String userId;
   private UserRole userRole;
   private String title;
@@ -23,6 +24,7 @@ public class InquiryListDto {
 
   public static InquiryListDto toDto(Inquiry inquiry) {
     return InquiryListDto.builder()
+        .inquiryId(inquiry.getId())
         .userId(inquiry.getUser().getUserId())
         .userRole(inquiry.getUser().getRole())
         .title(inquiry.getTitle())

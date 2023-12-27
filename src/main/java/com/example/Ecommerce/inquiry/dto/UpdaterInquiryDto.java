@@ -35,7 +35,6 @@ public class UpdaterInquiryDto {
     private String title;
     private String content;
     private boolean state;
-    private InquiryReply inquiryReply;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -47,7 +46,6 @@ public class UpdaterInquiryDto {
           .title(inquiry.getTitle())
           .content(inquiry.getContent())
           .state(inquiry.isReplyState())
-          .inquiryReply(inquiry.getInquiryReply())
           .createdAt(inquiry.getCreatedAt())
           .updatedAt(inquiry.getUpdatedAt())
           .build();

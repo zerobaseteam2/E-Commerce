@@ -14,5 +14,4 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
   Page<Inquiry> findAll(Pageable pageable);
   Page<Inquiry> findAllByReplyState(Pageable pageable, Boolean replyState);
 
-  Optional<Inquiry> findByInquiryReply(InquiryReply inquiryReply);
 }
