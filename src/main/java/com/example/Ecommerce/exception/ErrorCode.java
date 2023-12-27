@@ -51,6 +51,14 @@ public enum ErrorCode {
 
   NOT_SELLER_OF_THE_PRODUCT(HttpStatus.BAD_REQUEST, "해당 상품의 판매자가 아닙니다."),
 
+  // 문의
+  INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 문의내역이 없습니다."),
+  NO_PERMISSION_TO_VIEW(HttpStatus.FORBIDDEN, "조회 권한이 없습니다."),
+  NO_PERMISSION_TO_UPDATE(HttpStatus.FORBIDDEN, "수정 권한이 없습니다"),
+  INQUIRY_REPLY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 답변이 존재하지 않습니다."),
+  EXIST_REPLY(HttpStatus.BAD_REQUEST, "답변이 이미 존재합니다."),
+  CONTENT_CAN_NOT_BE_MODIFIED(HttpStatus.BAD_REQUEST, "답변이 작성되어 내용 수정이 불가합니다."),
+
   // 수정이 필요한 예외 처리.
   INVALID_OPERATION(HttpStatus.BAD_REQUEST, "예외처리 수정이 필요합니다."),
   INVALID_INPUT(HttpStatus.BAD_REQUEST, "예외처리 수정이 필요합니다."),
