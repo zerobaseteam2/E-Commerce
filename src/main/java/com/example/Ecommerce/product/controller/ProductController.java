@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("v1/product")
+@RequestMapping("/product")
 public class ProductController {
 
   private final ProductService productService;
@@ -47,7 +47,7 @@ public class ProductController {
   }
 
   // 판매승인된 상품에 옵션 추가
-  @PostMapping("/addOption")
+  @PostMapping("/post-Option")
   public ResponseEntity<ProductDto> addOption(@AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody @Valid AddProductOptionForm form) {
     Long sellerId = userDetails.getUser().getId();
@@ -55,7 +55,7 @@ public class ProductController {
   }
 
   // 판매승인된 상품에 태그 추가
-  @PostMapping("/addTag")
+  @PostMapping("/post-tag")
   public ResponseEntity<ProductDto> addTag(@AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody @Valid AddProductTagForm form) {
     Long sellerId = userDetails.getUser().getId();
@@ -63,7 +63,7 @@ public class ProductController {
   }
 
   // 등록된 상품 수정하기(옵션 및 태그도 같이 수정가능)
-  @PutMapping("/updateProduct")
+  @PutMapping
   public ResponseEntity<ProductDto> updateProduct(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody UpdateProductForm form) {
@@ -72,7 +72,7 @@ public class ProductController {
   }
 
   // 등록된 상품의 옵션만 수정하기
-  @PutMapping("/updateProductOption")
+  @PutMapping("/option")
   public ResponseEntity<ProductOptionDto> updateProductOption(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody UpdateProductOptionForm form) {
@@ -81,7 +81,7 @@ public class ProductController {
   }
 
   // 등록된 상품의 태그만 수정하기
-  @PutMapping("/updateProductTag")
+  @PutMapping("/tag")
   public ResponseEntity<ProductTagDto> updateProductTag(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestBody UpdateProductTagForm form) {
@@ -90,7 +90,7 @@ public class ProductController {
   }
 
   // 등록된 상품중 판매중지 혹은 등록 취소된 물품 삭제하기 - 연관된 모든 태그, 옵션들도 같이 삭제됨
-  @DeleteMapping("/deleteProduct")
+  @DeleteMapping
   public ResponseEntity<String> deleteProduct(@AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam Long productId) {
     Long sellerId = userDetails.getUser().getId();
@@ -99,7 +99,7 @@ public class ProductController {
   }
 
   // 등록승인된 상품의 옵션 삭제하기
-  @DeleteMapping("/deleteProductOption")
+  @DeleteMapping("/option")
   public ResponseEntity<String> deleteProductOption(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam Long optionId) {
@@ -109,7 +109,7 @@ public class ProductController {
   }
 
   // 등록승인된 상품의 태그 삭제하기
-  @DeleteMapping("/deleteProductTag")
+  @DeleteMapping("/tag")
   public ResponseEntity<String> deleteProductTag(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam Long tagId) {
@@ -140,7 +140,7 @@ public class ProductController {
 
 
   // 판매 거절된 상품 내역 확인
-  @GetMapping("/rejectList")
+  @GetMapping("/reject")
   public ResponseEntity<ProductPageResponse> getRejectList(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
@@ -151,7 +151,7 @@ public class ProductController {
   }
 
   // 내가 판매하는 상품 리스트 확인
-  @GetMapping("/sellingList")
+  @GetMapping("/selling")
   public ResponseEntity<ProductPageResponse> getSellingList(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
@@ -162,7 +162,7 @@ public class ProductController {
   }
 
   // 내가 요청한 상품 옵션 리스트 확인
-  @GetMapping("/optionList")
+  @GetMapping("/option")
   public ResponseEntity<ProductOptionPageResponse> getOptionList(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam Long productId,
@@ -174,7 +174,7 @@ public class ProductController {
   }
 
   // 내가 요청한 상품 옵션 태그 리스트 확인
-  @GetMapping("/tagList")
+  @GetMapping("/tag")
   public ResponseEntity<ProductTagPageResponse> getTagList(
       @AuthenticationPrincipal UserDetailsImpl userDetails,
       @RequestParam Long productId,
