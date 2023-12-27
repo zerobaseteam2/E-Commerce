@@ -2,6 +2,7 @@ package com.example.Ecommerce.order.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,8 +32,7 @@ public class NewOrderDto {
   @NotNull(message = "수령인 상세주소는 필수 항목입니다(동수, 호수 등 입력)")
   private String detailedAddress;
 
-  @NotNull
-  private Map<Long, Integer> productQuantityMap; // product id 와 상품수량 정보
+  private List<NewOrderProductDto> newOrderProductDtoList; // product id, option id, quantity
 
   private Long couponId; // 사용할 쿠폰 id
 

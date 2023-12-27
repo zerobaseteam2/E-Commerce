@@ -1,10 +1,10 @@
 package com.example.Ecommerce.order.controller;
 
 import com.example.Ecommerce.order.domain.OrderStatus;
-import com.example.Ecommerce.order.dto.OrderListDto;
-import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.list.OrderListDto;
+import com.example.Ecommerce.order.dto.OrderProductDetailDto;
 import com.example.Ecommerce.order.dto.OrderStatusHistoryDto;
-import com.example.Ecommerce.order.dto.StatusHistoryListDto;
+import com.example.Ecommerce.order.dto.list.StatusHistoryListDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto;
 import com.example.Ecommerce.order.service.OrderStatusService;
 import com.example.Ecommerce.security.UserDetailsImpl;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/order-status")
+@RequestMapping("/order-status")
 public class OrderStatusController {
 
   private final OrderStatusService orderStatusService;
@@ -42,6 +42,7 @@ public class OrderStatusController {
     return ResponseEntity.ok(response);
   }
 
+
   // 판매자의 주문 상태 변경 API - 배송중/ 반품완료/ 교환완료/ 환불완료
   @PatchMapping("/seller")
   public ResponseEntity<?> updateStatusBySeller(
@@ -55,7 +56,7 @@ public class OrderStatusController {
     return ResponseEntity.ok(response);
   }
 
-  // 주문 상태 목록 조회 API
+  // 판매자의 주문 상품 상태 목록 조회 API
   @GetMapping("/list")
   public ResponseEntity<OrderListDto> getOrderByStatus(
       @RequestParam(name = "status") OrderStatus status,
@@ -64,15 +65,15 @@ public class OrderStatusController {
       @AuthenticationPrincipal UserDetailsImpl userDetails){
 
     // 로그인한 회원 정보
-    Long customerId = userDetails.getUser().getId();
+    Long sellerId = userDetails.getUser().getId();
     // paging 처리
     Pageable pageable = PageRequest.of(page, size);
 
-    Page<OrderProductDto> result = orderStatusService.getOrdersByStatus(customerId, status, pageable);
+    Page<OrderProductDetailDto> result = orderStatusService.getOrdersByStatus(sellerId, status, pageable);
     return ResponseEntity.ok(OrderListDto.of(result));
   }
 
-  // 주문 상품 상태 변경 정보(history) 조회 API
+  // 구매자의 주문 상품 상태 변경 정보(history) 조회 API
   @GetMapping("/history/list/{orderProductId}")
   public ResponseEntity<?> getOrderStatusHistory(
       @PathVariable Long orderProductId,

@@ -61,4 +61,14 @@ public class ProductOption {
         .optionName(form.getOptionName())
         .build();
   }
+
+  // 최초 주문시 재고 업데이트
+  public void reduceInventory(Integer quantity) {
+    this.count = this.count - quantity;
+  }
+
+  // 주문 수량 수정시 재고 업데이트
+  public void updateInventoryForQuantity(int currentQuantity, int updateQuantity) {
+    this.count = this.count + currentQuantity - updateQuantity;
+  }
 }

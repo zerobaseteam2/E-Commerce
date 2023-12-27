@@ -4,22 +4,17 @@ import com.example.Ecommerce.exception.CustomException;
 import com.example.Ecommerce.exception.ErrorCode;
 import com.example.Ecommerce.exception.InvalidOrderStatusException;
 import com.example.Ecommerce.exception.UnauthorizedUserException;
-import com.example.Ecommerce.order.domain.Order;
 import com.example.Ecommerce.order.domain.OrderProduct;
 import com.example.Ecommerce.order.domain.OrderStatus;
 import com.example.Ecommerce.order.domain.OrderStatusHistory;
-import com.example.Ecommerce.order.dto.OrderProductDto;
+import com.example.Ecommerce.order.dto.OrderProductDetailDto;
 import com.example.Ecommerce.order.dto.OrderStatusHistoryDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Request;
 import com.example.Ecommerce.order.dto.UpdateStatusDto.Response;
 import com.example.Ecommerce.order.repository.OrderProductRepository;
-import com.example.Ecommerce.order.repository.OrderRepository;
 import com.example.Ecommerce.order.repository.OrderStatusHistoryRepository;
 import com.example.Ecommerce.order.service.OrderStatusService;
-import com.example.Ecommerce.user.repository.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderStatusServiceImpl implements OrderStatusService {
 
   private final OrderProductRepository orderProductRepository;
-  private final OrderRepository orderRepository;
-  private final UserRepository userRepository;
 
   private final OrderStatusHistoryRepository orderStatusHistoryRepository;
 
@@ -57,6 +50,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     return UpdateStatusDto.Response.of(orderProduct);
 
   }
+
 
   private void saveOrderStatusHistory(OrderProduct orderProduct, OrderStatus previousStatus) {
     OrderStatusHistory history = OrderStatusHistory.createHistory(
@@ -85,28 +79,18 @@ public class OrderStatusServiceImpl implements OrderStatusService {
     return UpdateStatusDto.Response.of(orderProduct);
   }
 
-  public Page<OrderProductDto> getOrdersByStatus(Long customerId, OrderStatus status,
+  public Page<OrderProductDetailDto> getOrdersByStatus(Long sellerId, OrderStatus status,
       Pageable pageable) {
 
-    List<Order> orderList = orderRepository.findAllByUser(userRepository.findById(customerId));
-    // 해당 회원의 주문이 존재하지 않으면 exception 발생
-    if (orderList.isEmpty()) {
-      throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
-    }
-    // 주문 id 리스트
-    List<Long> orderIds = orderList.stream()
-        .map(Order::getId)
-        .collect(Collectors.toList());
+    Page<OrderProduct> orderProducts
+        = orderProductRepository.findAllByProductSellerIdAndStatus(sellerId, status, pageable);
 
-    // 상태에 따른 리스트를 paging 처리하여 불러오기
-    Page<OrderProduct> filteredOrderProducts =
-        orderProductRepository.findAllByOrderIdInAndStatus(orderIds, status, pageable);
-
-    if (filteredOrderProducts.isEmpty()) {
+    // 주문 목록이 없으면 exception 발생
+    if (orderProducts.isEmpty()) {
       throw new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
     }
     // 결과를 OrderProductDto list 로 반환하여 반환
-    return filteredOrderProducts.map(OrderProductDto::of);
+    return orderProducts.map(OrderProductDetailDto::of);
   }
 
   @Override
