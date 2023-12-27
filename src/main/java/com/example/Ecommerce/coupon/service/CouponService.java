@@ -15,4 +15,6 @@ public interface CouponService {
   
   PageResponse viewCoupons(SearchFilterType filter, int pageNo, User user);
 
+  PageResponse viewCouponsForAdmin(SearchFilterType filterType, int pageNo, Long customerId);
+
 }
