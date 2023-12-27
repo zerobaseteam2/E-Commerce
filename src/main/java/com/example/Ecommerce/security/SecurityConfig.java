@@ -85,6 +85,8 @@ public class SecurityConfig {
                 .requestMatchers("/admin/product/**").hasRole("ADMIN")
                 .requestMatchers("/search/**").permitAll()
 
+                .requestMatchers("inquiry/admin/**").hasRole("ADMIN")
+
                 .requestMatchers("/customer/order/**").hasRole("CUSTOMER")
                 .requestMatchers("/seller/order/**").hasRole("SELLER")
                 .anyRequest().authenticated())
