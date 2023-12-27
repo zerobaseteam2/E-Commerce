@@ -24,14 +24,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/inquiry")
+@RequestMapping("/inquiry")
 @RequiredArgsConstructor
 public class InquiryController {
 
   private final InquiryService inquiryService;
 
-  @PostMapping("/register")
-  public ResponseEntity<RegisterInquiryDto.Response> registerInquiry(
+  @PostMapping("/new")
+  public ResponseEntity<RegisterInquiryDto.Response> newInquiry(
       @RequestBody @Valid RegisterInquiryDto.Request request,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
     User user = userDetails.getUser();
@@ -39,8 +39,8 @@ public class InquiryController {
     return ResponseEntity.ok(response);
   }
 
-  @PutMapping("/update/{inquiryId}")
-  public ResponseEntity<UpdaterInquiryDto.Response> updateInquiry(
+  @PutMapping("/{inquiryId}")
+  public ResponseEntity<UpdaterInquiryDto.Response> modifiedInquiry(
       @PathVariable Long inquiryId,
       @RequestBody @Valid UpdaterInquiryDto.Request request,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -48,7 +48,7 @@ public class InquiryController {
     UpdaterInquiryDto.Response response = inquiryService.updateInquiry(inquiryId, request, user);
     return ResponseEntity.ok(response);
   }
-  @DeleteMapping("/delete/{inquiryId}")
+  @DeleteMapping("/{inquiryId}")
   public ResponseEntity<?> deleteInquiry(
       @PathVariable Long inquiryId,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -56,7 +56,7 @@ public class InquiryController {
     inquiryService.deleteInquiry(inquiryId, user);
     return ResponseEntity.ok("");
   }
-  @GetMapping("/view/{inquiryId}")
+  @GetMapping("/{inquiryId}")
   public ResponseEntity<ViewInquiryDto> viewInquiry(
       @PathVariable Long inquiryId,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -72,7 +72,7 @@ public class InquiryController {
     InquiryPageDto response = inquiryService.viewInquiryList(pageNo, user);
     return ResponseEntity.ok(response);
   }
-  @PostMapping("/register-reply")
+  @PostMapping("/admin/reply")
   public ResponseEntity<ViewInquiryDto> registerInquiryReply(
       @RequestBody @Valid RegisterInquiryReplyDto.Request request,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -81,7 +81,7 @@ public class InquiryController {
     return ResponseEntity.ok(response);
   }
 
-  @PutMapping("/update-reply")
+  @PutMapping("/admin/reply")
   public ResponseEntity<ViewInquiryDto> updateInquiryReply(
       @RequestBody @Valid UpdateInquiryReplyDto.Request request,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -90,7 +90,7 @@ public class InquiryController {
     return ResponseEntity.ok(response);
   }
 
-  @GetMapping("/viewList/admin")
+  @GetMapping("/admin/viewList")
   public ResponseEntity<InquiryPageDto> viewInquiryListForAdmin(
       @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
       @RequestParam(value = "filter", defaultValue = "ALL", required = false) String filter,
