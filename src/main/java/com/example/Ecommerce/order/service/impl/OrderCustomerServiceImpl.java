@@ -132,9 +132,9 @@ public class OrderCustomerServiceImpl implements OrderCustomerService {
   @Override
   @Transactional
   public UpdateShippingDto.Response updateShippingInfo
-      (Long id, UpdateShippingDto.Request request, String customerId) {
+      (Long orderId, UpdateShippingDto.Request request, String customerId) {
     // 수정하려는 주문 가져오기
-    Order order = orderRepository.findById(id)
+    Order order = orderRepository.findById(orderId)
         .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
     // 권한 확인 - 수정하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
@@ -209,10 +209,10 @@ public class OrderCustomerServiceImpl implements OrderCustomerService {
 
 
   @Override
-  public OrderDetailDto getOrderDetails(String customerId, Long id) {
+  public OrderDetailDto getOrderDetails(String customerId, Long orderId) {
 
     // 조회하려는 주문 가져오기
-    Order order = orderRepository.findById(id)
+    Order order = orderRepository.findById(orderId)
         .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
     // 권한 확인 - 조회하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인
     if (!order.getUser().getUserId().equals(customerId)) {

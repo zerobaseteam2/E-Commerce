@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface OrderSellerService {
 
-  OrderProductDetailDto getOrderProductDetails(Long sellerId, Long id);
+  OrderProductDetailDto getOrderProductDetails(Long sellerId, Long orderProductId);
   Page<OrderProductDetailDto> getAllOrders(Long sellerId, Pageable pageable);
 }

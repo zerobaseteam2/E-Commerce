@@ -45,16 +45,16 @@ public class OrderCustomerController {
   }
 
   // 주문 배송지 정보 수정 API
-  @PutMapping("/{id}/shipping-info")
+  @PutMapping("/{orderId}/shipping-info")
   public ResponseEntity<UpdateShippingDto.Response> updateShippingInfo(
-      @PathVariable Long id,
+      @PathVariable Long orderId,
       @RequestBody UpdateShippingDto.Request request,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
 
-    UpdateShippingDto.Response response = orderCustomerService.updateShippingInfo(id, request, customerId);
+    UpdateShippingDto.Response response = orderCustomerService.updateShippingInfo(orderId, request, customerId);
     return ResponseEntity.ok(response);
   }
 
@@ -72,15 +72,15 @@ public class OrderCustomerController {
   }
 
   // 주문 상세 내역 조회 API
-  @GetMapping("/{id}/details")
+  @GetMapping("/{orderId}/details")
   public ResponseEntity<OrderDetailDto> getOrderDetails(
-      @PathVariable Long id,
+      @PathVariable Long orderId,
       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
     // 로그인한 회원 정보
     String customerId = userDetails.getUser().getUserId();
 
-    OrderDetailDto orderDetailDto = orderCustomerService.getOrderDetails(customerId, id);
+    OrderDetailDto orderDetailDto = orderCustomerService.getOrderDetails(customerId, orderId);
     return ResponseEntity.ok(orderDetailDto);
   }
 

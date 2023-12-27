@@ -19,9 +19,9 @@ public class OrderSellerServiceImpl implements OrderSellerService {
   private final OrderProductRepository orderProductRepository;
 
   @Override
-  public OrderProductDetailDto getOrderProductDetails(Long sellerId, Long id) {
+  public OrderProductDetailDto getOrderProductDetails(Long sellerId, Long orderProductId) {
     // 조회하려는 주문 가져오기
-    OrderProduct orderProduct = orderProductRepository.findById(id)
+    OrderProduct orderProduct = orderProductRepository.findById(orderProductId)
         .orElseThrow(() -> new CustomException(ErrorCode.ORDER_PRODUCT_NOT_FOUND));
 
     // 권한 확인 - 조회하려는 주문정보의 회원정보와 로그인한 회원이 같은지 확인

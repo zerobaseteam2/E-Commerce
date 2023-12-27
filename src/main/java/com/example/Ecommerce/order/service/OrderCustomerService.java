@@ -12,12 +12,12 @@ public interface OrderCustomerService {
 
   OrderDetailDto processOrder(String customerId, NewOrderDto newOrderDto);
 
-  UpdateShippingDto.Response updateShippingInfo(Long id, UpdateShippingDto.Request request,
+  UpdateShippingDto.Response updateShippingInfo(Long orderId, UpdateShippingDto.Request request,
       String customerId);
 
   OrderDetailDto updateQuantity(UpdateQuantityDto updateQuantityDto, String customerId);
 
-  OrderDetailDto getOrderDetails(String customerId, Long id);
+  OrderDetailDto getOrderDetails(String customerId, Long orderId);
 
   Page<OrderProductDetailDto> getAllOrders(Long customerId, Pageable pageable);
 }
