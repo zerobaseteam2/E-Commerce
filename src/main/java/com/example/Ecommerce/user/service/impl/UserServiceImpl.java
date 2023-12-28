@@ -152,6 +152,9 @@ public class UserServiceImpl implements UserService {
   }
 
   private RefreshToken saveRefreshToken(String username) {
+    if (refreshTokenRepository.existsById(username)) {
+      refreshTokenRepository.deleteById(username);
+    }
     return refreshTokenRepository.save(RefreshToken.createRefreshToken(username,
         jwtTokenUtil.generateRefreshToken(username)));
   }
