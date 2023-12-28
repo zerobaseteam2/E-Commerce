@@ -155,6 +155,8 @@
     - 가격순
     - 리뷰 개수순
     - 별점순
+## ERD
+![ERD.png](doc%2FERD.png)
 
 ## 기술 스택
 <div align=center> 
